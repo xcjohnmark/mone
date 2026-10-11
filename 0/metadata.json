@@ -1,0 +1,42 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PCJP11B18HYCS4YBNZ4T57",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T21:05:59.0239496Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "b60d59cf7794",
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 71,
+      "user_lines_removed": 68,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "trace_exports/failure_recovery_trace.json": 71
+      },
+      "user_removed_per_file": {
+        "trace_exports/failure_recovery_trace.json": 68
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 4,
+      "user_lines_removed": 0,
+      "agent_lines_added": 71,
+      "agent_lines_removed": 68,
+      "user_added_per_file": {
+        "mone/telemetry/__init__.py": 4
+      }
+    }
+  ]
+}
