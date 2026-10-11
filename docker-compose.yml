@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mone-agent:
+    build: .
+    container_name: mone-agent-runner
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - WEATHER_PROVIDER=auto
+      - DEFAULT_VENUE=paper
+      - AGENT_AUTONOMY_MODE=copilot
+      - NEATLOGS_API_KEY=${NEATLOGS_API_KEY}
+      - NEATLOGS_WORKFLOW_NAME=mone-trading-agent
+      - DATABASE_URL=sqlite:////app/data/mone.db
+    volumes:
+      - mone-data:/app/data
+
+volumes:
+  mone-data:
