@@ -1,0 +1,107 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PKHB2054TZ8KFVJPG7KMQ6",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T23:07:33.9880755Z",
+  "branch": "main",
+  "checkpoints_count": 4,
+  "save_step_count": 5,
+  "files_touched": [
+    ".env.example",
+    "benchmark_improvement_report.json",
+    "cfo_business_plan.md",
+    "mone/billing/dodo.py",
+    "mone/cli.py",
+    "mone/config.py",
+    "mone/risk/circuit_breaker.py",
+    "mone/server.py",
+    "scripts/benchmark_optimization.py",
+    "scripts/demo_failure_recovery.py",
+    "tests/test_config.py",
+    "trace_exports/failure_recovery_trace.json",
+    "web/src/app/agent/page.tsx",
+    "web/src/app/layout.tsx",
+    "web/src/app/page.tsx",
+    "web/src/components/CliSetupModal.tsx",
+    "web/src/components/OnboardingModal.tsx",
+    "web/src/components/PricingModal.tsx",
+    "web/src/context/AuthContext.tsx"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "bad882c251f2",
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T23:07:33.8636378Z",
+    "agent_lines": 1537,
+    "agent_removed": 320,
+    "human_added": 61,
+    "human_modified": 99,
+    "human_removed": 0,
+    "total_committed": 1697,
+    "total_lines_changed": 2018,
+    "agent_percentage": 92.02180376610507,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 14,
+      "user_lines_removed": 0,
+      "agent_lines_added": 369,
+      "agent_lines_removed": 69,
+      "user_added_per_file": {
+        "logo/mone-1.svg": 4,
+        "logo/mone-2.svg": 4,
+        "logo/mone-trans-1.svg": 3,
+        "logo/mone-trans-2.svg": 3
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 14,
+      "user_lines_removed": 0,
+      "agent_lines_added": 369,
+      "agent_lines_removed": 69,
+      "user_added_per_file": {
+        "logo/mone-1.svg": 4,
+        "logo/mone-2.svg": 4,
+        "logo/mone-trans-1.svg": 3,
+        "logo/mone-trans-2.svg": 3
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 21,
+      "user_lines_removed": 8,
+      "agent_lines_added": 1637,
+      "agent_lines_removed": 379,
+      "user_added_per_file": {
+        ".env.example": 2,
+        "logo/mone-1.svg": 4,
+        "logo/mone-2.svg": 4,
+        "logo/mone-trans-1.svg": 3,
+        "logo/mone-trans-2.svg": 3,
+        "mone/config.py": 1,
+        "tests/test_config.py": 1,
+        "web/src/app/page.tsx": 3
+      },
+      "user_removed_per_file": {
+        ".env.example": 2,
+        "mone/config.py": 1,
+        "tests/test_config.py": 1,
+        "web/src/app/page.tsx": 4
+      }
+    }
+  ]
+}
