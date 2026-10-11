@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PP3MQAA874PS4NP00K15SZ",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "docker-compose.yml",
+    "mone/cli.py",
+    "mone/markets/__init__.py",
+    "trace_exports/failure_recovery_trace.json",
+    "web/src/app/agent/page.tsx",
+    "web/src/components/CliSetupModal.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ]
+}

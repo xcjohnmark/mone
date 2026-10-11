@@ -1,0 +1,17 @@
+so outline the users flow currently, for both cli users and web users. it should highlight every single action they take if they want to use our agent for the first time.
+then outline the steps they take if they want to view the agent dashboard on the web. now what is the alternative to this for cli users? are we to create some sort of pre defined queries for them to get info tjhat would be on the dashboard in their cli?
+
+---
+
+there is nothing like the Paper Broker ($1,000 Sandbox) again we are only using kalshi demo for any agent testing access. and why do users need to open a loclhost whern they can just also be able to access the website? is that how other similar apps work?
+
+---
+
+ok more on the agent particularly. currently is this how the agent work:
+- scans polymarket and kalshi immediately they create the new daily rain weather market for a new day
+- gets all the info about the market, goes to the user-selected weathernext and get forecasts for each city.
+- uses the deterministic trading guardrail to determine which market is worth trading.
+- if autonomous, executes trades on those market signals
+- if not autonomous, sends signal to the persons (we've not talked about this, do they get notified in telegram, on their dashboard, and for cli users where do they get notified? do they hae to open cli and run the agent before they get signals?)
+
+what are other things the agents does that i am missing out, and is the agent running all over the clock or only when new weathermarkets for the day are created on polymarket and kalshi

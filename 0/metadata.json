@@ -1,0 +1,67 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PP3MQAA874PS4NP00K15SZ",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T23:52:30.7777521Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "save_step_count": 3,
+  "files_touched": [
+    "docker-compose.yml",
+    "mone/cli.py",
+    "mone/markets/__init__.py",
+    "trace_exports/failure_recovery_trace.json",
+    "web/src/app/agent/page.tsx",
+    "web/src/components/CliSetupModal.tsx"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "4db920f8444c",
+  "checkpoint_transcript_start": 538,
+  "transcript_lines_at_start": 538,
+  "session_metrics": {
+    "turn_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T23:52:30.6434333Z",
+    "agent_lines": 40,
+    "agent_removed": 15,
+    "human_added": 186,
+    "human_modified": 72,
+    "human_removed": 0,
+    "total_committed": 298,
+    "total_lines_changed": 362,
+    "agent_percentage": 15.193370165745856,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 1,
+      "user_lines_removed": 1,
+      "agent_lines_added": 96,
+      "agent_lines_removed": 71,
+      "user_added_per_file": {
+        "docker-compose.yml": 1
+      },
+      "user_removed_per_file": {
+        "docker-compose.yml": 1
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 113,
+      "agent_lines_removed": 80
+    }
+  ]
+}
