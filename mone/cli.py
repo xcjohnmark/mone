@@ -132,6 +132,25 @@ def cmd_approve(args):
         print(f"[-] Failed to execute signal #{args.signal_id}. Check status and logs.")
 
 
+def cmd_scan(args):
+    """Pre-defined query: Scans all 22 airport stations and displays live edge comparison."""
+    print_banner()
+    config = get_config()
+    agent = MoneAgent(config=config)
+    print(f"[*] Scanning 22 NWS stations via {agent.weather.provider_id} against {agent.market.venue_id}...")
+    res = agent.step(target_date=args.date)
+    signals = res.get("signals", [])
+    print("\n" + "=" * 78)
+    print(f"  {'CITY':<20} {'STATION':<10} {'PROB':<10} {'ASK':<10} {'EDGE':<10} {'ACTION':<10}")
+    print("=" * 78)
+    for s in signals:
+        edge_str = f"+{s['edge_pct']:.1f}%" if s['edge_pct'] > 0 else f"{s['edge_pct']:.1f}%"
+        print(f"  {s['city']:<20} {s['station_code']:<10} {s['model_prob_pct']:<9.1f}% ${s['market_ask']:<9.2f} {edge_str:<10} {s['action']:<10}")
+    print("=" * 78)
+    print(f"  Total Actionable Opportunities: {res['actionable_signals_count']}")
+    print(f"  Run 'mone run --mode copilot' or 'mone approve <id>' to execute trades.\n")
+
+
 def cmd_doctor(args):
     """Diagnoses connectivity to weather providers, market venues, and Neatlogs."""
     print_banner()
@@ -200,7 +219,7 @@ def cmd_configure(args):
     print("=" * 65)
     config = get_config()
     print(f"  Weather Provider     : {config.weather_provider.value} (Options: auto, openmeteo, weathernext3)")
-    print(f"  Execution Venue      : {config.default_venue.value} (Options: paper, kalshi_demo, kalshi_live, polymarket)")
+    print(f"  Execution Venue      : {config.default_venue.value} (Options: kalshi_demo, kalshi_live, polymarket)")
     print(f"  Autonomy Mode        : {config.agent_autonomy_mode.value} (Options: autonomous, copilot)")
     print(f"  Capital Per Trade    : ${config.capital_per_trade:.2f}")
     print(f"  Max Daily Drawdown   : ${config.max_daily_drawdown:.2f}")
@@ -231,7 +250,7 @@ def main():
     p_run = subparsers.add_parser("run", help="Run agent trading cycle(s)")
     p_run.add_argument("--date", type=str, help="Target date YYYY-MM-DD (defaults to today/tomorrow)")
     p_run.add_argument("--mode", choices=["autonomous", "copilot"], help="Execution autonomy mode")
-    p_run.add_argument("--venue", choices=["paper", "kalshi_demo", "kalshi_live", "polymarket"], help="Trading venue")
+    p_run.add_argument("--venue", choices=["kalshi_demo", "kalshi_live", "polymarket"], help="Trading venue")
     p_run.add_argument("--provider", choices=["auto", "openmeteo", "weathernext3"], help="Weather provider")
     p_run.add_argument("--loop", action="store_true", help="Run continuously in a loop")
     p_run.add_argument("--interval", type=int, help="Loop interval in seconds (default 3600)")
@@ -242,6 +261,10 @@ def main():
     # Command: approve
     p_app = subparsers.add_parser("approve", help="Approve a staged Copilot signal")
     p_app.add_argument("signal_id", type=int, help="ID of the staged signal to approve")
+
+    # Command: scan
+    p_scan = subparsers.add_parser("scan", help="Pre-defined query: scan all 22 stations and compare live model edge")
+    p_scan.add_argument("--date", type=str, help="Target date YYYY-MM-DD")
 
     # Command: doctor
     subparsers.add_parser("doctor", help="Check system connections and configuration")
@@ -264,6 +287,8 @@ def main():
             cmd_run(args)
         elif args.command == "status":
             cmd_status(args)
+        elif args.command == "scan":
+            cmd_scan(args)
         elif args.command == "approve":
             cmd_approve(args)
         elif args.command == "doctor":

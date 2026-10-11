@@ -49,9 +49,17 @@ def get_market_client(config: Optional[MoneConfig] = None) -> MarketClient:
             passphrase=config.polymarket_passphrase,
             proxy_wallet=config.polymarket_proxy_wallet,
         )
-    else:
-        # Default to Paper trading
+    elif config.default_venue == MarketVenueType.PAPER:
         return PaperMarketClient()
+    else:
+        # Default to Kalshi Demo sandbox
+        return KalshiClient(
+            is_demo=True,
+            api_key_id=config.kalshi_demo_api_key_id,
+            private_key_path=config.kalshi_demo_private_key_path,
+            email=config.kalshi_demo_email,
+            password=config.kalshi_demo_password,
+        )
 
 
 __all__ = [

@@ -9,7 +9,7 @@ services:
       - "8000:8000"
     environment:
       - WEATHER_PROVIDER=auto
-      - DEFAULT_VENUE=paper
+      - DEFAULT_VENUE=kalshi_demo
       - AGENT_AUTONOMY_MODE=copilot
       - NEATLOGS_API_KEY=${NEATLOGS_API_KEY}
       - NEATLOGS_WORKFLOW_NAME=mone-trading-agent

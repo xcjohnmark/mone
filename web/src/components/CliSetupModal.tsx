@@ -49,7 +49,7 @@ mone serve --port 8000`;
 
   const envTemplate = `# --- mone Agent BYOK Environment ---
 WEATHER_PROVIDER=auto
-DEFAULT_VENUE=paper
+DEFAULT_VENUE=kalshi_demo
 AGENT_AUTONOMY_MODE=copilot
 
 # Neatlogs Project Tracing

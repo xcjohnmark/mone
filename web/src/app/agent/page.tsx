@@ -243,9 +243,9 @@ function AgentDashboard() {
 
   const formatVenueName = (v: string) => {
     if (v === "kalshi_live") return "Kalshi Live KXRAIN";
-    if (v === "kalshi_demo") return "Kalshi Demo v2";
+    if (v === "kalshi_demo") return "Kalshi Demo v2 (Sandbox)";
     if (v === "polymarket") return "Polymarket Web3";
-    return "Paper Sandbox ($1,000)";
+    return "Kalshi Demo v2 (Sandbox)";
   };
 
   return (
@@ -508,7 +508,7 @@ function AgentDashboard() {
               <div className="text-xl sm:text-2xl font-bold font-mono text-indigo-400 mt-1">
                 ${(cashBalance + investedCapital).toFixed(2)}
               </div>
-              <span className="text-[10px] text-zinc-500">Paper + Live Equity</span>
+              <span className="text-[10px] text-zinc-500">Demo + Live Equity</span>
             </div>
             <div>
               <span className="text-[11px] text-zinc-400 block">Realized PnL</span>
