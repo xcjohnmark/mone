@@ -192,6 +192,9 @@ def cmd_backtest(args):
         logger.error(f"Backtest failed: {e}", exc_info=True)
 
 
+from mone.telemetry import flush_telemetry
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="mone",
@@ -224,19 +227,23 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "run":
-        cmd_run(args)
-    elif args.command == "status":
-        cmd_status(args)
-    elif args.command == "approve":
-        cmd_approve(args)
-    elif args.command == "doctor":
-        cmd_doctor(args)
-    elif args.command == "backtest":
-        cmd_backtest(args)
-    else:
-        parser.print_help()
+    try:
+        if args.command == "run":
+            cmd_run(args)
+        elif args.command == "status":
+            cmd_status(args)
+        elif args.command == "approve":
+            cmd_approve(args)
+        elif args.command == "doctor":
+            cmd_doctor(args)
+        elif args.command == "backtest":
+            cmd_backtest(args)
+        else:
+            parser.print_help()
+    finally:
+        flush_telemetry()
 
 
 if __name__ == "__main__":
     main()
+

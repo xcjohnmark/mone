@@ -48,7 +48,28 @@ All payments are processed via **Dodo Payments** (hackathon partner).
 
 ---
 
-## 3. Customer Acquisition & Market Opportunity
+## 3. Cash Runway & Scenario Analysis (cfo.ai Modeled)
+
+To verify financial resilience, the model was stress-tested across two scenarios assuming an initial pre-seed cash reserve of **$150,000**:
+
+```
+Formula: Runway (Months) = Current Cash Balance / Net Monthly Cash Burn
+Net Monthly Cash Burn = (Monthly Fixed OpEx + Variable COGS) - Gross Billings
+```
+
+| Scenario | Monthly Fixed OpEx | Revenue Realization | Peak Monthly Net Burn | Break-Even Month | Effective Runway |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Base Case (Target)** | $8,330 / mo | 100% of plan | -$4,800 / mo (M1) | **Month 5** | **Self-Sustaining** (Cash trough: $128.4k) |
+| **Downside Stress Case**| $7,500 / mo | 40% of plan (delayed) | -$6,950 / mo | **Month 14** | **21.6 Months** ($150k / $6.95k net burn) |
+
+### Runway Resilience Factors
+1. **Zero Custodial Liability:** Because users bring their own API keys, mone holds no customer balances, eliminating insurance and escrow reserve capital requirements.
+2. **Elastic Variable COGS:** Compute costs scale strictly with active user runs ($0.012/cycle); if volume drops, runner expenses drop concurrently.
+3. **High Gross Margins (88%):** Each new Pro subscriber ($49/mo) nets $43.12 in gross profit, requiring only **193 Pro Subscribers** to fully cover corporate fixed operating expenses.
+
+---
+
+## 4. Customer Acquisition & Market Opportunity
 
 ### Target Market Verticals
 1. **Prediction Market Traders (Polymarket & Kalshi):** Over $3.2B in annualized prediction volume. Traders currently trade weather contracts manually on gut feel or standard weather apps that do not compute ensemble member votes.

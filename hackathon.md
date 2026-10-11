@@ -30,7 +30,7 @@
 
 ### B. Hackathon Mandatory Partner Integrations
 * **neatlogs:** Full execution observability. Traced workflow roots (`mone_trading_cycle`, `resolve_settlements`), agent reasoning (`evaluate_market_signals`), and tool invocations (`fetch_weather_forecasts`, `fetch_market_quotes`, `execute_order`). Deliberate GCS disconnect failure-recovery trace captured in `trace_exports/failure_recovery_trace.json`.
-* **Entire (`entire.io`):** Repository architecture context tracking and code-evolution checkpoints throughout the hackathon build window.
+* **Entire (`entire.io`):** Repository architecture context tracking and code-evolution checkpoints throughout the hackathon build window. Checkpoint tracking enabled on branch `main` with native Antigravity and Claude agent hooks (`.entire/settings.json`, `.agents/hooks.json`).
 * **cfo.ai:** Unit economics and financial business modeling for mone’s non-custodial compute fuel & SaaS subscription pricing ([cfo.ai Session jahsfavour-cfoai-d694156f](https://app.cfo.ai/jahsfavour-cfoai-d694156f/chat/e56aaeb6-0d24-4f9d-8cd4-36c3f1593665), documented in `cfo_business_plan.md`).
 * **Dodo Payments:** Runner compute fuel credit checkout ($10, $25) and Pro subscriptions ($49/mo) with cryptographic webhook signature validation.
 
