@@ -1,0 +1,43 @@
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment and sensitive keys
+.env
+*.pem
+*.key
+credentials.json
+service_account.json
+
+# Local SQLite databases & runtime data
+*.db
+*.sqlite3
+mone.db
+backtest_cache/
+portfolio_state.json
+
+# Distribution & builds
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

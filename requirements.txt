@@ -1,0 +1,31 @@
+# mone — Autonomous Prediction Market Trading Agent
+# Dependencies
+
+# Observability & Hackathon Telemetry
+neatlogs>=1.4.0
+
+# HTTP & API Clients
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Schema & Configuration
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+cryptography>=42.0.0
+
+# WeatherNext 3 BigQuery & Spatial Zarr (Optional / BYOK)
+google-cloud-bigquery>=3.20.0
+google-cloud-storage>=2.14.0
+xarray>=2024.1.0
+zarr>=2.18.0
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Web Companion & API Runner
+fastapi>=0.110.0
+uvicorn>=0.28.0
+
+# Testing & Quality
+pytest>=8.0.0
+pytest-asyncio>=0.23.0

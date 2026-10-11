@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mone-agent"
+version = "0.1.0"
+description = "Autonomous quantitative trading agent bridging Google WeatherNext forecasting with prediction markets under BYOK architecture"
+readme = "hackathon.md"
+authors = [
+    { name = "xcjohnmark" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "neatlogs>=1.4.0",
+    "requests>=2.31.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "python-dotenv>=1.0.0",
+    "cryptography>=42.0.0",
+]
+
+[project.optional-dependencies]
+weathernext3 = [
+    "google-cloud-bigquery>=3.20.0",
+    "google-cloud-storage>=2.14.0",
+    "xarray>=2024.1.0",
+    "zarr>=2.18.0",
+    "numpy>=1.26.0",
+    "pandas>=2.2.0",
+]
+web = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+]
+test = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+mone = "mone.cli:main"
+mone-agent = "mone.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mone*"]
