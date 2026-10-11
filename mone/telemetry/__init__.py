@@ -10,6 +10,8 @@ from mone.telemetry.tracer import (
     tool_span,
     get_recorded_spans,
     clear_recorded_spans,
+    flush_telemetry,
+    shutdown_telemetry,
 )
 
 __all__ = [
@@ -20,4 +22,6 @@ __all__ = [
     "tool_span",
     "get_recorded_spans",
     "clear_recorded_spans",
+    "flush_telemetry",
+    "shutdown_telemetry",
 ]
