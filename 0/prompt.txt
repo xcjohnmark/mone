@@ -1,0 +1,1 @@
+ok for me to continue with dodo payment integration i have to have a website url so we are deploying the site even though it's still in production. now first off are we using vercel? what do i need to do? and create a plan to do what you have to do to deploy a websit for free on vercel.
