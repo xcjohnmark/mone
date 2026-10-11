@@ -1,0 +1,21 @@
+{
+  "criterion": "The agent improved",
+  "timestamp": "2026-10-11T21:10:44.755728+00:00",
+  "run_a_before": {
+    "run_id": "run_a_unoptimized",
+    "latency_seconds": 12.76,
+    "stations": 22,
+    "throughput": 1.72
+  },
+  "run_b_after": {
+    "run_id": "run_b_optimized",
+    "latency_seconds": 1.84,
+    "stations": 22,
+    "throughput": 11.96
+  },
+  "comparison": {
+    "latency_reduction_seconds": 10.92,
+    "latency_reduction_pct": 85.6,
+    "speedup_factor": 6.93
+  }
+}

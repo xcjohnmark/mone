@@ -1,6 +1,6 @@
 """
 mone.billing.dodo — Dodo Payments Integration (Hackathon Partner).
-Provides non-custodial runner compute fuel wallet top-ups ($10, $25) and $49/mo Pro subscriptions.
+Provides non-custodial runner passes ($10 for 100 runs, $25 for 300 runs) and $49/mo Pro subscriptions.
 Strict Non-Custodial Principle: The agent NEVER takes custody of user exchange funds on Kalshi or Polymarket.
 """
 
@@ -21,25 +21,29 @@ logger = logging.getLogger("mone.billing.dodo")
 
 # Standard Dodo Payments Products for mone
 PRODUCTS = {
-    "fuel_10": {
-        "name": "Runner Compute Fuel (100 Cycles)",
+    "pass_10": {
+        "name": "100 Trade Runs",
         "amount_usd": 10.00,
-        "credits_usd": 10.00,
+        "runs": 100,
         "type": "one_time",
     },
-    "fuel_25": {
-        "name": "Runner Compute Fuel (300 Cycles)",
+    "pass_25": {
+        "name": "300 Trade Runs",
         "amount_usd": 25.00,
-        "credits_usd": 25.00,
+        "runs": 300,
         "type": "one_time",
     },
     "pro_subscription": {
-        "name": "mone Pro SaaS Subscription",
+        "name": "mone Pro Subscription",
         "amount_usd": 49.00,
+        "runs": -1,  # unlimited
         "type": "subscription",
         "interval": "month",
     },
 }
+# Backward-compatibility aliases
+PRODUCTS["fuel_10"] = PRODUCTS["pass_10"]
+PRODUCTS["fuel_25"] = PRODUCTS["pass_25"]
 
 
 class DodoPaymentsClient:

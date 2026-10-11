@@ -57,7 +57,7 @@ class MoneConfig(BaseSettings):
     openmeteo_timeout_seconds: int = Field(default=15, alias="OPENMETEO_TIMEOUT_SECONDS")
 
     # --- Market Venues & Keys ---
-    default_venue: MarketVenueType = Field(default=MarketVenueType.PAPER, alias="DEFAULT_VENUE")
+    default_venue: MarketVenueType = Field(default=MarketVenueType.KALSHI_DEMO, alias="DEFAULT_VENUE")
     
     # Kalshi Demo
     kalshi_demo_email: Optional[str] = Field(default=None, alias="KALSHI_DEMO_EMAIL")

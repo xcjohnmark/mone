@@ -10,7 +10,7 @@ from mone.config import MoneConfig, WeatherProviderType, MarketVenueType, Autono
 def test_default_config():
     config = MoneConfig()
     assert config.weather_provider == WeatherProviderType.AUTO
-    assert config.default_venue == MarketVenueType.PAPER
+    assert config.default_venue == MarketVenueType.KALSHI_DEMO
     assert config.agent_autonomy_mode == AutonomyMode.COPILOT
     assert config.long_yes_prob_threshold == 75.0
     assert config.long_no_prob_threshold == 25.0

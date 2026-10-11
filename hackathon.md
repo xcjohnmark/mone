@@ -25,7 +25,7 @@
 ### A. Core Stack
 * **Language & Runtime:** Python 3.12+ (Data, WeatherNext client, trading engine, CLI, FastAPI) & Next.js 15 / React 19 / Tailwind CSS (Web UI).
 * **Weather Models:** Google WeatherNext 3 (Google BigQuery / GCS Zarr v3) with automated fallback to Open-Meteo Google WeatherNext 2 63-member ensemble REST API.
-* **Execution Targets:** Kalshi Live API, Kalshi Demo API v2, Polymarket CLOB, and Built-in Virtual Paper Engine.
+* **Execution Targets:** Kalshi Demo API v2 (Exclusive 7-Day Free Trial Testing Environment), Kalshi Live API (KXRAIN), and Polymarket CLOB.
 * **Persistence:** SQLite zero-config transactional ledger (`mone.db`).
 
 ### B. Hackathon Mandatory Partner Integrations

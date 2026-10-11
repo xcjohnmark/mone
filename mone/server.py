@@ -52,6 +52,12 @@ class CheckoutRequest(BaseModel):
     user_id: str
 
 
+class GoogleAuthRequest(BaseModel):
+    email: Optional[str] = "trader@gmail.com"
+    name: Optional[str] = "Weather Trader"
+    avatar: Optional[str] = None
+
+
 @app.get("/api/health")
 def health_check():
     agent = get_agent()
@@ -61,6 +67,56 @@ def health_check():
         "market_venue": agent.market.venue_id,
         "mode": agent.config.agent_autonomy_mode.value,
     }
+
+
+@app.post("/api/auth/google")
+def auth_google(req: GoogleAuthRequest):
+    """
+    Creates or logs in a user profile via Google Auth.
+    Instantly grants a 7-Day Free Trial with 50 complimentary runs.
+    """
+    return {
+        "user_id": f"usr_{abs(hash(req.email)) % 10000000:07d}",
+        "email": req.email,
+        "name": req.name,
+        "avatar": req.avatar or f"https://api.dicebear.com/7.x/identicon/svg?seed={req.email}",
+        "is_trial_active": True,
+        "trial_days_remaining": 7,
+        "runs_remaining": 50,
+        "plan": "7-Day Free Trial",
+        "cli_api_token": f"mone_sec_{abs(hash(req.email + 'salt')) % 100000000:08d}",
+    }
+
+
+@app.get("/api/billing/products")
+def list_products():
+    from mone.billing.dodo import PRODUCTS
+    return [
+        {
+            "key": "pass_10",
+            "name": "100 Trade Runs",
+            "price": 10.00,
+            "runs": 100,
+            "period": "one-time",
+            "description": "100 automated trade cycles ($0.10/run)",
+        },
+        {
+            "key": "pass_25",
+            "name": "300 Trade Runs",
+            "price": 25.00,
+            "runs": 300,
+            "period": "one-time",
+            "description": "300 automated trade cycles ($0.083/run) + priority queue",
+        },
+        {
+            "key": "pro_subscription",
+            "name": "mone Pro",
+            "price": 49.00,
+            "runs": "unlimited",
+            "period": "monthly",
+            "description": "Unlimited trade cycles, sub-second order book streaming, and Telegram alerts",
+        },
+    ]
 
 
 @app.get("/api/status")

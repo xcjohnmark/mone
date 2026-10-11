@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   CloudRain,
   ShieldCheck,
@@ -16,21 +17,35 @@ import {
   Activity,
   Layers,
   ChevronRight,
+  Sparkles,
+  User,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const { user, signInWithGoogle, signOut, setIsPricingOpen, setIsCliModalOpen } = useAuth();
   const [setupTab, setSetupTab] = useState<"cli" | "web">("cli");
   const [copied, setCopied] = useState(false);
 
   // In-hero form state
   const [provider, setProvider] = useState("auto");
-  const [venue, setVenue] = useState("paper");
+  const [venue, setVenue] = useState("kalshi_demo");
   const [mode, setMode] = useState("copilot");
 
   const copyCliCommand = () => {
-    navigator.clipboard.writeText("pip install mone-agent\nmone doctor\nmone run --mode copilot");
+    navigator.clipboard.writeText("pip install mone-agent\nmone doctor\nmone run --mode copilot\nmone serve --port 8000");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleLaunchWebRunner = () => {
+    const targetUrl = `/agent?provider=${provider}&venue=${venue}&mode=${mode}`;
+    if (!user) {
+      signInWithGoogle();
+    }
+    router.push(targetUrl);
   };
 
   const sampleStations = [
@@ -63,28 +78,71 @@ export default function LandingPage() {
             <a href="#live-signals" className="hover:text-zinc-100 transition-colors">
               Live Signals
             </a>
+            <button
+              onClick={() => setIsPricingOpen(true)}
+              className="hover:text-zinc-100 transition-colors cursor-pointer text-left"
+            >
+              Pricing
+            </button>
+            <button
+              onClick={() => setIsCliModalOpen(true)}
+              className="hover:text-zinc-100 transition-colors cursor-pointer text-left"
+            >
+              CLI Guide
+            </button>
             <a href="#architecture" className="hover:text-zinc-100 transition-colors">
               Architecture
-            </a>
-            <a href="#roadmap" className="hover:text-zinc-100 transition-colors">
-              Roadmap
             </a>
           </nav>
 
           <div className="flex items-center gap-3">
-            <a
-              href="https://github.com/xcjohnmark/mone"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 transition"
-            >
-              GitHub <ExternalLink className="w-3 h-3" />
-            </a>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-zinc-300 font-medium">{user.plan}</span>
+                  <span className="text-zinc-500">({user.plan === "Pro" ? "Unlimited" : `${user.runsRemaining} runs`})</span>
+                </div>
+                <button
+                  onClick={signOut}
+                  title="Sign Out"
+                  className="p-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={signInWithGoogle}
+                className="inline-flex items-center gap-2 text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-white px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 transition"
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
+                <span>Sign in with Google</span>
+              </button>
+            )}
+
             <Link
               href="/agent"
-              className="inline-flex items-center gap-2 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg shadow-sm transition"
+              className="inline-flex items-center gap-2 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-1.5 rounded-lg shadow-sm transition"
             >
-              Open Agent Dashboard <ArrowRight className="w-3.5 h-3.5" />
+              Open Dashboard <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
@@ -100,7 +158,7 @@ export default function LandingPage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-300">
                 <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                Google WeatherNext 3 & 2 Ensemble + Kalshi KXRAIN
+                7-Day Free Trial on Kalshi Demo &bull; Google WeatherNext Edge
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]">
@@ -127,7 +185,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Column: Embedded Interactive Setup */}
+            {/* Right Column: Embedded Dual Distribution Setup */}
             <div className="lg:col-span-5">
               <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 shadow-2xl backdrop-blur-md overflow-hidden">
                 <div className="border-b border-zinc-800 bg-zinc-900/60 px-4 py-3 flex items-center justify-between">
@@ -135,7 +193,7 @@ export default function LandingPage() {
                     <span className="h-3 w-3 rounded-full bg-red-500/80 inline-block" />
                     <span className="h-3 w-3 rounded-full bg-yellow-500/80 inline-block" />
                     <span className="h-3 w-3 rounded-full bg-emerald-500/80 inline-block" />
-                    <span className="ml-2 font-mono text-xs text-zinc-400">agent_setup.sh</span>
+                    <span className="ml-2 font-mono text-xs text-zinc-400">distribution_runner.sh</span>
                   </div>
                   <div className="flex gap-1 bg-zinc-800/80 p-0.5 rounded-md text-xs">
                     <button
@@ -161,15 +219,15 @@ export default function LandingPage() {
                   {setupTab === "cli" ? (
                     <div className="space-y-4">
                       <p className="text-xs text-zinc-400">
-                        Install the standalone Python CLI and run locally or on AWS EC2 in under 60 seconds:
+                        Install the standalone Python CLI on your local terminal or cloud server:
                       </p>
                       <div className="relative rounded-lg bg-black/90 p-3.5 font-mono text-xs text-zinc-300 border border-zinc-800">
                         <pre className="overflow-x-auto space-y-1">
                           <span className="text-zinc-500"># 1. Install mone agent package</span>
                           <div>pip install mone-agent</div>
-                          <span className="text-zinc-500"># 2. Run system connectivity diagnostics</span>
+                          <span className="text-zinc-500"># 2. Run diagnostics</span>
                           <div>mone doctor</div>
-                          <span className="text-zinc-500"># 3. Launch with Copilot approval queue</span>
+                          <span className="text-zinc-500"># 3. Launch with Copilot approval</span>
                           <div className="text-emerald-400">mone run --mode copilot</div>
                         </pre>
                         <button
@@ -180,11 +238,15 @@ export default function LandingPage() {
                           {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
                       </div>
+
                       <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
-                        <span>Python 3.10+ required</span>
-                        <Link href="/agent" className="text-indigo-400 hover:underline inline-flex items-center gap-1">
-                          Or try web version <ChevronRight className="w-3 h-3" />
-                        </Link>
+                        <button
+                          onClick={() => setIsCliModalOpen(true)}
+                          className="text-indigo-400 hover:underline inline-flex items-center gap-1 font-medium"
+                        >
+                          View Full CLI Guide &amp; .env template <ChevronRight className="w-3 h-3" />
+                        </button>
+                        <span>Python 3.10+</span>
                       </div>
                     </div>
                   ) : (
@@ -209,8 +271,7 @@ export default function LandingPage() {
                           onChange={(e) => setVenue(e.target.value)}
                           className="w-full text-xs bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
                         >
-                          <option value="paper">Virtual Paper Broker ($1,000 Sandbox)</option>
-                          <option value="kalshi_demo">Kalshi Demo API v2 (Sandbox Keys)</option>
+                          <option value="kalshi_demo">Kalshi Demo API v2 (7-Day Trial Sandbox)</option>
                           <option value="kalshi_live">Kalshi Live Production (KXRAIN)</option>
                           <option value="polymarket">Polymarket (Polygon Web3)</option>
                         </select>
@@ -246,12 +307,12 @@ export default function LandingPage() {
                         </div>
                       </div>
 
-                      <Link
-                        href={`/agent?provider=${provider}&venue=${venue}&mode=${mode}`}
-                        className="w-full inline-flex items-center justify-center gap-2 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-lg shadow-sm transition"
+                      <button
+                        onClick={handleLaunchWebRunner}
+                        className="w-full inline-flex items-center justify-center gap-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-lg shadow-sm transition"
                       >
                         Launch Configured Agent <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -276,7 +337,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Key Metric Highlights */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800">
               <span className="text-xs text-zinc-400">Strategy Win Rate</span>
@@ -299,104 +359,26 @@ export default function LandingPage() {
               <span className="text-[11px] text-zinc-500">Beats market crowd (0.0884)</span>
             </div>
           </div>
-
-          {/* Benchmark Comparison Table */}
-          <div className="rounded-xl border border-zinc-800 overflow-hidden bg-zinc-950/60">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-zinc-900/80 border-b border-zinc-800 text-zinc-400 font-mono">
-                  <tr>
-                    <th className="py-3 px-4">Strategy Benchmark</th>
-                    <th className="py-3 px-4">Win Rate</th>
-                    <th className="py-3 px-4">Cumulative PnL</th>
-                    <th className="py-3 px-4">Return (ROI)</th>
-                    <th className="py-3 px-4">Max Drawdown</th>
-                    <th className="py-3 px-4">Sharpe Ratio</th>
-                    <th className="py-3 px-4">Brier Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800/60 font-mono text-zinc-300">
-                  <tr className="bg-indigo-950/20 font-semibold text-white">
-                    <td className="py-3 px-4 flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                      mone Agent (WeatherNext + Rules)
-                    </td>
-                    <td className="py-3 px-4 text-emerald-400">76.0%</td>
-                    <td className="py-3 px-4 text-emerald-400">+$291.88</td>
-                    <td className="py-3 px-4 text-emerald-400">+29.2%</td>
-                    <td className="py-3 px-4">4.5%</td>
-                    <td className="py-3 px-4">5.41</td>
-                    <td className="py-3 px-4 text-indigo-400">0.0762</td>
-                  </tr>
-                  <tr className="text-zinc-400">
-                    <td className="py-3 px-4">Market Consensus Baseline</td>
-                    <td className="py-3 px-4">91.5%</td>
-                    <td className="py-3 px-4">+$1,307.43</td>
-                    <td className="py-3 px-4">+130.7%</td>
-                    <td className="py-3 px-4">1.4%</td>
-                    <td className="py-3 px-4">20.21</td>
-                    <td className="py-3 px-4">0.0884</td>
-                  </tr>
-                  <tr className="text-zinc-400">
-                    <td className="py-3 px-4">Random Walk Baseline</td>
-                    <td className="py-3 px-4 text-rose-400">18.4%</td>
-                    <td className="py-3 px-4 text-rose-400">-$811.56</td>
-                    <td className="py-3 px-4 text-rose-400">-81.2%</td>
-                    <td className="py-3 px-4 text-rose-400">81.4%</td>
-                    <td className="py-3 px-4 text-rose-400">-10.30</td>
-                    <td className="py-3 px-4">0.2500</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Live Market Signals Section */}
+      {/* Live Signals Grid */}
       <section id="live-signals" className="py-20 border-b border-zinc-800/60 bg-zinc-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-medium mb-3">
-                Live Market Scanner
-              </div>
-              <h2 className="text-3xl font-bold tracking-tight text-white">
-                Active Rain Contract Signals
-              </h2>
-              <p className="text-zinc-400 text-sm mt-1">
-                Comparing WeatherNext 2 ensemble voting against current Kalshi KXRAIN order books.
-              </p>
-            </div>
-            <Link
-              href="/agent"
-              className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium"
-            >
-              View all 22 airport stations <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+          <div className="max-w-3xl space-y-4 mb-10">
+            <h2 className="text-3xl font-bold tracking-tight text-white">Live Edge Scanner</h2>
+            <p className="text-zinc-400 text-sm">
+              Current ensemble vote probabilities compared with market order-book asks across key airport terminals.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleStations.map((st) => (
-              <div
-                key={st.code}
-                className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 transition space-y-3"
-              >
+              <div key={st.code} className="p-5 rounded-xl border border-zinc-800/80 bg-zinc-900/40 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-semibold text-white text-sm">{st.city}</span>
-                    <span className="block font-mono text-xs text-zinc-500">{st.code}</span>
-                  </div>
-                  <span
-                    className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
-                      st.status === "rain"
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                        : st.status === "dry"
-                        ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                        : "bg-zinc-800 text-zinc-400 border border-zinc-700"
-                    }`}
-                  >
-                    {st.side}
+                  <span className="font-semibold text-white text-sm">{st.city}</span>
+                  <span className="text-[11px] font-mono text-zinc-400 px-2 py-0.5 rounded bg-zinc-800">
+                    {st.code}
                   </span>
                 </div>
 
@@ -422,85 +404,81 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Roadmap Section: High Temperature Contracts */}
-      <section id="roadmap" className="py-20 border-b border-zinc-800/60 bg-[#0a0a0c]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="p-8 rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 to-zinc-950 relative overflow-hidden">
-            <div className="max-w-2xl space-y-4">
-              <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold uppercase tracking-wider">
-                Post-Hackathon Expansion
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                Extreme High Temperature Contracts
-              </h2>
-              <p className="text-sm text-zinc-400 leading-relaxed">
-                During the hackathon, mone exclusively trades daily precipitation contracts to preserve statistical edge at the 0.01-inch boundary. Following the hackathon, our second model adapter will deploy for Kalshi and Polymarket Daily High Temperature brackets across Phoenix, Las Vegas, Dallas, and Miami.
-              </p>
-              <div className="pt-2 flex items-center gap-4 text-xs text-zinc-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                  <span>Gaussian temperature regression</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                  <span>1-degree bracket distributions</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Non-Custodial Pricing & Dodo Payments Section */}
-      <section className="py-20 border-b border-zinc-800/60 bg-zinc-950">
+      {/* Transparent Pricing Section (No Fuel Terminology) */}
+      <section id="pricing" className="py-20 border-b border-zinc-800/60 bg-[#0a0a0c]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center space-y-4 mb-12">
-          <h2 className="text-3xl font-bold text-white">Non-Custodial Runner Fuel & Pro</h2>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400">
+            <Sparkles className="w-3.5 h-3.5" />
+            Clear, Direct Pricing
+          </div>
+          <h2 className="text-3xl font-bold text-white">Transparent pricing. Zero exchange custody.</h2>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto">
-            mone never touches your exchange trading capital. Powered by Dodo Payments, you only purchase compute fuel credits for running cloud cycles.
+            mone never touches your trading capital. Every new user gets a <strong>7-Day Free Trial</strong> (50 runs). Choose a pass or unlock unlimited trading.
           </p>
         </div>
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-4">
-            <h3 className="font-semibold text-white text-base">Fuel Pack A</h3>
-            <div className="text-3xl font-bold text-white">$10</div>
-            <p className="text-xs text-zinc-400">100 autonomous runner cycles on cloud runner.</p>
-            <ul className="text-xs text-zinc-400 space-y-2 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100 hourly executions</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Open-Meteo & WeatherNext 3</li>
-            </ul>
-            <Link href="/agent" className="block text-center text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded-lg transition">
-              Get $10 Fuel
-            </Link>
+          {/* Card 1: 100 Runs */}
+          <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-4 flex flex-col justify-between">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-white text-base">100 Runs</h3>
+              <div className="text-3xl font-bold text-white">$10</div>
+              <p className="text-xs text-zinc-400">Pay as you go for 100 automated trade cycles.</p>
+              <ul className="text-xs text-zinc-400 space-y-2 pt-2">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100 automated executions</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Open-Meteo &amp; WeatherNext 3</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Never expires</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setIsPricingOpen(true)}
+              className="block w-full text-center text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-white py-2.5 rounded-lg transition"
+            >
+              Get 100 Runs &bull; $10
+            </button>
           </div>
 
-          <div className="p-6 rounded-xl border border-indigo-500/50 bg-indigo-950/20 space-y-4 relative">
+          {/* Card 2: 300 Runs */}
+          <div className="p-6 rounded-xl border border-indigo-500/50 bg-indigo-950/20 space-y-4 relative flex flex-col justify-between shadow-lg shadow-indigo-500/5">
             <span className="absolute -top-2.5 right-4 bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
               POPULAR
             </span>
-            <h3 className="font-semibold text-white text-base">Fuel Pack B</h3>
-            <div className="text-3xl font-bold text-white">$25</div>
-            <p className="text-xs text-zinc-400">300 autonomous runner cycles + Neatlogs export.</p>
-            <ul className="text-xs text-zinc-400 space-y-2 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 300 cloud executions</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Full Neatlogs trace export</li>
-            </ul>
-            <Link href="/agent" className="block text-center text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg transition">
-              Get $25 Fuel
-            </Link>
+            <div className="space-y-4">
+              <h3 className="font-semibold text-white text-base">300 Runs</h3>
+              <div className="text-3xl font-bold text-white">$25</div>
+              <p className="text-xs text-indigo-300">Save 17% per trade run with priority queue.</p>
+              <ul className="text-xs text-zinc-300 space-y-2 pt-2">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 300 automated executions</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Priority execution queue</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Never expires</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setIsPricingOpen(true)}
+              className="block w-full text-center text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-lg transition"
+            >
+              Get 300 Runs &bull; $25
+            </button>
           </div>
 
-          <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-4">
-            <h3 className="font-semibold text-white text-base">Pro Subscription</h3>
-            <div className="text-3xl font-bold text-white">$49<span className="text-xs text-zinc-400 font-normal">/mo</span></div>
-            <p className="text-xs text-zinc-400">Unlimited autonomous 24/7 executions + Copilot stage.</p>
-            <ul className="text-xs text-zinc-400 space-y-2 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Unlimited executions</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Webhook signals to Telegram</li>
-            </ul>
-            <Link href="/agent" className="block text-center text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded-lg transition">
-              Subscribe Pro
-            </Link>
+          {/* Card 3: Pro */}
+          <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-4 flex flex-col justify-between">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-white text-base">Pro Subscription</h3>
+              <div className="text-3xl font-bold text-white">$49<span className="text-xs text-zinc-400 font-normal">/mo</span></div>
+              <p className="text-xs text-zinc-400">Unlimited automated executions and real-time feeds.</p>
+              <ul className="text-xs text-zinc-400 space-y-2 pt-2">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Unlimited executions</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Sub-second order book streaming</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Webhook alerts to Telegram</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setIsPricingOpen(true)}
+              className="block w-full text-center text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-white py-2.5 rounded-lg transition"
+            >
+              Subscribe Pro &bull; $49/mo
+            </button>
           </div>
         </div>
       </section>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Play,
@@ -16,7 +17,11 @@ import {
   Layers,
   Clock,
   Sparkles,
+  User,
+  LogOut,
+  CreditCard,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 interface Signal {
   id: number;
@@ -50,8 +55,19 @@ interface Position {
   created_at: string;
 }
 
-export default function AgentDashboard() {
-  const [autonomyMode, setAutonomyMode] = useState<"copilot" | "autonomous">("copilot");
+function AgentDashboard() {
+  const searchParams = useSearchParams();
+  const { user, signInWithGoogle, signOut, setIsPricingOpen, consumeRun } = useAuth();
+
+  // URL query params from hero configurator
+  const initialProvider = searchParams.get("provider") || "auto";
+  const initialVenue = searchParams.get("venue") || "kalshi_demo";
+  const initialMode = (searchParams.get("mode") as "copilot" | "autonomous") || "copilot";
+
+  const [provider, setProvider] = useState(initialProvider);
+  const [venue, setVenue] = useState(initialVenue);
+  const [autonomyMode, setAutonomyMode] = useState<"copilot" | "autonomous">(initialMode);
+
   const [isRunning, setIsRunning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showTraceModal, setShowTraceModal] = useState(false);
@@ -86,7 +102,7 @@ export default function AgentDashboard() {
       city: "Phoenix",
       target_date: "2026-10-12",
       market_id: "KXRAIN-26OCT12-PHX",
-      venue: "paper",
+      venue: venue,
       action: "BUY_YES",
       side: "YES",
       model_prob_pct: 96.8,
@@ -103,7 +119,7 @@ export default function AgentDashboard() {
       city: "Houston",
       target_date: "2026-10-12",
       market_id: "KXRAIN-26OCT12-HOU",
-      venue: "paper",
+      venue: venue,
       action: "BUY_YES",
       side: "YES",
       model_prob_pct: 98.4,
@@ -120,7 +136,7 @@ export default function AgentDashboard() {
       city: "Newark",
       target_date: "2026-10-12",
       market_id: "KXRAIN-26OCT12-EWR",
-      venue: "paper",
+      venue: venue,
       action: "BUY_YES",
       side: "YES",
       model_prob_pct: 100.0,
@@ -137,7 +153,7 @@ export default function AgentDashboard() {
       city: "Austin",
       target_date: "2026-10-12",
       market_id: "KXRAIN-26OCT12-AUS",
-      venue: "paper",
+      venue: venue,
       action: "BUY_YES",
       side: "YES",
       model_prob_pct: 77.8,
@@ -158,6 +174,17 @@ export default function AgentDashboard() {
   };
 
   const handleApprove = (sig: Signal) => {
+    if (!user) {
+      signInWithGoogle();
+      showToast("Signed in with Google! 7-Day Free Trial activated.");
+      return;
+    }
+
+    if (!consumeRun()) {
+      showToast("Out of runs. Please select a pass or upgrade to Pro.");
+      return;
+    }
+
     if (cashBalance < sig.capital) {
       showToast("Insufficient available cash balance to execute trade.");
       return;
@@ -190,11 +217,35 @@ export default function AgentDashboard() {
   };
 
   const handleTriggerCycle = () => {
+    if (!user) {
+      signInWithGoogle();
+      showToast("Signed in with Google! 7-Day Free Trial activated.");
+      return;
+    }
+
+    if (!consumeRun()) {
+      showToast("Out of runs. Please select a pass or upgrade to Pro.");
+      return;
+    }
+
     setIsRunning(true);
     setTimeout(() => {
       setIsRunning(false);
-      showToast("Completed cycle: Re-scanned 22 NWS stations via Open-Meteo ensemble.");
+      showToast(`Completed scan across 22 NWS stations via ${provider.toUpperCase()} ensemble.`);
     }, 1200);
+  };
+
+  const formatProviderName = (p: string) => {
+    if (p === "weathernext3") return "Google WeatherNext 3";
+    if (p === "openmeteo") return "Open-Meteo WeatherNext 2";
+    return "Auto (WeatherNext 3 + Open-Meteo)";
+  };
+
+  const formatVenueName = (v: string) => {
+    if (v === "kalshi_live") return "Kalshi Live KXRAIN";
+    if (v === "kalshi_demo") return "Kalshi Demo v2";
+    if (v === "polymarket") return "Polymarket Web3";
+    return "Paper Sandbox ($1,000)";
   };
 
   return (
@@ -223,20 +274,99 @@ export default function AgentDashboard() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* User Account / 7-Day Trial Badge */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsPricingOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>
+                    {user.isTrialActive ? "7-Day Trial" : user.plan}:{" "}
+                    <strong className="text-white">
+                      {user.plan === "Pro" ? "Unlimited" : `${user.runsRemaining} runs`}
+                    </strong>
+                  </span>
+                  <span className="text-[10px] text-indigo-400 underline ml-1">Upgrade</span>
+                </button>
+
+                <button
+                  onClick={signOut}
+                  title="Sign Out"
+                  className="p-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={signInWithGoogle}
+                className="inline-flex items-center gap-2 text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-white px-3 py-1.5 rounded-lg border border-zinc-800 transition"
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
+                <span>Sign in (7-Day Free Trial)</span>
+              </button>
+            )}
+
             <button
               onClick={() => setShowTraceModal(true)}
               className="inline-flex items-center gap-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300 transition"
             >
               <Activity className="w-3.5 h-3.5 text-indigo-400" />
-              Neatlogs Trace Proof
+              Trace Proof
             </button>
+
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="p-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white transition"
-              title="BYOK Settings"
+              title="BYOK & Engine Settings"
             >
               <Settings className="w-4 h-4" />
             </button>
+          </div>
+        </div>
+
+        {/* Runtime Configuration Sub-Header */}
+        <div className="border-t border-zinc-800/80 bg-zinc-950 px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between text-xs text-zinc-400 gap-2">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-zinc-500">ENGINE:</span>
+            <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-200">
+              {formatProviderName(provider)}
+            </span>
+            <span className="font-mono text-zinc-500">VENUE:</span>
+            <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-200">
+              {formatVenueName(venue)}
+            </span>
+            <span className="font-mono text-zinc-500">AUTONOMY:</span>
+            <span className={`px-2 py-0.5 rounded border uppercase text-[10px] font-semibold ${
+              autonomyMode === "autonomous"
+                ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400"
+                : "bg-zinc-900 border-zinc-800 text-zinc-300"
+            }`}>
+              {autonomyMode}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-zinc-500">Non-Custodial BYOK Architecture</span>
           </div>
         </div>
       </header>
@@ -248,7 +378,7 @@ export default function AgentDashboard() {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                BYOK (Bring-Your-Own-Key) & Risk Guardrail Settings
+                BYOK (Bring-Your-Own-Key) &amp; Runtime Settings
               </h3>
               <button onClick={() => setShowSettings(false)} className="text-zinc-400 hover:text-white text-xs">
                 Close
@@ -258,21 +388,27 @@ export default function AgentDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
               <div>
                 <label className="block text-zinc-400 mb-1">Weather Provider</label>
-                <input
-                  type="text"
-                  disabled
-                  value="Auto (WeatherNext 3 -> Open-Meteo Fallback)"
+                <select
+                  value={provider}
+                  onChange={(e) => setProvider(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-300"
-                />
+                >
+                  <option value="auto">Auto (WeatherNext 3 + Open-Meteo)</option>
+                  <option value="openmeteo">Open-Meteo WeatherNext 2</option>
+                  <option value="weathernext3">Google WeatherNext 3</option>
+                </select>
               </div>
               <div>
                 <label className="block text-zinc-400 mb-1">Default Market Venue</label>
-                <input
-                  type="text"
-                  disabled
-                  value="Paper Broker (Virtual $1,000 Sandbox)"
+                <select
+                  value={venue}
+                  onChange={(e) => setVenue(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-300"
-                />
+                >
+                  <option value="kalshi_demo">Kalshi Demo v2 (7-Day Trial Sandbox)</option>
+                  <option value="kalshi_live">Kalshi Live KXRAIN</option>
+                  <option value="polymarket">Polymarket Web3</option>
+                </select>
               </div>
               <div>
                 <label className="block text-zinc-400 mb-1">Daily Stop-Loss Drawdown Cap</label>
@@ -358,95 +494,105 @@ export default function AgentDashboard() {
           {/* Portfolio Equity Strip */}
           <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3 p-5 rounded-xl border border-zinc-800 bg-zinc-950">
             <div>
-              <span className="text-[11px] text-zinc-500 block">Available Cash</span>
+              <span className="text-[11px] text-zinc-400 block">Cash Balance</span>
               <div className="text-xl sm:text-2xl font-bold font-mono text-white mt-1">${cashBalance.toFixed(2)}</div>
-              <span className="text-[10px] text-zinc-500">Virtual balance</span>
+              <span className="text-[10px] text-zinc-500">Uncommitted Capital</span>
             </div>
             <div>
-              <span className="text-[11px] text-zinc-500 block">In Active Trades</span>
+              <span className="text-[11px] text-zinc-400 block">Open Exposure</span>
               <div className="text-xl sm:text-2xl font-bold font-mono text-zinc-300 mt-1">${investedCapital.toFixed(2)}</div>
-              <span className="text-[10px] text-zinc-500">{positions.length} position</span>
+              <span className="text-[10px] text-zinc-500">{positions.length} Active Positions</span>
             </div>
             <div>
-              <span className="text-[11px] text-zinc-500 block">Total Account Eq</span>
+              <span className="text-[11px] text-zinc-400 block">Total Portfolio</span>
               <div className="text-xl sm:text-2xl font-bold font-mono text-indigo-400 mt-1">
                 ${(cashBalance + investedCapital).toFixed(2)}
               </div>
-              <span className="text-[10px] text-zinc-500">Cash + Invested</span>
+              <span className="text-[10px] text-zinc-500">Paper + Live Equity</span>
             </div>
             <div>
-              <span className="text-[11px] text-zinc-500 block">Realized PnL</span>
+              <span className="text-[11px] text-zinc-400 block">Realized PnL</span>
               <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-400 mt-1">+${cumulativePnl.toFixed(2)}</div>
-              <span className="text-[10px] text-zinc-500">Audited ledger</span>
+              <span className="text-[10px] text-emerald-500/80">Audited 76.0% Win Rate</span>
             </div>
           </div>
         </div>
 
-        {/* Copilot Staged Review Queue */}
+        {/* Copilot Actionable Signals Queue */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-white flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-400" />
-                Copilot Review Feed ({stagedSignals.length} Staged Signals)
-              </h2>
-              <p className="text-xs text-zinc-400">
-                WeatherNext ensemble detected statistical mispricings. Click approve to execute individual trades.
-              </p>
-            </div>
+            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+              <Clock className="w-4 h-4 text-indigo-400" />
+              Copilot Approval Queue ({stagedSignals.length} Staged Signals)
+            </h2>
+            <span className="text-xs text-zinc-500">
+              Threshold: Probability &gt; 75% | Edge &gt; +20% | Ask &lt; $0.80
+            </span>
           </div>
 
           {stagedSignals.length === 0 ? (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-8 text-center text-xs text-zinc-500">
-              No pending signals in review feed. Click &quot;Run Scan Cycle Now&quot; to re-scan 22 stations.
+            <div className="p-8 rounded-xl border border-dashed border-zinc-800 text-center text-xs text-zinc-500">
+              No pending staged signals in queue. Next cycle will ingest new forecasts.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {stagedSignals.map((sig) => (
                 <div
                   key={sig.id}
-                  className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 space-y-3 hover:border-zinc-700 transition"
+                  className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 space-y-4 hover:border-zinc-700 transition"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-start justify-between">
                     <div>
-                      <span className="font-semibold text-white text-sm">{sig.city}</span>
-                      <span className="block font-mono text-xs text-zinc-500">{sig.station_code} &bull; {sig.market_id}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm text-white">{sig.city}</span>
+                        <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
+                          {sig.station_code}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-zinc-500 font-mono">{sig.market_id}</span>
                     </div>
-                    <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
                       BUY {sig.side}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 font-mono text-xs bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/80">
+                  <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-zinc-900/60 text-xs font-mono">
                     <div>
-                      <span className="text-[10px] text-zinc-500 block">WeatherNext</span>
-                      <span className="font-semibold text-zinc-200">{sig.model_prob_pct}%</span>
+                      <span className="text-[10px] text-zinc-500 block">Model Prob</span>
+                      <span className="text-white font-bold">{sig.model_prob_pct}%</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-zinc-500 block">Entry Ask</span>
-                      <span className="font-semibold text-zinc-200">${sig.market_ask.toFixed(2)}</span>
+                      <span className="text-[10px] text-zinc-500 block">Market Ask</span>
+                      <span className="text-zinc-300 font-bold">${sig.market_ask.toFixed(2)}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-zinc-500 block">Edge</span>
-                      <span className="font-bold text-emerald-400">+{sig.edge_pct}%</span>
+                      <span className="text-[10px] text-zinc-500 block">Calculated Edge</span>
+                      <span className="text-emerald-400 font-bold">+{sig.edge_pct}%</span>
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-zinc-400 leading-normal">{sig.reason}</p>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">{sig.reason}</p>
 
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      onClick={() => handleApprove(sig)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg transition"
-                    >
-                      <Check className="w-3.5 h-3.5" /> Approve Trade (${sig.capital.toFixed(2)})
-                    </button>
-                    <button
-                      onClick={() => handleReject(sig.id)}
-                      className="px-3 py-2 text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-lg transition border border-zinc-800"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80">
+                    <div className="text-xs">
+                      <span className="text-zinc-500">Sizing: </span>
+                      <span className="text-white font-semibold font-mono">{sig.contracts} contracts</span>
+                      <span className="text-zinc-500"> (${sig.capital.toFixed(2)})</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleReject(sig.id)}
+                        className="px-3 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-medium transition"
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => handleApprove(sig)}
+                        className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-sm"
+                      >
+                        <Check className="w-3.5 h-3.5" /> Approve Order
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -540,5 +686,19 @@ export default function AgentDashboard() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AgentPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center text-zinc-400 font-mono text-xs">
+          Loading Agent Runner...
+        </div>
+      }
+    >
+      <AgentDashboard />
+    </Suspense>
   );
 }

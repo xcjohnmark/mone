@@ -192,6 +192,28 @@ def cmd_backtest(args):
         logger.error(f"Backtest failed: {e}", exc_info=True)
 
 
+def cmd_configure(args):
+    """Configuration & Bring-Your-Own-Key (BYOK) wizard."""
+    print_banner()
+    print("=" * 65)
+    print("  mone CONFIGURATION & BRING-YOUR-OWN-KEY (BYOK) WIZARD")
+    print("=" * 65)
+    config = get_config()
+    print(f"  Weather Provider     : {config.weather_provider.value} (Options: auto, openmeteo, weathernext3)")
+    print(f"  Execution Venue      : {config.default_venue.value} (Options: paper, kalshi_demo, kalshi_live, polymarket)")
+    print(f"  Autonomy Mode        : {config.agent_autonomy_mode.value} (Options: autonomous, copilot)")
+    print(f"  Capital Per Trade    : ${config.capital_per_trade:.2f}")
+    print(f"  Max Daily Drawdown   : ${config.max_daily_drawdown:.2f}")
+    print(f"  Max Entry Ask Price  : ${config.max_entry_ask_price:.2f}")
+    print(f"  Neatlogs API Key     : {'[CONFIGURED]' if config.has_neatlogs() else '[NOT SET]'}")
+    print(f"  Kalshi Credentials   : {'[CONFIGURED]' if config.kalshi_api_key_id else '[DEMO / SIMULATED]'}")
+    print(f"  Polymarket Key       : {'[CONFIGURED]' if config.polymarket_api_key else '[MOCK / SIMULATED]'}")
+    print(f"  Database URL         : {config.database_url}")
+    print("-" * 65)
+    print("  Configuration is loaded from `.env`. Edit `.env` to update keys.")
+    print("=" * 65 + "\n")
+
+
 from mone.telemetry import flush_telemetry
 
 
@@ -201,6 +223,9 @@ def main():
         description="mone — Autonomous Weather Prediction Market Trading Agent",
     )
     subparsers = parser.add_subparsers(dest="command")
+
+    # Command: configure
+    subparsers.add_parser("configure", help="View and verify active BYOK configuration")
 
     # Command: run
     p_run = subparsers.add_parser("run", help="Run agent trading cycle(s)")
@@ -225,10 +250,17 @@ def main():
     p_bt = subparsers.add_parser("backtest", help="Run historical replay backtesting")
     p_bt.add_argument("--days", type=int, default=60, help="Number of historical days to simulate")
 
+    # Command: serve
+    p_srv = subparsers.add_parser("serve", help="Start the mone companion API server for web runner")
+    p_srv.add_argument("--host", type=str, default="127.0.0.1", help="Host interface to bind (default 127.0.0.1)")
+    p_srv.add_argument("--port", type=int, default=8000, help="Port to bind (default 8000)")
+
     args = parser.parse_args()
 
     try:
-        if args.command == "run":
+        if args.command == "configure":
+            cmd_configure(args)
+        elif args.command == "run":
             cmd_run(args)
         elif args.command == "status":
             cmd_status(args)
@@ -238,6 +270,11 @@ def main():
             cmd_doctor(args)
         elif args.command == "backtest":
             cmd_backtest(args)
+        elif args.command == "serve":
+            from mone.server import start_server
+            print_banner()
+            print(f"[*] Launching mone API companion server at http://{args.host}:{args.port}")
+            start_server(host=args.host, port=args.port)
         else:
             parser.print_help()
     finally:
@@ -246,4 +283,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
