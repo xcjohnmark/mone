@@ -14,6 +14,12 @@ import {
   Cpu,
   Layers,
   HelpCircle,
+  Moon,
+  Server,
+  Laptop,
+  Power,
+  AlertTriangle,
+  Cloud,
 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
@@ -96,6 +102,7 @@ export function CliSetupModal() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
+  const [laptopOs, setLaptopOs] = useState<"windows" | "mac" | "linux">("windows");
 
   if (!isCliModalOpen) return null;
 
@@ -169,6 +176,7 @@ MONE_API_TOKEN=${user?.cliApiToken || "mone_sec_your_token_here"}`;
           items={[
             { id: "queries", label: `Trader Queries (${CLI_QUERIES.length})` },
             { id: "setup", label: "Installation & Setup" },
+            { id: "always_on", label: "24/7 Setup (Lid Closed)" },
             { id: "env", label: "Environment (.env) BYOK" },
           ]}
         />
@@ -313,6 +321,234 @@ MONE_API_TOKEN=${user?.cliApiToken || "mone_sec_your_token_here"}`;
                   {copiedKey === "run" ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: 24/7 Always-On Setup (Lid Closed) */}
+        {activeTab === "always_on" && (
+          <div className="space-y-6 overflow-y-auto pr-1 flex-1 text-xs">
+            {/* Safety & Execution Invariant Banner */}
+            <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+              <div className="flex items-center gap-2 text-emerald-500 font-semibold font-outfit text-sm">
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                What Happens When You Close Your Laptop Lid?
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs leading-relaxed text-[var(--ds-gray-900)]">
+                <div className="p-3 rounded-lg bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] space-y-1">
+                  <div className="font-bold text-[var(--geist-foreground)] flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                    Open Positions
+                  </div>
+                  <p className="text-[11px] text-[var(--ds-gray-900)]">
+                    <strong>100% Safe &amp; Unaffected.</strong> Once placed, orders reside on the Kalshi / Polymarket exchange or blockchain. NOAA settlements and cash payouts resolve on the exchange automatically even if your machine is completely turned off.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-lg bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] space-y-1">
+                  <div className="font-bold text-[var(--geist-foreground)] flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" />
+                    Copilot Traders
+                  </div>
+                  <p className="text-[11px] text-[var(--ds-gray-900)]">
+                    The agent pauses scanning while asleep. Staged signals remain in your local SQLite ledger. When you reopen your laptop, mone wakes up, discards any expired yesterday contracts, and displays fresh opportunities.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-lg bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] space-y-1">
+                  <div className="font-bold text-[var(--geist-foreground)] flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" />
+                    Autonomous Traders
+                  </div>
+                  <p className="text-[11px] text-[var(--ds-gray-900)]">
+                    The CPU pauses in sleep mode and cannot execute trades during sleep. When you reopen your laptop, the agent immediately runs a fresh scan and resumes trading on live order books.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Two Operational Options Header */}
+            <div className="space-y-1">
+              <h3 className="font-outfit font-bold text-sm text-[var(--geist-foreground)]">
+                Choose How You Want to Run 24/7 Without Interruptions
+              </h3>
+              <p className="text-[11px] text-[var(--ds-gray-900)]">
+                Select between hosting on an independent cloud container or configuring your laptop to keep trading while closed with the screen off.
+              </p>
+            </div>
+
+            {/* Option A: Cloud Container (Docker / VPS) */}
+            <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[var(--ds-blue-700)]/10 text-[var(--ds-blue-700)] flex items-center justify-center font-bold text-xs">
+                    A
+                  </span>
+                  <div>
+                    <h4 className="font-outfit font-bold text-sm text-[var(--geist-foreground)] flex items-center gap-1.5">
+                      <Cloud className="w-4 h-4 text-[var(--ds-blue-700)]" />
+                      Run on a 24/7 Cloud Container (Docker / VPS)
+                    </h4>
+                    <span className="text-[11px] text-[var(--ds-gray-900)]">
+                      Recommended for Pro &amp; continuous traders. Works on AWS EC2, DigitalOcean ($4/mo), Fly.io, or Hetzner.
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="blue">Zero Laptop Needed</Badge>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                <p className="text-[11px] text-[var(--ds-gray-900)]">
+                  Launch the lightweight cloud daemon in 3 simple commands. You can close your laptop, sleep, or travel while it trades every 60 minutes:
+                </p>
+                <div className="relative">
+                  <pre className="p-3 bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-lg font-mono text-xs text-[var(--geist-foreground)] overflow-x-auto">
+{`# 1. Clone repository & configure BYOK credentials
+git clone https://github.com/xcjohnmark/mone.git && cd mone
+cp .env.example .env
+# Edit .env with your Kalshi / Polymarket keys
+
+# 2. Launch 24/7 background container
+docker compose up -d
+
+# 3. View real-time autonomous execution & neatlogs traces
+docker compose logs -f`}
+                  </pre>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      handleCopy(
+                        "git clone https://github.com/xcjohnmark/mone.git && cd mone\ncp .env.example .env\ndocker compose up -d\ndocker compose logs -f",
+                        "docker_cmd"
+                      )
+                    }
+                    className="absolute right-2 top-2 h-7 px-2 text-[11px]"
+                  >
+                    {copiedKey === "docker_cmd" ? (
+                      <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Option B: Laptop Power Settings (Zero Cost) */}
+            <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs">
+                    B
+                  </span>
+                  <div>
+                    <h4 className="font-outfit font-bold text-sm text-[var(--geist-foreground)] flex items-center gap-1.5">
+                      <Laptop className="w-4 h-4 text-emerald-500" />
+                      Keep Laptop Running With Lid Closed (100% Free)
+                    </h4>
+                    <span className="text-[11px] text-[var(--ds-gray-900)]">
+                      Turn off your screen while keeping the CPU active. Zero cloud expense.
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="success">Zero Cost</Badge>
+              </div>
+
+              {/* OS Tabs */}
+              <div className="flex items-center gap-1.5 pt-1">
+                {(["windows", "mac", "linux"] as const).map((os) => (
+                  <button
+                    key={os}
+                    onClick={() => setLaptopOs(os)}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold capitalize transition ${
+                      laptopOs === os
+                        ? "bg-[var(--geist-foreground)] text-[var(--geist-background)]"
+                        : "bg-[var(--geist-background)] text-[var(--ds-gray-900)] border border-[var(--ds-gray-400)] hover:text-[var(--geist-foreground)]"
+                    }`}
+                  >
+                    {os === "mac" ? "macOS" : os}
+                  </button>
+                ))}
+              </div>
+
+              {/* Windows Instructions */}
+              {laptopOs === "windows" && (
+                <div className="p-3.5 rounded-lg bg-[var(--geist-background)] border border-[var(--ds-gray-400)] space-y-2 text-[11px] text-[var(--ds-gray-900)]">
+                  <p className="font-semibold text-[var(--geist-foreground)]">
+                    Windows 10 / 11 Setup (Takes 30 seconds):
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Open <strong>Start</strong>, type <strong>Control Panel</strong>, and open it.</li>
+                    <li>Click <strong>Hardware and Sound</strong> &rarr; <strong>Power Options</strong>.</li>
+                    <li>In the left sidebar, click <strong>&quot;Choose what closing the lid does&quot;</strong>.</li>
+                    <li>Under <strong>&quot;When I close the lid&quot;</strong>, set the <strong>Plugged in</strong> dropdown to <strong>&quot;Do nothing&quot;</strong>.</li>
+                    <li>Click <strong>Save changes</strong>.</li>
+                  </ol>
+                  <p className="text-[11px] text-emerald-500 pt-1 font-medium">
+                    &bull; Now you can launch <code className="font-mono bg-[var(--ds-gray-100)] px-1 py-0.5 rounded">mone run --loop</code> and close your laptop lid while plugged into power. The screen will turn off, but mone will continuously execute every 60 minutes!
+                  </p>
+                </div>
+              )}
+
+              {/* macOS Instructions */}
+              {laptopOs === "mac" && (
+                <div className="p-3.5 rounded-lg bg-[var(--geist-background)] border border-[var(--ds-gray-400)] space-y-2 text-[11px] text-[var(--ds-gray-900)]">
+                  <p className="font-semibold text-[var(--geist-foreground)]">
+                    macOS Setup (Choose either method):
+                  </p>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="font-bold text-[var(--geist-foreground)]">Method 1: Native Terminal Command</span>
+                      <p className="text-[11px]">Run mone with macOS&apos;s built-in <code className="font-mono">caffeinate</code> utility to prevent sleep:</p>
+                      <div className="relative mt-1">
+                        <pre className="p-2 bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] rounded font-mono text-xs text-[var(--geist-foreground)]">
+                          caffeinate -d -s mone run --loop
+                        </pre>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCopy("caffeinate -d -s mone run --loop", "mac_caffeinate")}
+                          className="absolute right-1.5 top-1.5 h-6 px-1.5 text-[10px]"
+                        >
+                          {copiedKey === "mac_caffeinate" ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                        </Button>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-bold text-[var(--geist-foreground)]">Method 2: Mac System Settings</span>
+                      <p className="text-[11px]">Go to <strong>System Settings</strong> &rarr; <strong>Displays</strong> &rarr; <strong>Advanced...</strong> &rarr; Enable <em>&quot;Prevent automatic sleeping when display is off&quot;</em>. Or install the free Mac App Store utility <strong>Amphetamine</strong>.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Linux Instructions */}
+              {laptopOs === "linux" && (
+                <div className="p-3.5 rounded-lg bg-[var(--geist-background)] border border-[var(--ds-gray-400)] space-y-2 text-[11px] text-[var(--ds-gray-900)]">
+                  <p className="font-semibold text-[var(--geist-foreground)]">
+                    Linux systemd Setup (Ubuntu / Debian / Arch):
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Edit <code className="font-mono bg-[var(--ds-gray-100)] px-1 py-0.5 rounded">/etc/systemd/logind.conf</code> using sudo.</li>
+                    <li>Set <code className="font-mono bg-[var(--ds-gray-100)] px-1 py-0.5 rounded">HandleLidSwitch=ignore</code> and <code className="font-mono bg-[var(--ds-gray-100)] px-1 py-0.5 rounded">HandleLidSwitchExternalPower=ignore</code>.</li>
+                    <li>Restart logind daemon: <code className="font-mono bg-[var(--ds-gray-100)] px-1 py-0.5 rounded">sudo systemctl restart systemd-logind</code>.</li>
+                  </ol>
+                  <div className="relative mt-1">
+                    <pre className="p-2 bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] rounded font-mono text-xs text-[var(--geist-foreground)]">
+                      nohup mone run --loop &gt; mone.log 2&gt;&amp;1 &amp;
+                    </pre>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopy("nohup mone run --loop > mone.log 2>&1 &", "linux_nohup")}
+                      className="absolute right-1.5 top-1.5 h-6 px-1.5 text-[10px]"
+                    >
+                      {copiedKey === "linux_nohup" ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

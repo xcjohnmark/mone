@@ -22,6 +22,7 @@ import {
   Radio,
   BarChart3,
   Lock,
+  Moon,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { BrandLogo } from "../components/ui/BrandLogo";
@@ -171,6 +172,12 @@ export default function LandingPage() {
             >
               CLI Guide
             </button>
+            <button
+              onClick={() => setIsCliModalOpen(true)}
+              className="hover:text-emerald-400 text-emerald-500 font-medium transition-colors cursor-pointer text-left"
+            >
+              24/7 Setup
+            </button>
           </nav>
 
           <div className="flex items-center gap-2.5">
@@ -288,7 +295,7 @@ export default function LandingPage() {
                   className="gap-2"
                 >
                   <Terminal className="w-4 h-4" />
-                  Install CLI
+                  CLI &amp; 24/7 Setup
                 </Button>
               </div>
             </div>
@@ -547,7 +554,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="p-6 space-y-4">
               <div className="w-10 h-10 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--geist-background)] flex items-center justify-center text-[var(--ds-blue-700)]">
                 <Cpu className="w-5 h-5" />
@@ -584,6 +591,26 @@ export default function LandingPage() {
               <p className="font-satoshi text-xs text-[var(--ds-gray-900)] leading-relaxed">
                 Real-time execution telemetry, circuit-breaker alerts, and slippage monitoring
                 streamed via structured OpenTelemetry logs into Neatlogs.
+              </p>
+            </Card>
+
+            <Card
+              className="p-6 space-y-4 cursor-pointer hover:border-emerald-500/50 transition group"
+              onClick={() => setIsCliModalOpen(true)}
+            >
+              <div className="w-10 h-10 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--geist-background)] flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform">
+                <Moon className="w-5 h-5" />
+              </div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-outfit font-semibold text-lg text-[var(--geist-foreground)]">
+                  24/7 Always-On
+                </h3>
+                <span className="text-[10px] bg-emerald-500/10 text-emerald-500 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  Lid Closed
+                </span>
+              </div>
+              <p className="font-satoshi text-xs text-[var(--ds-gray-900)] leading-relaxed">
+                Trade 24/7 with your laptop closed via zero-cost power settings or launch the included Docker daemon on a cloud VPS. Open positions settle safely on-exchange.
               </p>
             </Card>
           </div>

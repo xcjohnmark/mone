@@ -16,46 +16,46 @@
     "status": "OPEN",
     "resolution": null,
     "realized_pnl": null,
-    "created_at": "2026-10-12T01:49:50.814604+00:00",
+    "created_at": "2026-10-12T09:46:09.725616+00:00",
     "settled_at": null
   },
   "spans": [
     {
       "name": "mone_trading_cycle",
       "kind": "WORKFLOW",
-      "timestamp": "2026-10-12T01:49:50.796651+00:00",
+      "timestamp": "2026-10-12T09:46:09.708153+00:00",
       "status": "SUCCESS"
     },
     {
       "name": "resolve_settlements",
       "kind": "WORKFLOW",
-      "timestamp": "2026-10-12T01:49:50.798371+00:00",
+      "timestamp": "2026-10-12T09:46:09.709165+00:00",
       "status": "SUCCESS"
     },
     {
       "name": "fetch_weather_forecasts",
       "kind": "TOOL",
-      "timestamp": "2026-10-12T01:49:50.802428+00:00",
+      "timestamp": "2026-10-12T09:46:09.715800+00:00",
       "status": "SUCCESS",
       "tool_name": "fetch_weather_forecasts"
     },
     {
       "name": "fetch_market_quotes",
       "kind": "TOOL",
-      "timestamp": "2026-10-12T01:49:50.806480+00:00",
+      "timestamp": "2026-10-12T09:46:09.718759+00:00",
       "status": "SUCCESS",
       "tool_name": "fetch_market_quotes"
     },
     {
       "name": "evaluate_market_signals",
       "kind": "AGENT",
-      "timestamp": "2026-10-12T01:49:50.809168+00:00",
+      "timestamp": "2026-10-12T09:46:09.721106+00:00",
       "status": "SUCCESS"
     },
     {
       "name": "execute_order",
       "kind": "TOOL",
-      "timestamp": "2026-10-12T01:49:50.814604+00:00",
+      "timestamp": "2026-10-12T09:46:09.725616+00:00",
       "status": "SUCCESS",
       "tool_name": "execute_order"
     }

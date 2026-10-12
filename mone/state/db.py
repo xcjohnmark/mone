@@ -177,11 +177,26 @@ class Database:
             return [SignalRecord(**dict(r)) for r in rows]
 
     def update_signal_status(self, signal_id: int, status: str):
-        """Updates signal status (e.g. APPROVED, REJECTED, EXECUTED)."""
+        """Updates signal status (e.g. APPROVED, REJECTED, EXECUTED, EXPIRED)."""
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("UPDATE signals SET status = ? WHERE id = ?", (status, signal_id))
             conn.commit()
+
+    def expire_stale_signals(self, today_str: str) -> int:
+        """
+        Marks any unapproved staged signals whose target_date is in the past as EXPIRED.
+        Protects traders who reopen their laptop days later from executing outdated opportunities.
+        """
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE signals SET status = 'EXPIRED' WHERE status = 'STAGED' AND target_date < ?",
+                (today_str,),
+            )
+            count = cursor.rowcount
+            conn.commit()
+            return count
 
     # --- Positions & Execution Operations ---
     def record_position(self, pos: PositionRecord) -> int:

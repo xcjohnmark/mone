@@ -190,6 +190,12 @@ class MoneAgent:
         # Resolve existing settlements
         resolved = self.resolve_settlements()
 
+        # Discard stale staged signals from previous days (laptop sleep / wakeup safety)
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        pruned_count = self.db.expire_stale_signals(today_str)
+        if pruned_count > 0:
+            logger.info(f"Cleaned up {pruned_count} expired staged signals from prior dates upon agent run.")
+
         if not target_date:
             now = datetime.now(timezone.utc)
             # WeatherNext forecasts target tomorrow if late in the day
@@ -260,6 +266,14 @@ class MoneAgent:
         target = next((s for s in staged if s.id == signal_id), None)
         if not target:
             logger.warning(f"Staged signal id {signal_id} not found")
+            return None
+
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if target.target_date < today_str:
+            logger.warning(
+                f"Cannot approve signal {signal_id}: market target date {target.target_date} has expired."
+            )
+            self.db.update_signal_status(signal_id, "EXPIRED")
             return None
 
         # Reconstruct TradeSignal
