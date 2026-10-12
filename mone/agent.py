@@ -9,7 +9,14 @@ import logging
 from typing import Dict, List, Optional
 
 from mone.config import AutonomyMode, MoneConfig, get_config
-from mone.markets import NWS_STATIONS, MarketClient, MarketQuote, OrderRequest, get_market_client
+from mone.markets import (
+    NWS_STATIONS,
+    MarketClient,
+    MarketQuote,
+    OrderRequest,
+    get_market_client,
+    resolve_station,
+)
 from mone.providers import WeatherForecast, WeatherProvider, get_weather_provider
 from mone.risk import RiskManager
 from mone.state import Database, EquitySummary, PositionRecord, SignalRecord
@@ -261,3 +268,168 @@ class MoneAgent:
         else:
             self.db.update_signal_status(signal_id, "REJECTED")
         return pos
+
+    def execute_custom_trade(
+        self,
+        identifier: str,
+        side: Optional[str] = None,
+        capital: Optional[float] = None,
+        contracts: Optional[int] = None,
+    ) -> Optional[PositionRecord]:
+        """
+        Executes a trade on a market or staged signal triggered by CLI query or trader intent.
+
+        Identifier can be:
+        1. Staged signal ID (e.g. '1', '#1')
+        2. Weather market ID (e.g. 'KXRAIN-26OCT12-SATX')
+        3. Station ticker / code (e.g. 'SATX', 'CLIORD')
+        4. City name (e.g. 'San Antonio', 'Miami', 'Chicago')
+        """
+        clean_id = identifier.strip()
+        num_part = clean_id.lstrip("#")
+
+        # 1. Numeric signal ID execution
+        if num_part.isdigit():
+            sig_id = int(num_part)
+            if side is None and capital is None and contracts is None:
+                return self.approve_copilot_signal(sig_id)
+
+            staged = self.db.get_staged_signals()
+            target = next((s for s in staged if s.id == sig_id), None)
+            if target:
+                trade_side = side.upper() if side else target.side
+                ask_p = target.market_ask
+                cap = capital if capital is not None else target.capital
+                cnts = contracts if contracts is not None else max(1, int(cap / max(ask_p, 0.01)))
+                sig = TradeSignal(
+                    station_code=target.station_code,
+                    city=target.city,
+                    target_date=target.target_date,
+                    market_id=target.market_id,
+                    venue=target.venue,
+                    action=f"BUY_{trade_side}",
+                    side=trade_side,  # type: ignore
+                    model_prob_pct=target.model_prob_pct,
+                    market_ask=ask_p,
+                    market_implied_prob_pct=round(ask_p * 100.0, 1),
+                    edge_pct=target.edge_pct,
+                    expected_roi_pct=round(((1.0 - ask_p) / ask_p) * 100.0, 1),
+                    contracts_suggested=cnts,
+                    capital_allocated=round(cnts * ask_p, 2),
+                    reason=f"CLI manual approval on signal #{sig_id}",
+                    is_actionable=True,
+                )
+                pos = self.execute_order(sig)
+                if pos:
+                    self.db.update_signal_status(sig_id, "EXECUTED")
+                return pos
+
+        # 2. Match existing staged signal by market_id, station_code, or city
+        staged = self.db.get_staged_signals()
+        matched_staged = None
+        for s in staged:
+            if s.market_id.upper() == clean_id.upper() or s.station_code.upper() == clean_id.upper() or s.city.lower() == clean_id.lower():
+                matched_staged = s
+                break
+
+        station = resolve_station(clean_id)
+        if not matched_staged and station:
+            for s in staged:
+                if s.station_code == station.station_code:
+                    matched_staged = s
+                    break
+
+        if matched_staged and side is None and capital is None and contracts is None:
+            return self.approve_copilot_signal(matched_staged.id)
+
+        # 3. Direct market trade execution
+        now = datetime.now(timezone.utc)
+        target_date = (now + timedelta(days=1)).strftime("%Y-%m-%d") if now.hour >= 18 else now.strftime("%Y-%m-%d")
+
+        quotes = self.fetch_market_quotes(target_date)
+        quote = None
+        target_station_code = None
+        target_city = None
+
+        if station:
+            target_station_code = station.station_code
+            target_city = station.city
+            quote = quotes.get(station.station_code)
+        else:
+            for q in quotes.values():
+                if q.market_id.upper() == clean_id.upper():
+                    quote = q
+                    target_station_code = q.station_code
+                    target_city = q.city
+                    break
+
+        if not quote:
+            if station:
+                dt = datetime.strptime(target_date, "%Y-%m-%d")
+                date_code = dt.strftime("%y%b%d").upper()
+                quote = MarketQuote(
+                    market_id=f"KXRAIN-{date_code}-{station.kalshi_suffix}",
+                    venue=self.market.venue_id,
+                    station_code=station.station_code,
+                    city=station.city,
+                    target_date=target_date,
+                    yes_ask=0.50,
+                    yes_bid=0.48,
+                    no_ask=0.52,
+                    no_bid=0.50,
+                )
+                target_station_code = station.station_code
+                target_city = station.city
+            else:
+                logger.error(f"Cannot resolve station or market from identifier: {clean_id}")
+                return None
+
+        # Determine side (YES/NO)
+        if side:
+            trade_side = side.upper()
+        else:
+            forecasts = self.weather.batch_get_forecasts([station.model_dump()], target_date) if station else {}
+            forecast = forecasts.get(target_station_code or "")
+            trade_side = "YES" if (forecast and forecast.rain_probability_pct >= 50.0) else "NO"
+
+        ask_price = quote.yes_ask if trade_side == "YES" else quote.no_ask
+        if ask_price <= 0.0:
+            ask_price = 0.50
+
+        cap = capital if capital is not None else self.config.capital_per_trade_usd
+        cnts = contracts if contracts is not None else max(1, int(cap / max(ask_price, 0.01)))
+
+        sig = TradeSignal(
+            station_code=target_station_code or "UNKNOWN",
+            city=target_city or "Unknown",
+            target_date=target_date,
+            market_id=quote.market_id,
+            venue=self.market.venue_id,
+            action=f"BUY_{trade_side}",
+            side=trade_side,  # type: ignore
+            model_prob_pct=50.0,
+            market_ask=ask_price,
+            market_implied_prob_pct=round(ask_price * 100.0, 1),
+            edge_pct=0.0,
+            expected_roi_pct=round(((1.0 - ask_price) / ask_price) * 100.0, 1),
+            contracts_suggested=cnts,
+            capital_allocated=round(cnts * ask_price, 2),
+            reason=f"Manual CLI trader execution for {clean_id}",
+            is_actionable=True,
+        )
+
+        equity = self.db.get_equity_summary()
+        risk_check = self.risk.validate_signal_risk(
+            sig,
+            current_cash_balance=equity.cash_balance,
+            open_positions_count=equity.open_positions_count,
+        )
+        if not risk_check.allowed:
+            logger.warning(f"Risk guardrail rejected trade: {risk_check.reason}")
+            return None
+
+        pos = self.execute_order(sig)
+        if pos and matched_staged:
+            self.db.update_signal_status(matched_staged.id, "EXECUTED")
+        return pos
+

@@ -241,3 +241,43 @@ def get_station_by_suffix(suffix: str) -> Optional[StationInfo]:
 def get_station_by_city(city: str) -> Optional[StationInfo]:
     """Returns station by city name case-insensitively."""
     return _BY_CITY.get(city.strip().lower())
+
+
+def resolve_station(identifier: str) -> Optional[StationInfo]:
+    """
+    Fuzzy resolver for any station identifier.
+    Supports:
+    - Market ID: 'KXRAIN-26OCT12-SATX' -> resolves SATX
+    - Kalshi suffix: 'SATX', 'CHI', 'MIA'
+    - Station code: 'CLISAT', 'CLIORD'
+    - City name: 'San Antonio', 'chicago', 'Miami'
+    """
+    cleaned = identifier.strip().upper()
+
+    # 1. Direct code lookup
+    if cleaned in _BY_CODE:
+        return _BY_CODE[cleaned]
+
+    # 2. Suffix lookup
+    if cleaned in _BY_SUFFIX:
+        return _BY_SUFFIX[cleaned]
+
+    # 3. Market ID format: KXRAIN-DATE-SUFFIX
+    if "-" in cleaned:
+        parts = cleaned.split("-")
+        suffix = parts[-1]
+        if suffix in _BY_SUFFIX:
+            return _BY_SUFFIX[suffix]
+
+    # 4. City name exact or substring
+    city_match = get_station_by_city(identifier)
+    if city_match:
+        return city_match
+
+    query_lower = identifier.strip().lower()
+    for s in NWS_STATIONS:
+        if query_lower in s.city.lower():
+            return s
+
+    return None
+

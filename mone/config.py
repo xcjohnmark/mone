@@ -153,6 +153,10 @@ class MoneConfig(BaseSettings):
             return bool((self.kalshi_email and self.kalshi_password) or self.kalshi_api_key_id)
         return False
 
+    @property
+    def capital_per_trade_usd(self) -> float:
+        return self.capital_per_trade
+
 
 # Global singleton instance cache
 _config_instance: Optional[MoneConfig] = None

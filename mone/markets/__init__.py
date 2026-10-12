@@ -12,6 +12,7 @@ from mone.markets.stations import (
     get_station_by_code,
     get_station_by_suffix,
     get_station_by_city,
+    resolve_station,
 )
 from mone.markets.kalshi import KalshiClient
 from mone.markets.polymarket import PolymarketClient
@@ -73,6 +74,7 @@ __all__ = [
     "get_station_by_code",
     "get_station_by_suffix",
     "get_station_by_city",
+    "resolve_station",
     "KalshiClient",
     "PolymarketClient",
     "PaperMarketClient",
