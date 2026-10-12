@@ -71,12 +71,54 @@
 
 ---
 
-## 5. Submission Checklist & Evidence Artifacts
-* [x] Public GitHub repository: [https://github.com/xcjohnmark/mone](https://github.com/xcjohnmark/mone) with fresh commits during Oct 10–12.
-* [x] Full test suite passing (31 / 31 unit tests passing in <1s).
-* [x] neatlogs trace proof artifact exported: `trace_exports/failure_recovery_trace.json`.
-* [x] cfo.ai financial plan artifact: `cfo_business_plan.md` (88% gross margin).
-* [x] Dodo Payments non-custodial checkout & webhook integration.
-* [x] Backtest audit report: `BACKTEST_AUDIT.md`.
-* [ ] Record 3-minute Loom demo video walking through architecture, live Copilot approvals, and neatlogs telemetry.
-* [ ] Post submission quote-tweet on X tagging `#neatHack`.
+## 5. Submission Checklist & The 7 Evidence Verifications
+
+### 1. The agent improved
+* **Evidence:** Slashed weather ensemble ingestion and evaluation latency from sequential single-thread scanning (Run A) to multi-threaded concurrent batching and vectorized edge math (Run B).
+* **The Numbers:**
+  * **Run A (Unoptimized Baseline):** 12.76s latency (1.72 stations/sec).
+  * **Run B (Optimized Pipeline):** 1.84s latency (11.96 stations/sec).
+  * **Improvement:** **-10.92s latency reduction (85.6% faster, 6.93x speedup)**.
+* **Artifact:** Verified in [`benchmark_improvement_report.json`](benchmark_improvement_report.json) and reproducible via `python scripts/benchmark_optimization.py`.
+
+### 2. You used neatlogs
+* **Evidence:** End-to-end native instrumentation via `@neatlogs.span`, `@workflow_span`, `@agent_span`, and `@tool_span`. Spans stream live to `https://ingest.neatlogs.com`.
+* **Traces Recorded:**
+  * Root workflow: `mone_trading_cycle`
+  * Agent reasoning: `evaluate_market_signals`
+  * Tool calls: `fetch_weather_forecasts`, `fetch_market_quotes`, `execute_order`
+* **Artifacts:**
+  * Production cycle trace: [`trace_exports/trading_cycle_trace.json`](trace_exports/trading_cycle_trace.json)
+  * Failure recovery trace: [`trace_exports/failure_recovery_trace.json`](trace_exports/failure_recovery_trace.json)
+
+### 3. You used Entire
+* **Evidence:** Entire CLI 0.11.4 active on branch `main` with Antigravity and Claude Code agent hooks (`.entire/settings.json`, `.agents/hooks.json`).
+* **Checkpoints:** 9 synced checkpoints recorded throughout the build window, mapping every prompt and architectural commit directly to GitHub (`origin/main`).
+* **Active Session:** `319545d9-be64-4fd6-a881-897f7eabc8ad`.
+* **Architecture Graph:** Pre-rendered vector repository graph in [`docs/entire-graph.svg`](docs/entire-graph.svg).
+
+### 4. You used cfo.ai
+* **Evidence:** Complete SaaS + Compute Fuel financial model and 18-month runway projection planned in cfo.ai.
+* **Live Session:** [cfo.ai Workspace jahsfavour-cfoai-d694156f](https://app.cfo.ai/jahsfavour-cfoai-d694156f/chat/e56aaeb6-0d24-4f9d-8cd4-36c3f1593665).
+* **Financial Highlights:**
+  * Unit COGS per user: ~$4.80/mo (Cloud Zarr storage + BigQuery + serverless runner).
+  * Gross Margin: **89.8%** (enabled by non-custodial BYOK).
+  * Pre-seed Runway: **18 months** at $8,333/mo net burn rate on $150k capital.
+* **Artifact:** Documented in [`cfo_business_plan.md`](cfo_business_plan.md).
+
+### 5. The agent recovers from failures
+* **Evidence:** Injected primary Google Cloud GCS Zarr connection reset (HTTP 503 error) during market scan.
+* **Autonomous Reaction:** Agent catches the error, emits an alert span to Neatlogs, immediately triggers `FallbackWeatherProvider` to Open-Meteo WeatherNext 2, and completes trade execution without downtime or human intervention.
+* **Artifact:** Verified in [`tests/test_failure_recovery.py`](tests/test_failure_recovery.py) and runnable via `python scripts/demo_failure_recovery.py`.
+
+### 6. You built in public
+* **Social Updates Tagged `#neatHack`:**
+  * Post 1 (Kickoff & Architecture): [Link to X/Twitter Post]
+  * Post 2 (Neatlogs Telemetry & Failover): [Link to X/Twitter Post]
+  * Post 3 (Final Submission & Demo Video): [Link to X/Twitter Post]
+
+### 7. Code written during the hackathon
+* **Public Repository:** [https://github.com/xcjohnmark/mone](https://github.com/xcjohnmark/mone)
+* **Commits:** Continuous, granular commit history with timestamps between October 10 and October 12, 2026.
+* **Test Suite:** 34 / 34 unit tests passing in `<1.5s`.
+

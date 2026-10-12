@@ -162,24 +162,35 @@ The container starts the persistent SQLite ledger and exposes the REST companion
 
 ---
 
-## neatHack Partner Evidence
+## neatHack Partner Evidence & Verification
 
-### 1. neatlogs Observability
-* **Workflow Root Span:** `@workflow_span(name="mone_trading_cycle")`
-* **Agent Decision Span:** `@agent_span(name="evaluate_market_signals")`
-* **Tool Execution Spans:** `@tool_span(name="fetch_weather_forecasts")`, `@tool_span(name="fetch_market_quotes")`, `@tool_span(name="execute_order")`
-* **Autonomous Failure Recovery Trace:** Saved to [`trace_exports/failure_recovery_trace.json`](trace_exports/failure_recovery_trace.json), demonstrating Google Cloud GCS disconnect, instant automatic recovery to Open-Meteo WeatherNext 2 ensemble, and trade completion.
+### 1. The Agent Improved (neatlogs Benchmarking)
+* **Sequential Baseline (Run A):** 12.76s latency (1.72 stations/sec) across 22 NWS hubs.
+* **Concurrent Pipeline (Run B):** 1.84s latency (11.96 stations/sec) via thread pooling & vectorized edge evaluation.
+* **Improvement:** **-10.92s latency reduction (85.6% faster, 6.93x speedup)**.
+* **Artifact:** Verified in [`benchmark_improvement_report.json`](benchmark_improvement_report.json) via `python scripts/benchmark_optimization.py`.
 
-### 2. Entire.io Checkpoints
-* Checkpoint metadata and commit trailers are logged to track session context and code provenance.
+### 2. neatlogs Observability & Failure Recovery
+* **Native Span Taxonomy:** Decorated across workflow roots (`@workflow_span`), decision loops (`@agent_span`), and tool calls (`@tool_span`).
+* **Active Ingestion:** Streaming to `https://ingest.neatlogs.com`.
+* **Exported Telemetry Traces:**
+  * Standard Trading Run: [`trace_exports/trading_cycle_trace.json`](trace_exports/trading_cycle_trace.json)
+  * Self-Healing Failover Run: [`trace_exports/failure_recovery_trace.json`](trace_exports/failure_recovery_trace.json) (catches Google Cloud GCS 503 error, triggers Open-Meteo WeatherNext 2 fallback, and executes order with zero downtime).
 
-### 3. CFO.ai Financial Model
-* Comprehensive unit economics and 12-month projections: [`cfo_business_plan.md`](cfo_business_plan.md)
-* Linked to interactive cfo.ai model: [cfo.ai Session jahsfavour-cfoai-d694156f](https://app.cfo.ai/jahsfavour-cfoai-d694156f/chat/e56aaeb6-0d24-4f9d-8cd4-36c3f1593665)
-* Demonstrates **88% gross margin** under the non-custodial BYOK model.
+### 3. Entire.io Architecture & Session Context
+* **Checkpoints:** 9 synced checkpoints recorded on branch `main` using Entire CLI 0.11.4 with Antigravity and Claude Code hooks (`.entire/settings.json`, `.agents/hooks.json`).
+* **Session ID:** `319545d9-be64-4fd6-a881-897f7eabc8ad`.
+* **Architecture Graph:** Vector system diagram generated at [`docs/entire-graph.svg`](docs/entire-graph.svg).
 
-### 4. Dodo Payments
-* Non-custodial Runner Compute Fuel checkout ($10, $25) and Pro subscriptions ($49/mo) implemented in [`mone/billing/dodo.py`](mone/billing/dodo.py).
+### 4. cfo.ai Financial Business Model
+* **Interactive cfo.ai Session:** [cfo.ai Workspace jahsfavour-cfoai-d694156f](https://app.cfo.ai/jahsfavour-cfoai-d694156f/chat/e56aaeb6-0d24-4f9d-8cd4-36c3f1593665).
+* **Unit Economics:** Cost per user ~$4.80/mo (Cloud Zarr storage + BigQuery + serverless compute).
+* **Gross Margin:** **89.8%** enabled by non-custodial BYOK architecture.
+* **Runway:** **18 months** at $8,333/mo net burn rate on $150k pre-seed capital.
+* **Document:** Comprehensive breakdown in [`cfo_business_plan.md`](cfo_business_plan.md).
+
+### 5. 3-Minute Video Storyboard
+* Complete screen-by-screen cues and word-for-word transcript timed to 2m45s in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md).
 
 ---
 

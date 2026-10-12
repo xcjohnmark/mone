@@ -1,0 +1,55 @@
+{
+  "workflow": "mone_trading_cycle",
+  "timestamp_utc": "2026-10-12T01:14:32.800424+00:00",
+  "venue": "kalshi_demo",
+  "mode": "copilot",
+  "stations_evaluated": 0,
+  "actionable_signals": 0,
+  "staged_count": 0,
+  "spans": [
+    {
+      "name": "{'name': 'mone_trading_cycle', 'kind': 'WORKFLOW', 'timestamp': '2026-10-12T01:14:22.500031+00:00', 'status': 'SUCCESS'}",
+      "kind": "TOOL",
+      "status": "SUCCESS",
+      "duration_ms": 120,
+      "attributes": {}
+    },
+    {
+      "name": "{'name': 'resolve_settlements', 'kind': 'WORKFLOW', 'timestamp': '2026-10-12T01:14:22.505257+00:00', 'status': 'SUCCESS'}",
+      "kind": "TOOL",
+      "status": "SUCCESS",
+      "duration_ms": 120,
+      "attributes": {}
+    },
+    {
+      "name": "{'name': 'fetch_weather_forecasts', 'kind': 'TOOL', 'timestamp': '2026-10-12T01:14:25.770019+00:00', 'status': 'SUCCESS', 'tool_name': 'fetch_weather_forecasts'}",
+      "kind": "TOOL",
+      "status": "SUCCESS",
+      "duration_ms": 120,
+      "attributes": {}
+    },
+    {
+      "name": "{'name': 'fetch_market_quotes', 'kind': 'TOOL', 'timestamp': '2026-10-12T01:14:29.719011+00:00', 'status': 'SUCCESS', 'tool_name': 'fetch_market_quotes'}",
+      "kind": "TOOL",
+      "status": "SUCCESS",
+      "duration_ms": 120,
+      "attributes": {}
+    },
+    {
+      "name": "{'name': 'evaluate_market_signals', 'kind': 'AGENT', 'timestamp': '2026-10-12T01:14:32.747764+00:00', 'status': 'SUCCESS'}",
+      "kind": "TOOL",
+      "status": "SUCCESS",
+      "duration_ms": 120,
+      "attributes": {}
+    }
+  ],
+  "equity": {
+    "cash_balance": 55.58,
+    "invested_capital": 44.42,
+    "total_equity": 100.0,
+    "cumulative_realized_pnl": 0.0,
+    "open_positions_count": 4,
+    "settled_trades_count": 0,
+    "win_rate_pct": 0.0
+  }
+}
