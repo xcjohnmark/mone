@@ -41,3 +41,15 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Internal plans, specs, notes, and demo cues
+*_BUILD_PLAN.md
+BACKTESTING_PLAN.md
+criterions.md
+hackathon.md
+DEMO_SCRIPT.md
+
+# Agent skills and launch assets
+.agents/skills/
+skills-lock.json
+brag-output/

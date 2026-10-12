@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "mone-agent"
 version = "0.1.0"
 description = "Autonomous quantitative trading agent bridging Google WeatherNext forecasting with prediction markets under BYOK architecture"
-readme = "hackathon.md"
+readme = "README.md"
 authors = [
     { name = "xcjohnmark" }
 ]

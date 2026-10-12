@@ -33,8 +33,7 @@
 
 [![mone Demo Video](https://img.shields.io/badge/Watch%20Demo%20Video-YouTube%20%2F%20Loom-red?style=for-the-badge&logo=youtube)](https://youtu.be/DEMO_VIDEO_LINK_PLACEHOLDER)
 
-> 📌 **Demo Video Link:** `https://youtu.be/DEMO_VIDEO_LINK_PLACEHOLDER` *(Drop your recorded link here)*  
-> 📄 **Word-for-Word Script & Screen Timings:** Full 2m45s storyboard is available in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md).
+> 📌 **Demo Video Link:** `https://youtu.be/DEMO_VIDEO_LINK_PLACEHOLDER` *(Drop your recorded link here)*
 
 ---
 
