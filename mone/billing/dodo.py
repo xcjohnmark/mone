@@ -68,7 +68,7 @@ class DodoPaymentsClient:
         product_key: str,
         customer_email: str,
         user_id: str,
-        return_url: str = "https://mone.trade/agent?checkout=success",
+        return_url: str = "https://mono-agent.vercel.app/agent?checkout=success",
     ) -> Dict:
         """
         Creates a Dodo Payments hosted checkout session.
