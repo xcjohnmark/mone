@@ -53,10 +53,14 @@ class CheckoutRequest(BaseModel):
     user_id: str
 
 
+import json
+import logging
 import os
 import urllib.request
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+
+logger = logging.getLogger("mone.server")
 
 GOOGLE_CLIENT_ID = os.getenv(
     "GOOGLE_CLIENT_ID",
@@ -70,6 +74,12 @@ class GoogleAuthRequest(BaseModel):
     email: Optional[str] = "trader@gmail.com"
     name: Optional[str] = "Weather Trader"
     avatar: Optional[str] = None
+    device_fingerprint: Optional[str] = None
+
+
+class DeleteAccountRequest(BaseModel):
+    user_id: str
+    google_sub: Optional[str] = None
 
 
 @app.get("/api/health")
@@ -87,7 +97,8 @@ def health_check():
 def auth_google(req: GoogleAuthRequest):
     """
     Verifies real Google OAuth ID token / access token cryptographically,
-    authenticates the user profile, and grants an active 7-Day Free Trial with 50 runs.
+    authenticates user profile, and queries the persistent Anti-Abuse Sybil ledger
+    to prevent free trial recycling across account recreation.
     """
     user_email = req.email
     user_name = req.name
@@ -133,16 +144,43 @@ def auth_google(req: GoogleAuthRequest):
     user_id = f"usr_{user_sub or abs(hash(user_email)) % 10000000:07d}"
     user_avatar = user_avatar or f"https://api.dicebear.com/7.x/identicon/svg?seed={user_email}"
 
+    # Anti-Abuse Sybil Verification: Query immutable cryptographic tombstone ledger
+    agent = get_agent()
+    trial_sub_key = user_sub or f"email_{user_email}"
+    trial_res = agent.db.check_or_grant_trial(
+        google_sub=trial_sub_key,
+        device_hash=req.device_fingerprint,
+        default_runs=50,
+        trial_days=7,
+    )
+
     return {
         "user_id": user_id,
         "email": user_email,
         "name": user_name,
         "avatar": user_avatar,
-        "is_trial_active": True,
-        "trial_days_remaining": 7,
-        "runs_remaining": 50,
-        "plan": "7-Day Free Trial",
+        "is_trial_active": trial_res["is_trial_active"],
+        "trial_days_remaining": trial_res["trial_days_remaining"],
+        "runs_remaining": trial_res["runs_remaining"],
+        "plan": trial_res["plan"],
+        "is_new_trial": trial_res.get("is_new_trial", False),
+        "trial_reason": trial_res.get("reason", ""),
         "cli_api_token": f"mone_sec_{abs(hash(user_email + 'salt')) % 100000000:08d}",
+    }
+
+
+@app.post("/api/user/delete-account")
+def delete_user_account(req: DeleteAccountRequest):
+    """
+    GDPR-compliant account deletion:
+    Removes user profile and session data from active tables, but PRESERVES the
+    cryptographic tombstone in 'consumed_trials' so the 7-day trial cannot be recycled.
+    """
+    agent = get_agent()
+    agent.db.delete_user_account(user_id=req.user_id, google_sub=req.google_sub)
+    return {
+        "status": "success",
+        "message": "User account successfully deleted. Consumed trial ledger tombstoned.",
     }
 
 

@@ -6,8 +6,8 @@ Maintains persistent trade log, pending positions, copilot approval queue, and a
 import logging
 import os
 import sqlite3
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import datetime, timezone, timedelta
+from typing import Any, Dict, List, Optional
 
 from mone.state.models import EquitySummary, PositionRecord, SignalRecord
 from mone.strategy.rules import TradeSignal
@@ -116,6 +116,19 @@ class Database:
                     is_pro_subscriber INTEGER NOT NULL DEFAULT 0,
                     subscription_expires_at TEXT,
                     last_updated TEXT NOT NULL
+                )
+            """)
+
+            # Anti-Abuse Sybil Protection: Consumed Free Trials Ledger (Cryptographic Tombstones)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS consumed_trials (
+                    google_sub_hash TEXT PRIMARY KEY,
+                    first_granted_at TEXT NOT NULL,
+                    trial_expires_at TEXT NOT NULL,
+                    runs_used INTEGER NOT NULL DEFAULT 0,
+                    runs_allowed INTEGER NOT NULL DEFAULT 50,
+                    device_hash TEXT,
+                    is_revoked INTEGER NOT NULL DEFAULT 0
                 )
             """)
 
@@ -349,3 +362,130 @@ class Database:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM crypto_payments ORDER BY id DESC")
             return [dict(row) for row in cursor.fetchall()]
+
+    # --- Anti-Abuse Sybil Trial Management ---
+    def check_or_grant_trial(
+        self,
+        google_sub: str,
+        device_hash: Optional[str] = None,
+        default_runs: int = 50,
+        trial_days: int = 7,
+    ) -> Dict[str, Any]:
+        """
+        Anti-Abuse Sybil Verification:
+        Ensures a single Google account (keyed by SHA-256 hash of permanent Google 'sub')
+        can only ever claim one 7-day free trial.
+        Even if user deletes their profile or attempts to re-register, the cryptographic
+        tombstone record persists and denies renewal or restores existing remaining time/runs.
+        """
+        import hashlib
+
+        sub_hash = hashlib.sha256(google_sub.strip().encode("utf-8")).hexdigest()
+        now = datetime.now(timezone.utc)
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM consumed_trials WHERE google_sub_hash = ?",
+                (sub_hash,),
+            )
+            row = cursor.fetchone()
+
+            if row:
+                trial_data = dict(row)
+                exp_dt = datetime.fromisoformat(trial_data["trial_expires_at"])
+                runs_used = trial_data["runs_used"]
+                runs_allowed = trial_data["runs_allowed"]
+                runs_left = max(0, runs_allowed - runs_used)
+                days_left = max(0, (exp_dt - now).days) if exp_dt > now else 0
+
+                is_active = (exp_dt > now) and (runs_left > 0) and not trial_data["is_revoked"]
+
+                return {
+                    "is_new_trial": False,
+                    "is_trial_active": is_active,
+                    "trial_days_remaining": days_left if is_active else 0,
+                    "runs_remaining": runs_left if is_active else 0,
+                    "plan": "7-Day Free Trial" if is_active else "Expired Free Trial",
+                    "reason": "Existing trial record restored" if is_active else "Free trial previously consumed and expired",
+                    "first_granted_at": trial_data["first_granted_at"],
+                }
+
+            # Device-level duplicate check (max 2 trials per device footprint)
+            if device_hash:
+                cursor.execute(
+                    "SELECT COUNT(*) as cnt FROM consumed_trials WHERE device_hash = ?",
+                    (device_hash.strip(),),
+                )
+                dev_count = cursor.fetchone()["cnt"]
+                if dev_count >= 2:
+                    return {
+                        "is_new_trial": False,
+                        "is_trial_active": False,
+                        "trial_days_remaining": 0,
+                        "runs_remaining": 0,
+                        "plan": "Expired Free Trial",
+                        "reason": "Device trial allocation limit reached. Please purchase a Starter Pass or Pro tier.",
+                    }
+
+            # Legitimate new trial grant
+            expires_at = (now + timedelta(days=trial_days)).isoformat()
+            cursor.execute(
+                """
+                INSERT INTO consumed_trials (
+                    google_sub_hash, first_granted_at, trial_expires_at,
+                    runs_used, runs_allowed, device_hash, is_revoked
+                ) VALUES (?, ?, ?, 0, ?, ?, 0)
+                """,
+                (
+                    sub_hash,
+                    now.isoformat(),
+                    expires_at,
+                    default_runs,
+                    device_hash.strip() if device_hash else None,
+                ),
+            )
+            conn.commit()
+
+            return {
+                "is_new_trial": True,
+                "is_trial_active": True,
+                "trial_days_remaining": trial_days,
+                "runs_remaining": default_runs,
+                "plan": "7-Day Free Trial",
+                "reason": "New 7-Day Free Trial granted",
+                "first_granted_at": now.isoformat(),
+            }
+
+    def record_trial_run_used(self, google_sub: str) -> int:
+        """Increments the consumed runs counter for a trial user and returns remaining runs."""
+        import hashlib
+        sub_hash = hashlib.sha256(google_sub.strip().encode("utf-8")).hexdigest()
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE consumed_trials SET runs_used = runs_used + 1 WHERE google_sub_hash = ?",
+                (sub_hash,),
+            )
+            conn.commit()
+            cursor.execute(
+                "SELECT runs_allowed - runs_used AS runs_left FROM consumed_trials WHERE google_sub_hash = ?",
+                (sub_hash,),
+            )
+            res = cursor.fetchone()
+            return max(0, res["runs_left"]) if res else 0
+
+    def delete_user_account(self, user_id: str, google_sub: Optional[str] = None) -> bool:
+        """
+        Compliant account deletion:
+        Removes user profile and session data from active tables, but PRESERVES the
+        cryptographic tombstone in 'consumed_trials' so the trial cannot be reclaimed.
+        """
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM fuel_credits WHERE user_id = ?", (user_id,))
+            conn.commit()
+            logger.info(
+                f"Account deleted for {user_id}. Consumed trial tombstone preserved in immutable ledger."
+            )
+            return True

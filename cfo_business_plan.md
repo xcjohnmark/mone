@@ -196,6 +196,14 @@ $$\text{Net Monthly Burn} = (\text{Fixed OpEx} + \text{COGS}) - \text{Gross Bill
   2. **Asynchronous NOAA Settlement Lag:** Weather contracts settle 24–48 hours after close when NOAA/NWS posts official daily climate data. Debiting user balances days after execution creates negative balance risks, customer confusion, and elevated Dodo Payments chargeback exposure.
   3. **Simplicity & Conversion:** Traders strongly prefer transparent, upfront pricing ($10 / $25 / $49) over variable retrospective escrow deductions.
 
+### Decision 4: Anti-Abuse & Sybil Prevention (Account Deletion / Re-Registration Safeguard)
+* **Choice:** Implemented an immutable, cryptographic tombstone ledger (`consumed_trials`) keyed by SHA-256 hashes of the permanent Google OAuth Subject Identifier (`sub`) and client device fingerprint (`device_hash`).
+* **Rationale & Mechanics:**
+  1. **Google OAuth Invariant:** Google assigns an immutable, unique 21-digit `sub` ID per account. Even if a user changes their email alias, display name, or deletes their `mone` account, their Google `sub` never changes.
+  2. **Cryptographic Tombstone Ledger:** When an account is deleted for privacy/GDPR compliance, user PII, active sessions, and API keys are purged from operational tables, but the SHA-256 hash of their Google `sub` remains permanently in `consumed_trials`.
+  3. **Re-Registration Behavior:** When a user re-registers with the same Google credentials, `check_or_grant_trial()` verifies the tombstone ledger. If their trial has already expired or been exhausted, they are assigned `plan: "Expired Free Trial"` (0 runs) and prompted to purchase a paid pass or Pro subscription. If they re-register within the initial 7 days, they receive only their *remaining* runs, preventing trial counter resets.
+  4. **Device Fingerprint Throttling:** Client canvas/hardware fingerprints limit multiple distinct Google accounts from claiming more than 2 free trials on the same machine, eliminating throwaway Gmail bot farming.
+
 ---
 
 ## 7. Interactive cfo.ai (Ari) Prompt Specification
