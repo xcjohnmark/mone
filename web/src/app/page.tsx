@@ -22,7 +22,6 @@ import {
   Radio,
   BarChart3,
   Lock,
-  Moon,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { BrandLogo } from "../components/ui/BrandLogo";
@@ -48,7 +47,7 @@ export default function LandingPage() {
     setIsPricingOpen,
     setIsCliModalOpen,
   } = useAuth();
-  const [setupTab, setSetupTab] = useState<string>("cli");
+  const [setupTab, setSetupTab] = useState<string>("globe");
   const [copied, setCopied] = useState(false);
 
   // In-hero configuration state
@@ -131,63 +130,57 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--geist-background)] text-[var(--geist-foreground)] font-satoshi selection:bg-[var(--geist-selection)]">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 border-b border-[var(--ds-gray-400)] bg-[var(--geist-background)]/85 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      {/* 80px Top Navigation Bar (Glider Blueprint Standard) */}
+      <header className="sticky top-0 z-50 border-b border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] backdrop-blur-md transition-all duration-200">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-[80px] flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <BrandLogo size="md" />
-            <Badge variant="blue" dot className="hidden sm:inline-flex">
+            <Badge variant="blue" dot className="hidden md:inline-flex">
               WeatherNext 3 Engine
             </Badge>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm text-[var(--ds-gray-900)]">
+          <nav className="hidden lg:flex items-center gap-8 text-xs sm:text-sm font-medium text-[var(--ds-gray-900)]">
             <a
               href="#architecture"
-              className="hover:text-[var(--geist-foreground)] transition-colors"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
             >
               Architecture
             </a>
             <a
               href="#live-signals"
-              className="hover:text-[var(--geist-foreground)] transition-colors"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
             >
               Live Signals
             </a>
             <a
               href="#backtest"
-              className="hover:text-[var(--geist-foreground)] transition-colors"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
             >
               Backtest Audit
             </a>
             <button
               onClick={() => setIsPricingOpen(true)}
-              className="hover:text-[var(--geist-foreground)] transition-colors cursor-pointer text-left"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200 cursor-pointer text-left"
             >
               Pricing
             </button>
             <button
               onClick={() => setIsCliModalOpen(true)}
-              className="hover:text-[var(--geist-foreground)] transition-colors cursor-pointer text-left"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200 cursor-pointer text-left"
             >
               CLI Guide
             </button>
-            <button
-              onClick={() => setIsCliModalOpen(true)}
-              className="hover:text-emerald-400 text-emerald-500 font-medium transition-colors cursor-pointer text-left"
-            >
-              24/7 Setup
-            </button>
           </nav>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
 
             {user ? (
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] text-xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-medium text-[var(--geist-foreground)]">
+              <div className="flex items-center gap-2.5">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] text-xs shadow-brand-soft">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-semibold text-[var(--geist-foreground)]">
                     {user.plan}
                   </span>
                   <span className="text-[var(--ds-gray-900)] tabular-nums">
@@ -205,17 +198,17 @@ export default function LandingPage() {
                   title="Sign Out"
                   aria-label="Sign Out"
                 >
-                  <LogOut className="w-3.5 h-3.5 text-[var(--ds-gray-900)]" />
+                  <LogOut className="size-4 text-[var(--ds-gray-900)]" />
                 </Button>
               </div>
             ) : (
               <Button
                 variant="secondary"
-                size="sm"
+                size="md"
                 onClick={signInWithGoogle}
                 className="gap-2 text-xs"
               >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                <svg className="size-4 shrink-0" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -238,8 +231,8 @@ export default function LandingPage() {
             )}
 
             <Link href="/agent">
-              <Button variant="default" size="sm" className="gap-1.5 text-xs">
-                Dashboard <ArrowRight className="w-3.5 h-3.5" />
+              <Button variant="default" size="md" className="gap-2 text-xs">
+                Dashboard <ArrowRight className="size-4" />
               </Button>
             </Link>
           </div>
@@ -247,17 +240,17 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-20 overflow-hidden border-b border-[var(--ds-gray-400)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+      <section className="relative pt-16 pb-20 overflow-hidden border-b border-[var(--brand-border-subtle)]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Column: Value Proposition */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-xs text-[var(--ds-gray-900)]">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Google WeatherNext 3 × Kalshi & Polymarket · 7-Day Trial</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft text-xs text-[var(--ds-gray-900)]">
+                <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Google WeatherNext 3 × Kalshi &amp; Polymarket · 7-Day Trial</span>
               </div>
 
-              <h1 className="font-outfit text-4xl sm:text-6xl font-bold tracking-tight text-[var(--geist-foreground)] leading-[1.08] text-balance">
+              <h1 className="font-outfit text-4xl sm:text-6xl font-bold tracking-tight text-[var(--geist-foreground)] leading-[1.06] text-balance">
                 Autonomous weather edge for prediction markets.
               </h1>
 
@@ -267,25 +260,26 @@ export default function LandingPage() {
                 contracts, and routes non-custodial orders across 22 NWS airport stations.
               </p>
 
-              <div className="flex flex-wrap items-center gap-6 pt-1 text-xs text-[var(--ds-gray-900)]">
+              <div className="flex flex-wrap items-center gap-6 pt-1 text-xs text-[var(--ds-gray-900)] font-medium">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  <ShieldCheck className="size-5 text-emerald-500 shrink-0" />
                   <span>100% Non-Custodial (BYOK)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-[var(--ds-blue-700)]" />
+                  <Activity className="size-5 text-[var(--ds-blue-700)] shrink-0" />
                   <span>Neatlogs Observability</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                  <TrendingUp className="size-5 text-emerald-500 shrink-0" />
                   <span className="tabular-nums">Audited 76.8% Win Rate</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-2">
+              {/* 48px Touch Target CTAs (Glider Blueprint Standard) */}
+              <div className="flex items-center gap-4 pt-2">
                 <Link href="/agent">
                   <Button variant="default" size="lg" className="gap-2">
-                    Open Web Dashboard <ArrowRight className="w-4 h-4" />
+                    Open Web Dashboard <ArrowRight className="size-4" />
                   </Button>
                 </Link>
                 <Button
@@ -294,20 +288,20 @@ export default function LandingPage() {
                   onClick={() => setIsCliModalOpen(true)}
                   className="gap-2"
                 >
-                  <Terminal className="w-4 h-4" />
-                  CLI &amp; 24/7 Setup
+                  <Terminal className="size-4" />
+                  Install CLI
                 </Button>
               </div>
             </div>
 
             {/* Right Column: 3D Weather Grid Globe with Interactive Tabs */}
             <div className="lg:col-span-5 flex flex-col items-center">
-              <Card className="w-full overflow-hidden shadow-sm">
-                <div className="border-b border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] px-4 py-3 flex items-center justify-between">
+              <Card className="w-full overflow-hidden">
+                <div className="border-b border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                    <span className="size-2.5 rounded-full bg-rose-500/80 inline-block" />
+                    <span className="size-2.5 rounded-full bg-amber-500/80 inline-block" />
+                    <span className="size-2.5 rounded-full bg-emerald-500/80 inline-block" />
                     <span className="ml-2 font-mono text-xs text-[var(--ds-gray-900)]">
                       weathernext_grid.glb
                     </span>
@@ -324,13 +318,13 @@ export default function LandingPage() {
                   />
                 </div>
 
-                <div className="p-5 flex flex-col items-center justify-center min-h-[320px]">
+                <div className="p-6 flex flex-col items-center justify-center min-h-[340px]">
                   {setupTab === "globe" ? (
                     <div className="w-full flex flex-col items-center">
                       <WeatherGlobe3D className="w-64 h-64 sm:w-72 sm:h-72" />
-                      <div className="flex items-center justify-between w-full pt-3 border-t border-[var(--ds-gray-400)] text-[11px] text-[var(--ds-gray-900)]">
+                      <div className="flex items-center justify-between w-full pt-4 border-t border-[var(--brand-border-subtle)] text-[11px] text-[var(--ds-gray-900)]">
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-[var(--ds-blue-700)] animate-ping" />
+                          <span className="size-2 rounded-full bg-[var(--ds-blue-700)] animate-ping" />
                           22 Active Forecast Stations
                         </span>
                         <span className="tabular-nums font-mono">
@@ -343,7 +337,7 @@ export default function LandingPage() {
                       <p className="text-xs text-[var(--ds-gray-900)]">
                         Run the standalone autonomous Python engine locally or on your VPS:
                       </p>
-                      <div className="relative rounded-lg bg-[var(--ds-gray-100)] p-3.5 font-mono text-xs text-[var(--geist-foreground)] border border-[var(--ds-gray-400)]">
+                      <div className="relative rounded-brand-card bg-[var(--brand-card-bg)] p-4 font-mono text-xs text-[var(--geist-foreground)] border border-[var(--brand-border-subtle)]">
                         <pre className="overflow-x-auto space-y-1">
                           <span className="text-[var(--ds-gray-500)]">
                             # 1. Install mone agent package
@@ -362,13 +356,13 @@ export default function LandingPage() {
                         </pre>
                         <button
                           onClick={copyCliCommand}
-                          className="absolute top-2.5 right-2.5 p-1.5 rounded-md border border-[var(--ds-gray-400)] bg-[var(--geist-background)] hover:bg-[var(--ds-gray-200)] text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] transition"
+                          className="absolute top-3 right-3 p-1.5 rounded-full border border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] hover:bg-[var(--ds-gray-200)] text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] transition-all duration-200"
                           title="Copy commands"
                         >
                           {copied ? (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                            <CheckCircle2 className="size-4 text-emerald-500" />
                           ) : (
-                            <Copy className="w-3.5 h-3.5" />
+                            <Copy className="size-4" />
                           )}
                         </button>
                       </div>
@@ -378,7 +372,7 @@ export default function LandingPage() {
                           onClick={() => setIsCliModalOpen(true)}
                           className="text-[var(--ds-blue-700)] hover:underline inline-flex items-center gap-1 font-medium"
                         >
-                          View complete CLI parameters <ChevronRight className="w-3 h-3" />
+                          View complete CLI parameters <ChevronRight className="size-3" />
                         </button>
                         <span>v0.1.0-prod</span>
                       </div>
@@ -393,7 +387,7 @@ export default function LandingPage() {
                           <select
                             value={provider}
                             onChange={(e) => setProvider(e.target.value)}
-                            className="w-full bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--geist-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                            className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--geist-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)]"
                           >
                             <option value="auto">WeatherNext 3 (Auto Failover)</option>
                             <option value="openmeteo">Open-Meteo Ensemble</option>
@@ -407,7 +401,7 @@ export default function LandingPage() {
                           <select
                             value={venue}
                             onChange={(e) => setVenue(e.target.value)}
-                            className="w-full bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--geist-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                            className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--geist-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)]"
                           >
                             <option value="kalshi_demo">Kalshi Demo ($1,000 Sandbox)</option>
                             <option value="kalshi">Kalshi Live (Production)</option>
@@ -422,7 +416,7 @@ export default function LandingPage() {
                           <select
                             value={mode}
                             onChange={(e) => setMode(e.target.value)}
-                            className="w-full bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--geist-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                            className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--geist-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)]"
                           >
                             <option value="autonomous">Full Autonomous</option>
                             <option value="copilot">Copilot (Manual Approval)</option>
@@ -447,16 +441,16 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Live Market Signals Showcase */}
+      {/* Live Market Signals Showcase (56px Rhythmic Pacing) */}
       <section
         id="live-signals"
-        className="py-16 border-b border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)]"
+        className="py-14 border-b border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)]/40"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-medium text-[var(--ds-blue-700)] mb-1">
-                <Radio className="w-3.5 h-3.5 animate-pulse" /> Live Ingestion Feed
+                <Radio className="size-4 animate-pulse" /> Live Ingestion Feed
               </div>
               <h2 className="font-outfit text-2xl sm:text-3xl font-bold tracking-tight text-[var(--geist-foreground)]">
                 Evaluated Market Opportunities
@@ -466,17 +460,18 @@ export default function LandingPage() {
               </p>
             </div>
             <Link href="/agent">
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                Inspect Real-Time Feed <ExternalLink className="w-3.5 h-3.5" />
+              <Button variant="outline" size="md" className="gap-1.5 text-xs">
+                Inspect Real-Time Feed <ExternalLink className="size-4" />
               </Button>
             </Link>
           </div>
 
+          {/* 16px Grid System (gap-4) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sampleStations.map((s, idx) => (
               <Card
                 key={idx}
-                className="hover:border-[var(--ds-gray-500)] transition-all bg-[var(--geist-background)]"
+                className="hover:border-[var(--brand-border)] transition-all duration-200"
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
@@ -492,7 +487,7 @@ export default function LandingPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 pt-1">
-                  <div className="grid grid-cols-2 gap-2 text-xs p-2.5 rounded-md bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] tabular-nums">
+                  <div className="grid grid-cols-2 gap-2 text-xs p-3 rounded-brand-card bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] tabular-nums">
                     <div>
                       <span className="text-[var(--ds-gray-900)] block text-[10px]">
                         WeatherNext Prob
@@ -541,9 +536,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Architecture & Bento Grid */}
-      <section id="architecture" className="py-20 border-b border-[var(--ds-gray-400)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
+      {/* Architecture & Bento Grid (56px Pacing) */}
+      <section id="architecture" className="py-14 border-b border-[var(--brand-border-subtle)]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <Badge variant="outline">Engine Architecture</Badge>
             <h2 className="font-outfit text-3xl sm:text-4xl font-bold tracking-tight text-[var(--geist-foreground)] text-balance">
@@ -554,10 +549,10 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="p-6 space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--geist-background)] flex items-center justify-center text-[var(--ds-blue-700)]">
-                <Cpu className="w-5 h-5" />
+              <div className="size-10 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] flex items-center justify-center text-[var(--ds-blue-700)]">
+                <Cpu className="size-5" />
               </div>
               <h3 className="font-outfit font-semibold text-lg text-[var(--geist-foreground)]">
                 Google WeatherNext 3
@@ -569,8 +564,8 @@ export default function LandingPage() {
             </Card>
 
             <Card className="p-6 space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--geist-background)] flex items-center justify-center text-emerald-500">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="size-10 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] flex items-center justify-center text-emerald-500">
+                <ShieldCheck className="size-5" />
               </div>
               <h3 className="font-outfit font-semibold text-lg text-[var(--geist-foreground)]">
                 Non-Custodial BYOK
@@ -582,8 +577,8 @@ export default function LandingPage() {
             </Card>
 
             <Card className="p-6 space-y-4">
-              <div className="w-10 h-10 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--geist-background)] flex items-center justify-center text-[var(--ds-blue-700)]">
-                <Activity className="w-5 h-5" />
+              <div className="size-10 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] flex items-center justify-center text-[var(--ds-blue-700)]">
+                <Activity className="size-5" />
               </div>
               <h3 className="font-outfit font-semibold text-lg text-[var(--geist-foreground)]">
                 Neatlogs Observability
@@ -593,37 +588,17 @@ export default function LandingPage() {
                 streamed via structured OpenTelemetry logs into Neatlogs.
               </p>
             </Card>
-
-            <Card
-              className="p-6 space-y-4 cursor-pointer hover:border-emerald-500/50 transition group"
-              onClick={() => setIsCliModalOpen(true)}
-            >
-              <div className="w-10 h-10 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--geist-background)] flex items-center justify-center text-amber-500 group-hover:scale-105 transition-transform">
-                <Moon className="w-5 h-5" />
-              </div>
-              <div className="flex items-center justify-between">
-                <h3 className="font-outfit font-semibold text-lg text-[var(--geist-foreground)]">
-                  24/7 Always-On
-                </h3>
-                <span className="text-[10px] bg-emerald-500/10 text-emerald-500 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">
-                  Lid Closed
-                </span>
-              </div>
-              <p className="font-satoshi text-xs text-[var(--ds-gray-900)] leading-relaxed">
-                Trade 24/7 with your laptop closed via zero-cost power settings or launch the included Docker daemon on a cloud VPS. Open positions settle safely on-exchange.
-              </p>
-            </Card>
           </div>
         </div>
       </section>
 
-      {/* Backtest Audit Section */}
+      {/* Backtest Audit Section (56px Pacing) */}
       <section
         id="backtest"
-        className="py-16 border-b border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)]"
+        className="py-14 border-b border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)]/40"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="rounded-2xl border border-[var(--ds-gray-400)] bg-[var(--geist-background)] p-8 sm:p-12">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8">
+          <Card className="p-8 sm:p-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-6 space-y-4">
                 <Badge variant="success" dot>
@@ -639,7 +614,7 @@ export default function LandingPage() {
               </div>
 
               <div className="lg:col-span-6 grid grid-cols-2 sm:grid-cols-4 gap-4 tabular-nums">
-                <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-center">
+                <div className="p-4 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] text-center shadow-brand-soft">
                   <span className="font-outfit text-2xl font-bold text-emerald-500 block">
                     76.8%
                   </span>
@@ -647,7 +622,7 @@ export default function LandingPage() {
                     Win Rate
                   </span>
                 </div>
-                <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-center">
+                <div className="p-4 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] text-center shadow-brand-soft">
                   <span className="font-outfit text-2xl font-bold text-[var(--geist-foreground)] block">
                     2.41
                   </span>
@@ -655,7 +630,7 @@ export default function LandingPage() {
                     Sharpe Ratio
                   </span>
                 </div>
-                <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-center">
+                <div className="p-4 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] text-center shadow-brand-soft">
                   <span className="font-outfit text-2xl font-bold text-[var(--geist-foreground)] block">
                     6.2%
                   </span>
@@ -663,7 +638,7 @@ export default function LandingPage() {
                     Max Drawdown
                   </span>
                 </div>
-                <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-center">
+                <div className="p-4 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] text-center shadow-brand-soft">
                   <span className="font-outfit text-2xl font-bold text-[var(--ds-blue-700)] block">
                     +48.6%
                   </span>
@@ -673,13 +648,13 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
-      {/* Pricing Section (Native USDC) */}
-      <section id="pricing" className="py-20 border-b border-[var(--ds-gray-400)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12">
+      {/* Pricing Section (56px Pacing) */}
+      <section id="pricing" className="py-14 border-b border-[var(--brand-border-subtle)]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <Badge variant="blue">Native USDC Settlement</Badge>
             <h2 className="font-outfit text-3xl sm:text-4xl font-bold tracking-tight text-[var(--geist-foreground)]">
@@ -690,7 +665,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {/* Tier 1 */}
             <Card className="p-6 space-y-6 flex flex-col justify-between">
               <div className="space-y-4">
@@ -710,15 +685,15 @@ export default function LandingPage() {
                 </div>
                 <ul className="text-xs text-[var(--ds-gray-900)] space-y-2 pt-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>100 Automated Strategy Runs</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>WeatherNext 3 Multi-Station Ingestion</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>Full CLI and Web Dashboard Access</span>
                   </li>
                 </ul>
@@ -757,16 +732,16 @@ export default function LandingPage() {
                 </div>
                 <ul className="text-xs text-[var(--ds-gray-900)] space-y-2 pt-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>300 Automated Strategy Runs</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>Priority Ensemble Compute Queue</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    <span>Both Kalshi & Polymarket Routing</span>
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                    <span>Both Kalshi &amp; Polymarket Routing</span>
                   </li>
                 </ul>
               </div>
@@ -799,16 +774,16 @@ export default function LandingPage() {
                 </div>
                 <ul className="text-xs text-[var(--ds-gray-900)] space-y-2 pt-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>Unlimited Autonomous Executions</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                     <span>30-Day Pass (Early renewals stack)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    <span>Telegram & Webhook Instant Signals</span>
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                    <span>Telegram &amp; Webhook Instant Signals</span>
                   </li>
                 </ul>
               </div>
@@ -825,9 +800,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Minimalist Vercel Footer */}
-      <footer className="py-12 border-t border-[var(--ds-gray-400)] bg-[var(--geist-background)] text-xs text-[var(--ds-gray-900)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Minimalist Footer */}
+      <footer className="py-12 border-t border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] text-xs text-[var(--ds-gray-900)]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <BrandLogo size="sm" />
             <span>&copy; 2026 mone. Precision prediction market infrastructure.</span>
@@ -836,13 +811,13 @@ export default function LandingPage() {
           <div className="flex items-center gap-6">
             <button
               onClick={() => setIsCliModalOpen(true)}
-              className="hover:text-[var(--geist-foreground)] transition"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
             >
               CLI Setup
             </button>
             <button
               onClick={() => setIsPricingOpen(true)}
-              className="hover:text-[var(--geist-foreground)] transition"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
             >
               USDC Deposit
             </button>
@@ -850,12 +825,12 @@ export default function LandingPage() {
               href="https://github.com/xcjohnmark/mone"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-[var(--geist-foreground)] transition"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
             >
               GitHub
             </a>
             <span className="flex items-center gap-1.5 text-emerald-500 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               All Systems Operational
             </span>
           </div>

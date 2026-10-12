@@ -375,15 +375,15 @@ function AgentDashboardContent() {
 
   return (
     <div className="min-h-screen bg-[var(--geist-background)] text-[var(--geist-foreground)] font-satoshi flex flex-col selection:bg-[var(--geist-selection)]">
-      {/* Top Header & Master Control Bar */}
-      <header className="sticky top-0 z-40 border-b border-[var(--ds-gray-400)] bg-[var(--geist-background)]/85 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      {/* 80px Top Navigation Bar (Glider Blueprint Standard) */}
+      <header className="sticky top-0 z-40 border-b border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] backdrop-blur-md transition-all duration-200">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-[80px] flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <BrandLogo size="md" href="/agent" />
-            <div className="h-5 w-px bg-[var(--ds-gray-400)] hidden sm:block" />
+            <div className="h-6 w-px bg-[var(--brand-border-subtle)] hidden sm:block" />
 
             {/* Master Agent Power Toggle */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)]">
+            <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft">
               <Switch
                 checked={isAgentActive}
                 onCheckedChange={setIsAgentActive}
@@ -392,7 +392,7 @@ function AgentDashboardContent() {
               />
               <span className="text-xs font-semibold font-satoshi flex items-center gap-1.5">
                 <span
-                  className={`w-2 h-2 rounded-full ${
+                  className={`size-2 rounded-full ${
                     isAgentActive
                       ? "bg-emerald-500 animate-pulse"
                       : "bg-[var(--ds-gray-500)]"
@@ -403,7 +403,7 @@ function AgentDashboardContent() {
             </div>
 
             {/* Autonomy Switch */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)]">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft">
               <span className="text-xs text-[var(--ds-gray-900)]">Mode:</span>
               <button
                 onClick={() =>
@@ -411,9 +411,9 @@ function AgentDashboardContent() {
                     prev === "AUTONOMOUS" ? "COPILOT" : "AUTONOMOUS"
                   )
                 }
-                className={`text-xs font-semibold px-2 py-0.5 rounded transition ${
+                className={`text-xs font-semibold px-2.5 py-1 rounded-brand-card transition-all duration-200 ${
                   autonomyMode === "AUTONOMOUS"
-                    ? "bg-[var(--ds-blue-700)] text-white"
+                    ? "bg-[var(--ds-blue-700)] text-white shadow-sm"
                     : "bg-[var(--ds-gray-200)] text-[var(--geist-foreground)]"
                 }`}
               >
@@ -423,12 +423,12 @@ function AgentDashboardContent() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* 6-Day Date Dropdown Selector */}
+            {/* 40px Standard Height Date Dropdown */}
             <div className="relative">
               <select
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="appearance-none bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] text-[var(--geist-foreground)] text-xs font-medium rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)] cursor-pointer"
+                className="appearance-none bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] text-[var(--geist-foreground)] text-xs font-medium rounded-brand-card pl-3 pr-8 h-10 focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)] cursor-pointer shadow-brand-soft transition-all duration-200 hover:border-[var(--brand-border)]"
               >
                 {AVAILABLE_DATES.map((d) => (
                   <option key={d.value} value={d.value}>
@@ -436,15 +436,15 @@ function AgentDashboardContent() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-3.5 h-3.5 text-[var(--ds-gray-900)] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="size-3.5 text-[var(--ds-gray-900)] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
             <ThemeToggle />
 
             {/* User Plan Pill */}
             {user && (
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft text-xs">
+                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="font-semibold text-[var(--geist-foreground)]">
                   {user.plan}
                 </span>
@@ -465,35 +465,35 @@ function AgentDashboardContent() {
               title="Sign Out"
               aria-label="Sign Out"
             >
-              <LogOut className="w-3.5 h-3.5 text-[var(--ds-gray-900)]" />
+              <LogOut className="size-4 text-[var(--ds-gray-900)]" />
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full space-y-6">
+      {/* Main Container (1440px Max Width with 16px Grid System) */}
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-8 py-8 flex-1 w-full space-y-6">
         {/* Early Exit Notification Banner */}
         {exitNotification && (
-          <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs flex items-center justify-between">
+          <div className="p-4 rounded-brand-card border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs flex items-center justify-between shadow-brand-soft">
             <span className="flex items-center gap-2">
-              <Check className="w-4 h-4 shrink-0" />
+              <Check className="size-4 shrink-0" />
               <span>{exitNotification}</span>
             </span>
             <button
               onClick={() => setExitNotification(null)}
-              className="text-emerald-500 hover:text-emerald-400"
+              className="text-emerald-500 hover:text-emerald-400 p-1"
             >
-              <X className="w-4 h-4" />
+              <X className="size-4" />
             </button>
           </div>
         )}
 
         {/* Venue Collateral Awareness Alert */}
         {isLowCollateral && (
-          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-start sm:items-center gap-2.5">
-              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 sm:mt-0" />
+          <div className="p-4 rounded-brand-card border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-brand-soft">
+            <div className="flex items-start sm:items-center gap-3">
+              <AlertTriangle className="size-5 shrink-0 mt-0.5 sm:mt-0" />
               <div>
                 <span className="font-semibold block sm:inline font-outfit">
                   INSUFFICIENT VENUE COLLATERAL:{" "}
@@ -517,7 +517,7 @@ function AgentDashboardContent() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <Button variant="default" size="sm" className="text-xs bg-amber-500 text-black hover:bg-amber-400">
+                <Button variant="default" size="md" className="text-xs bg-amber-500 text-black hover:bg-amber-400 font-semibold">
                   Deposit Collateral
                 </Button>
               </a>
@@ -525,12 +525,12 @@ function AgentDashboardContent() {
           </div>
         )}
 
-        {/* 4 Metric KPI Cards */}
+        {/* 4 Metric KPI Cards (16px Grid Rhythm) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 tabular-nums">
           <Card className="p-4">
             <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
               <span>Venue Balance</span>
-              <DollarSign className="w-3.5 h-3.5" />
+              <DollarSign className="size-4" />
             </div>
             <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
               ${venueBalance.toFixed(2)}
@@ -543,7 +543,7 @@ function AgentDashboardContent() {
           <Card className="p-4">
             <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
               <span>Realized Day PnL</span>
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+              <TrendingUp className="size-4 text-emerald-500" />
             </div>
             <div className="font-outfit text-2xl font-bold text-emerald-500">
               +$28.76
@@ -556,7 +556,7 @@ function AgentDashboardContent() {
           <Card className="p-4">
             <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
               <span>Audited Win Rate</span>
-              <Activity className="w-3.5 h-3.5 text-[var(--ds-blue-700)]" />
+              <Activity className="size-4 text-[var(--ds-blue-700)]" />
             </div>
             <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
               76.8%
@@ -569,7 +569,7 @@ function AgentDashboardContent() {
           <Card className="p-4">
             <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
               <span>Remaining Runs</span>
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <Sparkles className="size-4 text-amber-500" />
             </div>
             <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
               {user?.plan === "Pro"
@@ -588,7 +588,7 @@ function AgentDashboardContent() {
         </div>
 
         {/* Segmented Control Navigation */}
-        <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-3">
+        <div className="flex items-center justify-between border-b border-[var(--brand-border-subtle)] pb-4">
           <Tabs
             size="md"
             value={activeTab}
@@ -600,7 +600,7 @@ function AgentDashboardContent() {
                 id: "opportunities",
                 label: (
                   <span className="flex items-center gap-2">
-                    <Activity className="w-3.5 h-3.5" />
+                    <Activity className="size-4" />
                     Curated Daily Signals ({opportunities.length})
                   </span>
                 ),
@@ -609,7 +609,7 @@ function AgentDashboardContent() {
                 id: "positions",
                 label: (
                   <span className="flex items-center gap-2">
-                    <Layers className="w-3.5 h-3.5" />
+                    <Layers className="size-4" />
                     Active Positions (
                     {positions.filter((p) => p.status === "OPEN").length})
                   </span>
@@ -619,8 +619,8 @@ function AgentDashboardContent() {
                 id: "settings",
                 label: (
                   <span className="flex items-center gap-2">
-                    <Settings className="w-3.5 h-3.5" />
-                    Settings & Danger Zone
+                    <Settings className="size-4" />
+                    Settings &amp; Danger Zone
                   </span>
                 ),
               },
@@ -646,7 +646,7 @@ function AgentDashboardContent() {
               {opportunities.map((opp) => (
                 <Card
                   key={opp.id}
-                  className="p-5 space-y-4 hover:border-[var(--ds-gray-500)] transition"
+                  className="p-5 space-y-4 hover:border-[var(--brand-border)] transition-all duration-200"
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -681,7 +681,7 @@ function AgentDashboardContent() {
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-[var(--geist-background)] border border-[var(--ds-gray-400)] text-xs tabular-nums">
+                  <div className="grid grid-cols-3 gap-2 p-3 rounded-brand-card bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] text-xs tabular-nums">
                     <div>
                       <span className="text-[var(--ds-gray-900)] block text-[10px]">
                         WeatherNext Prob
@@ -721,7 +721,7 @@ function AgentDashboardContent() {
                     {opp.reason}
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-[var(--ds-gray-400)] text-xs tabular-nums">
+                  <div className="flex items-center justify-between pt-3 border-t border-[var(--brand-border-subtle)] text-xs tabular-nums">
                     <span className="text-[var(--ds-gray-900)]">
                       Capital Allocation:{" "}
                       <strong className="text-[var(--geist-foreground)]">
@@ -760,28 +760,28 @@ function AgentDashboardContent() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] overflow-hidden">
+            <div className="rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md overflow-hidden shadow-brand-soft">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs tabular-nums">
-                  <thead className="bg-[var(--geist-background)] border-b border-[var(--ds-gray-400)] text-[var(--ds-gray-900)]">
+                  <thead className="bg-[var(--brand-glass)] border-b border-[var(--brand-border-subtle)] text-[var(--ds-gray-900)]">
                     <tr>
-                      <th className="p-3.5 font-medium">Market / Station</th>
-                      <th className="p-3.5 font-medium">Side</th>
-                      <th className="p-3.5 font-medium">Contracts</th>
-                      <th className="p-3.5 font-medium">Entry Price</th>
-                      <th className="p-3.5 font-medium">Current Bid</th>
-                      <th className="p-3.5 font-medium">Invested</th>
-                      <th className="p-3.5 font-medium">Unrealized PnL</th>
-                      <th className="p-3.5 font-medium text-right">Early Exit</th>
+                      <th className="p-4 font-medium">Market / Station</th>
+                      <th className="p-4 font-medium">Side</th>
+                      <th className="p-4 font-medium">Contracts</th>
+                      <th className="p-4 font-medium">Entry Price</th>
+                      <th className="p-4 font-medium">Current Bid</th>
+                      <th className="p-4 font-medium">Invested</th>
+                      <th className="p-4 font-medium">Unrealized PnL</th>
+                      <th className="p-4 font-medium text-right">Early Exit</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[var(--ds-gray-400)]">
+                  <tbody className="divide-y divide-[var(--brand-border-subtle)]">
                     {positions.map((pos) => (
                       <tr
                         key={pos.id}
-                        className="hover:bg-[var(--geist-background)]/50 transition"
+                        className="hover:bg-[var(--ds-gray-200)]/40 transition-colors duration-200"
                       >
-                        <td className="p-3.5">
+                        <td className="p-4">
                           <span className="font-semibold text-[var(--geist-foreground)] block">
                             {pos.city}
                           </span>
@@ -789,7 +789,7 @@ function AgentDashboardContent() {
                             {pos.market_id}
                           </span>
                         </td>
-                        <td className="p-3.5">
+                        <td className="p-4">
                           <Badge
                             variant={pos.side === "YES" ? "success" : "warning"}
                             className="font-bold text-[10px]"
@@ -797,13 +797,13 @@ function AgentDashboardContent() {
                             {pos.side}
                           </Badge>
                         </td>
-                        <td className="p-3.5 font-medium">{pos.contracts}</td>
-                        <td className="p-3.5">${pos.entry_price.toFixed(2)}</td>
-                        <td className="p-3.5 font-semibold text-[var(--ds-blue-700)]">
+                        <td className="p-4 font-medium">{pos.contracts}</td>
+                        <td className="p-4">${pos.entry_price.toFixed(2)}</td>
+                        <td className="p-4 font-semibold text-[var(--ds-blue-700)]">
                           ${pos.current_bid.toFixed(2)}
                         </td>
-                        <td className="p-3.5">${pos.total_invested.toFixed(2)}</td>
-                        <td className="p-3.5">
+                        <td className="p-4">${pos.total_invested.toFixed(2)}</td>
+                        <td className="p-4">
                           <span
                             className={`font-semibold ${
                               pos.unrealized_pnl >= 0
@@ -817,11 +817,11 @@ function AgentDashboardContent() {
                             {pos.unrealized_pct.toFixed(1)}%)
                           </span>
                         </td>
-                        <td className="p-3.5 text-right">
+                        <td className="p-4 text-right">
                           {pos.status === "OPEN" ? (
                             <Button
                               variant="default"
-                              size="sm"
+                              size="md"
                               onClick={() => setEarlyExitPosition(pos)}
                               className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
                             >
@@ -859,7 +859,7 @@ function AgentDashboardContent() {
                     type="number"
                     value={capitalPerTrade}
                     onChange={(e) => setCapitalPerTrade(parseFloat(e.target.value) || 10)}
-                    className="w-full bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--geist-foreground)] focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                    className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--geist-foreground)] focus:ring-1 focus:ring-[var(--ds-focus-color)]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -870,7 +870,7 @@ function AgentDashboardContent() {
                     type="text"
                     defaultValue="$50.00 max daily drawdown"
                     disabled
-                    className="w-full bg-[var(--ds-gray-200)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--ds-gray-900)] cursor-not-allowed"
+                    className="w-full h-10 bg-[var(--ds-gray-200)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--ds-gray-900)] cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -879,7 +879,7 @@ function AgentDashboardContent() {
             {/* Danger Zone: Account Deletion */}
             <Card className="p-6 border-rose-500/30 bg-rose-500/5 space-y-4">
               <div className="flex items-center gap-2 text-rose-500">
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="size-5" />
                 <h3 className="font-outfit text-base font-bold">
                   Danger Zone: Account Deletion
                 </h3>
@@ -887,12 +887,12 @@ function AgentDashboardContent() {
               <p className="font-satoshi text-xs text-[var(--ds-gray-900)] leading-relaxed">
                 Permanently delete your account, session records, and API credentials from the system.
               </p>
-              <div className="p-3 rounded-lg border border-rose-500/20 bg-rose-500/10 text-xs text-rose-500 font-medium">
+              <div className="p-3.5 rounded-brand-card border border-rose-500/20 bg-rose-500/10 text-xs text-rose-500 font-medium">
                 ⚠️ Strict Non-Refundable Crypto Policy: Decentralized USDC payments and remaining plan runs are final and non-refundable upon account deletion.
               </div>
               <Button
                 variant="destructive"
-                size="sm"
+                size="md"
                 onClick={() => setIsDeleteModalOpen(true)}
                 className="text-xs font-semibold"
               >
@@ -905,17 +905,17 @@ function AgentDashboardContent() {
 
       {/* Take Profit Early Modal */}
       {earlyExitPosition && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--geist-background)] border-[var(--ds-gray-400)] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--brand-glass)] border-[var(--brand-border)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--brand-border-subtle)] pb-3">
               <h3 className="font-outfit font-bold text-lg text-[var(--geist-foreground)]">
                 Take Profit Early
               </h3>
               <button
                 onClick={() => setEarlyExitPosition(null)}
-                className="text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)]"
+                className="text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] p-1 rounded-full"
               >
-                <X className="w-4 h-4" />
+                <X className="size-4" />
               </button>
             </div>
 
@@ -923,7 +923,7 @@ function AgentDashboardContent() {
               Sell your active position back to the market order book at current bid to lock in gains before settlement:
             </p>
 
-            <div className="p-3.5 rounded-lg bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] space-y-2 text-xs tabular-nums">
+            <div className="p-4 rounded-brand-card bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] space-y-2 text-xs tabular-nums">
               <div className="flex justify-between">
                 <span className="text-[var(--ds-gray-900)]">Market:</span>
                 <span className="font-semibold text-[var(--geist-foreground)]">
@@ -944,7 +944,7 @@ function AgentDashboardContent() {
                   ${earlyExitPosition.current_bid.toFixed(2)}
                 </span>
               </div>
-              <div className="border-t border-[var(--ds-gray-400)] pt-2 flex justify-between font-bold text-emerald-500">
+              <div className="border-t border-[var(--brand-border-subtle)] pt-2 flex justify-between font-bold text-emerald-500">
                 <span>Net Gain to Lock:</span>
                 <span>
                   +${earlyExitPosition.unrealized_pnl.toFixed(2)} (+
@@ -956,14 +956,14 @@ function AgentDashboardContent() {
             <div className="flex items-center justify-end gap-3 pt-2">
               <Button
                 variant="outline"
-                size="sm"
+                size="md"
                 onClick={() => setEarlyExitPosition(null)}
               >
                 Cancel
               </Button>
               <Button
                 variant="default"
-                size="sm"
+                size="md"
                 isLoading={isExitSubmitting}
                 onClick={handleTakeProfitEarly}
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
@@ -977,20 +977,20 @@ function AgentDashboardContent() {
 
       {/* Account Deletion Modal */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--geist-background)] border-rose-500/40 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--brand-glass)] border-rose-500/40 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--brand-border-subtle)] pb-3">
               <div className="flex items-center gap-2 text-rose-500">
-                <AlertTriangle className="w-5 h-5" />
+                <AlertTriangle className="size-5" />
                 <h3 className="font-outfit font-bold text-lg">
                   Confirm Account Deletion
                 </h3>
               </div>
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)]"
+                className="text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] p-1 rounded-full"
               >
-                <X className="w-4 h-4" />
+                <X className="size-4" />
               </button>
             </div>
 
@@ -998,7 +998,7 @@ function AgentDashboardContent() {
               <p>
                 This action is irreversible. All stored venue credentials, session states, and trade records will be permanently wiped.
               </p>
-              <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-500 font-semibold leading-relaxed">
+              <div className="p-3.5 rounded-brand-card border border-rose-500/30 bg-rose-500/10 text-rose-500 font-semibold leading-relaxed">
                 ⚠️ NON-REFUNDABLE POLICY: Any remaining USDC subscription time or run passes are permanently forfeit and cannot be refunded.
               </div>
               <p>
@@ -1009,21 +1009,21 @@ function AgentDashboardContent() {
                 value={deleteConfirmationText}
                 onChange={(e) => setDeleteConfirmationText(e.target.value)}
                 placeholder="DELETE"
-                className="w-full bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] rounded-md px-3 py-2 text-sm text-[var(--geist-foreground)] font-mono focus:ring-1 focus:ring-rose-500"
+                className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-sm text-[var(--geist-foreground)] font-mono focus:ring-1 focus:ring-rose-500"
               />
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
               <Button
                 variant="outline"
-                size="sm"
+                size="md"
                 onClick={() => setIsDeleteModalOpen(false)}
               >
                 Cancel
               </Button>
               <Button
                 variant="destructive"
-                size="sm"
+                size="md"
                 disabled={deleteConfirmationText !== "DELETE"}
                 isLoading={isDeleting}
                 onClick={handleDeleteAccount}

@@ -27,8 +27,8 @@ export function OnboardingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <Card className="bg-[var(--geist-background)] border-[var(--ds-gray-400)] rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <Card className="bg-[var(--brand-glass)] border-[var(--brand-border)] rounded-brand-card max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center backdrop-blur-md">
         <div className="mx-auto w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
           <Sparkles className="w-6 h-6" />
         </div>

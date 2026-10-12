@@ -15,9 +15,9 @@ export function BrandLogo({
   size?: "sm" | "md" | "lg";
 }) {
   const iconSizes = {
-    sm: "w-6 h-6",
-    md: "w-7 h-7",
-    lg: "w-9 h-9",
+    sm: "size-7",
+    md: "size-9",
+    lg: "size-11",
   };
 
   const textSizes = {
@@ -30,21 +30,21 @@ export function BrandLogo({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-2.5 group select-none transition-opacity hover:opacity-90",
+        "inline-flex items-center gap-3 group select-none transition-opacity duration-200 hover:opacity-90",
         className
       )}
     >
       <div
         className={cn(
-          "relative rounded-md overflow-hidden border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] flex items-center justify-center shrink-0 shadow-sm",
+          "relative rounded-brand-card overflow-hidden border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md flex items-center justify-center shrink-0 shadow-brand-soft group-hover:border-[var(--brand-border)] transition-all duration-200",
           iconSizes[size]
         )}
       >
         <Image
           src="/logo.png"
           alt="mone logo"
-          width={36}
-          height={36}
+          width={38}
+          height={38}
           priority
           className="object-contain"
         />

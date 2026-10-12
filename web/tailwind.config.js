@@ -9,9 +9,29 @@ module.exports = {
   ],
   theme: {
     extend: {
+      borderRadius: {
+        DEFAULT: "6px",
+        "brand-card": "0.5rem", // 8px Glider standard
+      },
+      boxShadow: {
+        "brand-soft":
+          "0px 0px 6px rgba(0,0,0,0.02), 0px 2px 2px rgba(0,0,0,0.04)",
+        "brand-glass": "0 8px 32px 0 rgba(0, 0, 0, 0.08)",
+      },
+      spacing: {
+        "header-h": "80px",
+        "touch-target": "48px",
+      },
+      maxWidth: {
+        "brand-container": "1440px",
+        "brand-utility": "400px",
+      },
       colors: {
         background: "var(--geist-background)",
         foreground: "var(--geist-foreground)",
+        "brand-border": "var(--brand-border)",
+        "brand-border-subtle": "var(--brand-border-subtle)",
+        "brand-glass": "var(--brand-glass)",
         "ds-gray": {
           100: "var(--ds-gray-100)",
           200: "var(--ds-gray-200)",
@@ -44,8 +64,11 @@ module.exports = {
           "monospace",
         ],
       },
-      borderRadius: {
-        DEFAULT: "6px",
+      transitionTimingFunction: {
+        "brand-ease": "ease-in-out",
+      },
+      transitionDuration: {
+        "brand-speed": "200ms",
       },
     },
   },

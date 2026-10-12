@@ -26,7 +26,7 @@ export function Tabs({
   return (
     <div
       className={cn(
-        "inline-flex p-1 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] gap-1",
+        "inline-flex p-1 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md gap-1 shadow-brand-soft",
         className
       )}
     >
@@ -38,13 +38,13 @@ export function Tabs({
             type="button"
             onClick={() => onValueChange(tab.id)}
             className={cn(
-              "rounded-md font-satoshi font-medium transition-all duration-150 select-none text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-focus-color)]",
+              "rounded-brand-card font-satoshi font-medium transition-all duration-200 ease-in-out select-none text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-focus-color)]",
               size === "sm"
-                ? "text-xs px-2.5 py-1"
-                : "text-sm px-3.5 py-1.5",
+                ? "text-xs px-3 py-1.5"
+                : "text-xs sm:text-sm px-4 py-2",
               isActive
-                ? "bg-[var(--geist-background)] text-[var(--geist-foreground)] shadow-sm font-semibold"
-                : "text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--ds-gray-200)]"
+                ? "bg-[var(--geist-background)] text-[var(--geist-foreground)] shadow-sm font-semibold border border-[var(--brand-border-subtle)]"
+                : "text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--ds-gray-200)]/60"
             )}
           >
             {tab.label}

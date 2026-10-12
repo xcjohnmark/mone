@@ -208,18 +208,18 @@ export function PricingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
-      <Card className="bg-[var(--geist-background)] border-[var(--ds-gray-400)] rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
+      <Card className="bg-[var(--brand-glass)] border-[var(--brand-border)] rounded-brand-card max-w-4xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8 backdrop-blur-md">
         {/* Close Button */}
         <button
           onClick={() => {
             setSelectedPlan(null);
             setIsPricingOpen(false);
           }}
-          className="absolute top-5 right-5 text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] p-1.5 rounded-lg hover:bg-[var(--ds-gray-100)] transition"
+          className="absolute top-5 right-5 text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] size-8 rounded-full hover:bg-[var(--ds-gray-200)] flex items-center justify-center transition-all duration-200"
           aria-label="Close"
         >
-          <X className="w-5 h-5" />
+          <X className="size-4" />
         </button>
 
         {!selectedPlan ? (

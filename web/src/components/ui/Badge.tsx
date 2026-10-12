@@ -24,11 +24,11 @@ export function Badge({
 }: BadgeProps) {
   const variants = {
     default:
-      "bg-[var(--ds-gray-200)] text-[var(--geist-foreground)] border border-[var(--ds-gray-400)]",
+      "bg-[var(--ds-gray-200)] text-[var(--geist-foreground)] border border-[var(--brand-border-subtle)]",
     secondary:
-      "bg-[var(--ds-gray-100)] text-[var(--ds-gray-900)] border border-[var(--ds-gray-400)]",
+      "bg-[var(--ds-gray-100)] text-[var(--ds-gray-900)] border border-[var(--brand-border-subtle)]",
     outline:
-      "bg-transparent text-[var(--ds-gray-900)] border border-[var(--ds-gray-400)]",
+      "bg-transparent text-[var(--ds-gray-900)] border border-[var(--brand-border-subtle)]",
     success:
       "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
     warning:
@@ -36,7 +36,7 @@ export function Badge({
     error:
       "bg-rose-500/10 text-rose-500 border border-rose-500/20",
     blue:
-      "bg-[var(--ds-blue-700)]/10 text-[var(--ds-blue-700)] border border-[var(--ds-blue-700)]/20",
+      "bg-[var(--ds-blue-700)]/10 text-[var(--ds-blue-700)] border border-[var(--brand-border)]",
   };
 
   const dotColors = {
@@ -52,7 +52,7 @@ export function Badge({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium font-satoshi transition-colors select-none",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium font-satoshi transition-all duration-200 ease-in-out select-none",
         variants[variant],
         className
       )}
@@ -61,7 +61,7 @@ export function Badge({
       {dot && (
         <span
           className={cn(
-            "w-1.5 h-1.5 rounded-full animate-pulse",
+            "size-1.5 rounded-full animate-pulse",
             dotColors[variant]
           )}
         />
