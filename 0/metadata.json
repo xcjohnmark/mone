@@ -1,0 +1,101 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4QQJ6B3SZ68HV3CT0Q9D0VD",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T09:37:09.5713502Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "web/src/app/agent/page.tsx",
+    "web/src/app/globals.css",
+    "web/src/app/layout.tsx",
+    "web/src/app/page.tsx",
+    "web/src/components/CliSetupModal.tsx",
+    "web/src/components/OnboardingModal.tsx",
+    "web/src/components/PricingModal.tsx",
+    "web/src/components/ui/Badge.tsx",
+    "web/src/components/ui/BrandLogo.tsx",
+    "web/src/components/ui/Button.tsx",
+    "web/src/components/ui/Card.tsx",
+    "web/src/components/ui/Switch.tsx",
+    "web/src/components/ui/Tabs.tsx",
+    "web/src/components/ui/ThemeToggle.tsx",
+    "web/src/components/ui/WeatherGlobe3D.tsx",
+    "web/src/context/ThemeContext.tsx",
+    "web/src/lib/utils.ts",
+    "web/tailwind.config.js"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "c1a0b47be402",
+  "checkpoint_transcript_start": 1140,
+  "transcript_lines_at_start": 1140,
+  "token_usage": {
+    "input_tokens": 62237,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 4029866,
+    "output_tokens": 16428,
+    "api_call_count": 71
+  },
+  "session_metrics": {
+    "turn_count": 19
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T09:37:09.4562784Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 1865,
+    "total_committed": 0,
+    "total_lines_changed": 1867,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 2695,
+      "user_lines_removed": 1865,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "web/package-lock.json": 29,
+        "web/package.json": 4,
+        "web/public/mone-wordmark-dark.svg": 3,
+        "web/public/mone-wordmark-light.svg": 3,
+        "web/src/app/agent/page.tsx": 728,
+        "web/src/app/globals.css": 86,
+        "web/src/app/layout.tsx": 71,
+        "web/src/app/page.tsx": 623,
+        "web/src/components/CliSetupModal.tsx": 160,
+        "web/src/components/OnboardingModal.tsx": 38,
+        "web/src/components/PricingModal.tsx": 274,
+        "web/src/components/ui/Badge.tsx": 72,
+        "web/src/components/ui/BrandLogo.tsx": 65,
+        "web/src/components/ui/Button.tsx": 92,
+        "web/src/components/ui/Card.tsx": 100,
+        "web/src/components/ui/Switch.tsx": 51,
+        "web/src/components/ui/Tabs.tsx": 56,
+        "web/src/components/ui/ThemeToggle.tsx": 36,
+        "web/src/components/ui/WeatherGlobe3D.tsx": 82,
+        "web/src/context/ThemeContext.tsx": 80,
+        "web/src/lib/utils.ts": 6,
+        "web/tailwind.config.js": 36
+      },
+      "user_removed_per_file": {
+        "web/package-lock.json": 1,
+        "web/package.json": 1,
+        "web/src/app/agent/page.tsx": 898,
+        "web/src/app/globals.css": 9,
+        "web/src/app/layout.tsx": 9,
+        "web/src/app/page.tsx": 432,
+        "web/src/components/CliSetupModal.tsx": 225,
+        "web/src/components/OnboardingModal.tsx": 26,
+        "web/src/components/PricingModal.tsx": 261,
+        "web/tailwind.config.js": 3
+      }
+    }
+  ]
+}

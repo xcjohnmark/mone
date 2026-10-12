@@ -1,0 +1,59 @@
+It is time to work on the project UI. Our primary ui inspiration is vercel.com. We are following the light and dark theme design system of vercel and replicating in mone. that is the primary context of color. now the ext thing is fonts. our website should follow a 2 font system, Outfit and Satoshi. Outfit for the Mone wordmark and Headings and large texts. Satoshi for the smaller texts and buttons. Then the next thing is components. We are getting all our components from https://reui.io/components. and also to use and execute all these design changes you'll need skills from https://www.ui-skills.com/skills. make sure to pick and apply skills from ui, typography, color, interaction, motion, 3d, frontend and framework skills categories. inspect each skill, tailor it's use to the project and the change we want to make to the website design. also note that all changes would be across the website and dashboard. the goal is to creat a light and dark theme minimalistic website and dashboard. no complexities, but still having a smooth and intuitive experience. since we are following vercel.com color pallette, here goes an instruction to follow it strictly: ## Color Design System Analysis: Vercel (Geist)
+
+**Context**
+Comprehensive extraction of the Vercel design system's color palette, including core backgrounds, typography, systematic gray/blue scales, and semantic UI states.
+
+**Diagnostics**
+The system utilizes a tokenized approach with HSL-based scales (100–1000) to maintain consistent lightness and saturation across themes.
+
+| Category | Token Name | Value (Dark Mode) |
+| :--- | :--- | :--- |
+| **Background** | `--geist-background` | `#000` |
+| **Text** | `--geist-foreground` | `#fff` |
+| **Selection** | `--geist-selection` | `hsla(0, 0%, 93%, 1)` |
+| **Border** | `--ds-gray-400` | `hsla(0, 0%, 18%, 1)` |
+| **Link/Hover** | `--ds-blue-900` | `hsla(210, 100%, 66%, 1)` |
+| **Success** | `--geist-success` | `#0070f3` |
+| **Warning** | `--geist-warning` | `#f5a623` |
+| **Error** | `--geist-error` | `red` / `#ff0000` |
+
+**Actionable Findings**
+*   **Gray Scale:** Use `hsla(0, 0%, 63%, 1)` (`--ds-gray-900`) for secondary text and `hsla(0, 0%, 10%, 1)` (`--ds-gray-100`) for subtle surface offsets.
+*   **Blue Scale:** Use `hsla(212, 100%, 48%, 1)` (`--ds-blue-700`) for primary actions and focus indicators.
+*   **Theming Logic:** The design system relies on CSS variables that swap values between light and dark modes. Ensure variables like `--accents-1` are used for relative shading rather than hardcoded hex values.
+
+**Code Guidance**
+The following CSS variables were identified as the core tokens for replicating the design system's current state:
+
+
+`````css
+/* Core tokens for a Geist-inspired Dark Mode implementation */
+:root {
+  --geist-background: #000;
+  --geist-foreground: #fff;
+  
+  /* Gray Scale */
+  --ds-gray-100: hsla(0, 0%, 10%, 1);
+  --ds-gray-400: hsla(0, 0%, 18%, 1);
+  --ds-gray-900: hsla(0, 0%, 63%, 1);
+  
+  /* Primary Accent */
+  --ds-blue-700: hsla(212, 100%, 48%, 1);
+  --ds-blue-900: hsla(210, 100%, 66%, 1);
+  
+  /* Semantic UI */
+  --geist-success: #0070f3;
+  --geist-error: #ee0000;
+  --geist-warning: #f5a623;
+  
+  /* Interactive States */
+  --ds-focus-color: var(--ds-blue-900);
+  --geist-selection: hsla(0, 0%, 93%, 1);
+}
+`````
+
+*Note: The code fixes and findings above were identified on a live page in DevTools. When applying them to your codebase, please adapt them to your project's specific technical stack (e.g., Tailwind CSS classes, CSS modules, framework components) rather than applying them as literal CSS overrides.* also if you need to install fonts, use /browser to search for the right font packs and download them. also make good use of the ui-skills.com and reui.io/components for all our website components. create a full /plan to do all this with detailed instruction of how you would work implement each task for these full ui-redesign. now also note that the C:\Users\ADMIN\Documents\mone\logo is now the new logo of mone, while the others are just wordmarks, so the topleft bar should have the logo then the wordmark. make sure you adhere to the color rules, font rukles and components and skills rules. we are aiming for minimalist. create a full /plan first./plan
+
+---
+
+proceed.
