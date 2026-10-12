@@ -1,0 +1,21 @@
+Access blocked: Authorization Error
+
+accessjohnmark@gmail.com
+
+You can't sign in to this app because it doesn't comply with Google's OAuth 2.0 policy.
+
+If you're the app developer, register the JavaScript origin in the Google Cloud Console.
+Learn more about this error
+If you are a developer of this app, see error details.
+Error 400: origin_mismatch
+
+why this error tried signin from a user account and i got this error, what is wrong? check our oauth implementations and integrations confirm everything is working fine. Access blocked: Authorization Error
+
+accessjohnmark@gmail.com
+
+You can't sign in to this app because it doesn't comply with Google's OAuth 2.0 policy.
+
+If you're the app developer, register the JavaScript origin in the Google Cloud Console.
+Learn more about this error
+If you are a developer of this app, see error details.
+Error 400: origin_mismatch

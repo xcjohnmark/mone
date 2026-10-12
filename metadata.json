@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4R0D4332MY7AM0354CBPBH6",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".gitignore",
+    "AGENT_BUILD_PLAN.md",
+    "BACKTESTING_PLAN.md",
+    "DEMO_SCRIPT.md",
+    "MASTER_BUILD_PLAN.md",
+    "README.md",
+    "WEBSITE_BUILD_PLAN.md",
+    "criterions.md",
+    "hackathon.md",
+    "pyproject.toml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ]
+}
