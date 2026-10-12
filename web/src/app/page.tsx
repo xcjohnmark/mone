@@ -78,6 +78,9 @@ export default function LandingPage() {
             <a href="#live-signals" className="hover:text-zinc-100 transition-colors">
               Live Signals
             </a>
+            <a href="#cli-queries" className="hover:text-zinc-100 transition-colors">
+              CLI Queries
+            </a>
             <button
               onClick={() => setIsPricingOpen(true)}
               className="hover:text-zinc-100 transition-colors cursor-pointer text-left"
@@ -404,16 +407,140 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Transparent Pricing Section (No Fuel Terminology) */}
+      {/* CLI Queries & Terminal Trader Section */}
+      <section id="cli-queries" className="py-20 border-b border-zinc-800/60 bg-[#08080a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-400">
+                <Terminal className="w-3.5 h-3.5" />
+                Terminal Trader Command Reference
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight text-white">
+                Full prediction market trading control from your CLI
+              </h2>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                Execute trades by signal ID or ticker, inspect real-time collateral, configure capital per trade, and query Google WeatherNext ensemble forecasts with simple terminal commands.
+              </p>
+            </div>
+            <button
+              onClick={() => setIsCliModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold border border-zinc-700 transition shrink-0"
+            >
+              Open Interactive CLI Guide <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Command 1: Trade */}
+            <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  mone trade &lt;id | ticker&gt;
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Trading</span>
+              </div>
+              <p className="text-xs text-zinc-300">
+                Execute trade by staged signal ID, market ticker (e.g. <code>KXRAIN-26OCT12-SATX</code>), or city name with optional <code>--capital</code>, <code>--side</code>, or <code>--contracts</code>.
+              </p>
+              <div className="bg-black/80 rounded-lg p-2.5 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+                <span className="text-zinc-500">$ </span>mone trade SATX --capital 15 --side YES
+              </div>
+            </div>
+
+            {/* Command 2: Balance */}
+            <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+                  mone balance
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Portfolio</span>
+              </div>
+              <p className="text-xs text-zinc-300">
+                Inspect cash balance, open margin collateral, account equity, cumulative realized PnL, win rate %, and daily drawdown circuit breaker status.
+              </p>
+              <div className="bg-black/80 rounded-lg p-2.5 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+                <span className="text-zinc-500">$ </span>mone balance
+              </div>
+            </div>
+
+            {/* Command 3: Signals */}
+            <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  mone signals
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Copilot</span>
+              </div>
+              <p className="text-xs text-zinc-300">
+                Display staged Copilot opportunities with model probability %, market ask price, expected ROI %, and ready-to-run <code>mone trade &lt;id&gt;</code> commands.
+              </p>
+              <div className="bg-black/80 rounded-lg p-2.5 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+                <span className="text-zinc-500">$ </span>mone signals
+              </div>
+            </div>
+
+            {/* Command 4: Positions */}
+            <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                  mone positions [--all]
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Ledger</span>
+              </div>
+              <p className="text-xs text-zinc-300">
+                View all open active contracts and historical settled positions from the zero-config SQLite ledger with fill prices and net realized PnL.
+              </p>
+              <div className="bg-black/80 rounded-lg p-2.5 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+                <span className="text-zinc-500">$ </span>mone positions --all
+              </div>
+            </div>
+
+            {/* Command 5: Config */}
+            <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                  mone config [flags]
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Settings</span>
+              </div>
+              <p className="text-xs text-zinc-300">
+                Configure capital per trade (<code>--capital 25</code>), max daily drawdown, venue (<code>--venue kalshi_demo</code>), and autonomy mode (<code>--mode copilot</code>).
+              </p>
+              <div className="bg-black/80 rounded-lg p-2.5 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+                <span className="text-zinc-500">$ </span>mone config --capital 25.0 --mode copilot
+              </div>
+            </div>
+
+            {/* Command 6: Forecast */}
+            <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
+                  mone forecast [city]
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-semibold">Forecasts</span>
+              </div>
+              <p className="text-xs text-zinc-300">
+                Inspect Google WeatherNext 63-member ensemble precipitation probabilities, millimeter expectations, and model signals for any city.
+              </p>
+              <div className="bg-black/80 rounded-lg p-2.5 font-mono text-[11px] text-zinc-300 border border-zinc-800">
+                <span className="text-zinc-500">$ </span>mone forecast Miami
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Transparent Pricing Section (USDC Native) */}
       <section id="pricing" className="py-20 border-b border-zinc-800/60 bg-[#0a0a0c]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center space-y-4 mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400">
             <Sparkles className="w-3.5 h-3.5" />
-            Clear, Direct Pricing
+            Native USDC Crypto Payments
           </div>
-          <h2 className="text-3xl font-bold text-white">Transparent pricing. Zero exchange custody.</h2>
+          <h2 className="text-3xl font-bold text-white">Transparent pricing. Zero banking borders.</h2>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto">
-            mone never touches your trading capital. Every new user gets a <strong>7-Day Free Trial</strong> (50 runs). Choose a pass or unlock unlimited trading.
+            mone never touches your exchange trading capital. Every new user gets a <strong>7-Day Free Trial</strong> (50 runs). Top up anytime with native <strong>USDC</strong> on Polygon, Base, or Solana.
           </p>
         </div>
 
@@ -422,11 +549,16 @@ export default function LandingPage() {
           <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
               <h3 className="font-semibold text-white text-base">100 Runs</h3>
-              <div className="text-3xl font-bold text-white">$10</div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold text-white">10</span>
+                <span className="text-sm font-bold text-indigo-400">USDC</span>
+                <span className="text-xs text-zinc-500">one-time</span>
+              </div>
               <p className="text-xs text-zinc-400">Pay as you go for 100 automated trade cycles.</p>
               <ul className="text-xs text-zinc-400 space-y-2 pt-2">
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 100 automated executions</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Open-Meteo &amp; WeatherNext 3</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Polygon, Base &amp; Solana</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Never expires</li>
               </ul>
             </div>
@@ -434,7 +566,7 @@ export default function LandingPage() {
               onClick={() => setIsPricingOpen(true)}
               className="block w-full text-center text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-white py-2.5 rounded-lg transition"
             >
-              Get 100 Runs &bull; $10
+              Pay 10 USDC &bull; 100 Runs
             </button>
           </div>
 
@@ -445,11 +577,16 @@ export default function LandingPage() {
             </span>
             <div className="space-y-4">
               <h3 className="font-semibold text-white text-base">300 Runs</h3>
-              <div className="text-3xl font-bold text-white">$25</div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold text-white">25</span>
+                <span className="text-sm font-bold text-indigo-400">USDC</span>
+                <span className="text-xs text-zinc-500">one-time</span>
+              </div>
               <p className="text-xs text-indigo-300">Save 17% per trade run with priority queue.</p>
               <ul className="text-xs text-zinc-300 space-y-2 pt-2">
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> 300 automated executions</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Priority execution queue</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Polygon, Base &amp; Solana</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Never expires</li>
               </ul>
             </div>
@@ -457,7 +594,7 @@ export default function LandingPage() {
               onClick={() => setIsPricingOpen(true)}
               className="block w-full text-center text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-lg transition"
             >
-              Get 300 Runs &bull; $25
+              Pay 25 USDC &bull; 300 Runs
             </button>
           </div>
 
@@ -465,19 +602,23 @@ export default function LandingPage() {
           <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
               <h3 className="font-semibold text-white text-base">Pro Subscription</h3>
-              <div className="text-3xl font-bold text-white">$49<span className="text-xs text-zinc-400 font-normal">/mo</span></div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-3xl font-bold text-white">49</span>
+                <span className="text-sm font-bold text-indigo-400">USDC</span>
+                <span className="text-xs text-zinc-500">/ 30 days</span>
+              </div>
               <p className="text-xs text-zinc-400">Unlimited automated executions and real-time feeds.</p>
               <ul className="text-xs text-zinc-400 space-y-2 pt-2">
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Unlimited executions</li>
                 <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Sub-second order book streaming</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Webhook alerts to Telegram</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Telegram alerts &amp; Copilot queue</li>
               </ul>
             </div>
             <button
               onClick={() => setIsPricingOpen(true)}
               className="block w-full text-center text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-white py-2.5 rounded-lg transition"
             >
-              Subscribe Pro &bull; $49/mo
+              Pay 49 USDC &bull; Pro
             </button>
           </div>
         </div>

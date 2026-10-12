@@ -228,6 +228,25 @@ def create_checkout(req: CheckoutRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+class VerifyUsdcRequest(BaseModel):
+    tx_hash: str
+    network: Optional[str] = "polygon"
+    plan_key: Optional[str] = "pass_10"
+    user_email: Optional[str] = None
+
+
+@app.post("/api/billing/verify-usdc")
+def verify_usdc(req: VerifyUsdcRequest):
+    from mone.billing.crypto import verify_evm_transaction, verify_solana_transaction
+    if req.network == "solana":
+        res = verify_solana_transaction(req.tx_hash, req.plan_key)
+    else:
+        res = verify_evm_transaction(req.network, req.tx_hash, req.plan_key)
+    if not res.get("valid"):
+        raise HTTPException(status_code=400, detail=res.get("error", "Verification failed"))
+    return res
+
+
 @app.post("/api/billing/webhook")
 async def dodo_webhook(request: Request, x_dodo_signature: Optional[str] = Header(None)):
     body_bytes = await request.body()
