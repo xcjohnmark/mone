@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PV9XFDFZX5BDG2B6JZ5Y3X",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T01:23:18.7331657Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "48695986e1fa",
+  "checkpoint_transcript_start": 938,
+  "transcript_lines_at_start": 938,
+  "session_metrics": {
+    "turn_count": 16
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
