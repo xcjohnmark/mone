@@ -1,0 +1,68 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4QR3G7886C760XFCS3RC7BF",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T09:46:36.2067553Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "save_step_count": 2,
+  "files_touched": [
+    "mone/agent.py",
+    "mone/state/db.py",
+    "trace_exports/failure_recovery_trace.json",
+    "web/src/app/page.tsx",
+    "web/src/components/CliSetupModal.tsx"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "e650829808be",
+  "checkpoint_transcript_start": 1300,
+  "transcript_lines_at_start": 1300,
+  "token_usage": {
+    "input_tokens": 12162,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 7453821,
+    "output_tokens": 7808,
+    "api_call_count": 41
+  },
+  "session_metrics": {
+    "turn_count": 21
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T09:46:36.0847809Z",
+    "agent_lines": 228,
+    "agent_removed": 7,
+    "human_added": 61,
+    "human_modified": 74,
+    "human_removed": 0,
+    "total_committed": 363,
+    "total_lines_changed": 370,
+    "agent_percentage": 63.51351351351351,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 36,
+      "user_lines_removed": 1,
+      "agent_lines_added": 71,
+      "agent_lines_removed": 71,
+      "user_added_per_file": {
+        "mone/agent.py": 14,
+        "mone/state/db.py": 16,
+        "web/src/components/CliSetupModal.tsx": 6
+      },
+      "user_removed_per_file": {
+        "mone/state/db.py": 1
+      }
+    }
+  ]
+}
