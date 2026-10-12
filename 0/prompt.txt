@@ -1,0 +1,1 @@
+remove the 3d whatever going on in the setup section nobody needs that. just the terminal setup and the Web setup. change it from Runner to Web Runner.
