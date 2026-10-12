@@ -1,0 +1,95 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4QRZFFXGP73TSVQS0ADAR3X",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T10:01:53.0434118Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "web/src/app/agent/page.tsx",
+    "web/src/app/globals.css",
+    "web/src/app/page.tsx",
+    "web/src/components/CliSetupModal.tsx",
+    "web/src/components/OnboardingModal.tsx",
+    "web/src/components/PricingModal.tsx",
+    "web/src/components/ui/Badge.tsx",
+    "web/src/components/ui/BrandLogo.tsx",
+    "web/src/components/ui/Button.tsx",
+    "web/src/components/ui/Card.tsx",
+    "web/src/components/ui/Switch.tsx",
+    "web/src/components/ui/Tabs.tsx",
+    "web/src/components/ui/ThemeToggle.tsx",
+    "web/tailwind.config.js"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "dcc511a06363",
+  "checkpoint_transcript_start": 1336,
+  "transcript_lines_at_start": 1336,
+  "token_usage": {
+    "input_tokens": 6353,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 574417,
+    "output_tokens": 6169,
+    "api_call_count": 6
+  },
+  "session_metrics": {
+    "turn_count": 22
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T10:01:52.9231148Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 267,
+    "total_committed": 0,
+    "total_lines_changed": 267,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 351,
+      "user_lines_removed": 338,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "trace_exports/failure_recovery_trace.json": 71,
+        "web/src/app/agent/page.tsx": 83,
+        "web/src/app/globals.css": 16,
+        "web/src/app/page.tsx": 102,
+        "web/src/components/CliSetupModal.tsx": 4,
+        "web/src/components/OnboardingModal.tsx": 2,
+        "web/src/components/PricingModal.tsx": 4,
+        "web/src/components/ui/Badge.tsx": 6,
+        "web/src/components/ui/BrandLogo.tsx": 7,
+        "web/src/components/ui/Button.tsx": 15,
+        "web/src/components/ui/Card.tsx": 4,
+        "web/src/components/ui/Switch.tsx": 2,
+        "web/src/components/ui/Tabs.tsx": 6,
+        "web/src/components/ui/ThemeToggle.tsx": 4,
+        "web/tailwind.config.js": 25
+      },
+      "user_removed_per_file": {
+        "trace_exports/failure_recovery_trace.json": 71,
+        "web/src/app/agent/page.tsx": 83,
+        "web/src/app/globals.css": 4,
+        "web/src/app/page.tsx": 127,
+        "web/src/components/CliSetupModal.tsx": 4,
+        "web/src/components/OnboardingModal.tsx": 2,
+        "web/src/components/PricingModal.tsx": 4,
+        "web/src/components/ui/Badge.tsx": 6,
+        "web/src/components/ui/BrandLogo.tsx": 7,
+        "web/src/components/ui/Button.tsx": 12,
+        "web/src/components/ui/Card.tsx": 4,
+        "web/src/components/ui/Switch.tsx": 2,
+        "web/src/components/ui/Tabs.tsx": 6,
+        "web/src/components/ui/ThemeToggle.tsx": 4,
+        "web/tailwind.config.js": 2
+      }
+    }
+  ]
+}
