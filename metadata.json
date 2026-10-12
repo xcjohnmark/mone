@@ -1,0 +1,24 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PTD4667GTRHHH4T1CFS535",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "mone/agent.py",
+    "mone/cli.py",
+    "mone/entitlements.py",
+    "mone/server.py",
+    "tests/test_entitlements.py",
+    "web/src/app/api/auth/entitlement/route.ts",
+    "web/src/context/AuthContext.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ]
+}

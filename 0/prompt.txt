@@ -1,0 +1,1 @@
+ok, so is our agent abstracted and encapsulated behind the paywall. make sure the agent is not hackable through the web or cli. setting up the cli is free, but after the 7 days tril end, how does the cli user know? how does it block the user from accessing the premiums of the agent? how does it return a upgrade plan error message when it tries to query or get signals or stuffs?
