@@ -1,0 +1,149 @@
+have we created the project readme? if not this is your primary instruction, create the readme so that iw would be towards the judges, the judges should understand how the agent works, how they can access, it , how we used the neatlogs, entire and cfo partner tools and every othe rimporttant thing that should be in a readme, here is hackathon context again. make sure th redme contain all needed to pass all criteriosn and requirment when judges view it Build an agent that works (literally)
+Build an AI agent, or a team of agents, that completes a substantial task from start to finish.
+Give it a goal, tools and an environment; let each result guide its next action. All projects compete for the same prizes.
+
+Focus areas
+Planning
+Tool use
+State
+Context
+Execution
+Recovery
+Verification
+Iteration
+See example tasks
+Requirements
+Use
+,
+
+and
+
+Your project must use neatlogs, Entire and cfo.ai. Use neatlogs and Entire to build and improve your agent, and cfo.ai to plan its business.
+
+neatlogs
+Works with any agent
+Trace every agent run
+Find the code behind a failure, then compare runs to verify your fix.
+
+Model and tool calls, inputs and responses
+State changes, retries, failures and agent messages
+Latency, token usage and cost
+neatlogs
+/
+traces
+Example run
+Research agent
+Every step, in context.
+Success
+Span tree
+Duration
+agent
+research_agent
+2.84s
+llm
+plan
+620ms
+tool
+search_documents
+480ms
+llm
+compose_answer
+1.42s
+tool
+verify_citations
+320ms
+5 spans
+1.8k tokens
+$0.003
+Entire
+For coding agents
+Give your coding agent repository context
+Open-source tools for understanding your codebase and the history of AI-made changes.
+
+Checkpoints: save the context behind each change
+entire-graph: map relationships across your repository
+agent-workspace
+Example PR
+Preserve state across retries #42
+agent/recovery → main
+
+Conversation 2
+Files changed 1
++3 −1
+src/agent/run.ts
+− const state = createState();
++ const state = checkpoint.restore();
++ await agent.run(state);
++ checkpoint.save(state);
+Entire
+Checkpoint attached
+Context, decisions & changes
+cfo.ai
+Plan the business with cfo.ai
+Use cfo.ai to plan your agent’s pricing, costs, revenue and runway. Include the resulting business plan in your submission.
+
+neatHack signup & credits
+Sign up at cfo.ai/neathacks ↗
+
+A card is required during signup. Immediately after signing up, cancel your subscription in Settings → Billing. You won’t be billed if you cancel immediately.
+
+The neatHack team will provide your cfo.ai credits directly.
+
+cfo.ai
+/
+agent economics
+Example model
+C6
+ƒx
+=(C3-C4)/C3
+Illustrative monthly economics for two scenarios
+A	B	C
+1	Monthly model	Base	Growth
+2	Customers	100	250
+3	Revenue	$2,000	$5,000
+4	Infra + inference	$400	$850
+5	Gross profit	$1,600	$4,150
+6	Gross margin	80%	83%
+Unit economics
+Runway
+Scenarios
+Judging criteria
+Judges score each project in five categories. Each category is scored out of 100, and the categories are weighted as shown to give a final score out of 100.
+
+The agent
+How well the agent, or the system of agents, handles a substantial task from start to finish.
+
+30%
+Use of neatlogs, Entire and cfo.ai
+How effectively you used neatlogs, Entire and cfo.ai to build, improve and plan a business around the agent.
+
+25%
+Demo video
+How clearly the demo video explains the agent and your use of neatlogs, Entire and cfo.ai.
+
+20%
+Building in public
+How you shared your project with other people while you built it.
+
+15%
+Usefulness and originality
+Whether the agent solves a problem that people have, in a new way.
+
+10%
+Evidence & verification
+Back up each claim in your submission with evidence that judges can check.
+
+The agent improved
+A run before your change and a run after it, e.g., two neatlogs traces, with the numbers you compared
+You used neatlogs
+Links to neatlogs traces from your project, or screenshots of them
+You used Entire
+Checkpoints or entire-graph output from your repository
+You used cfo.ai
+A business plan covering your agent’s pricing, costs, revenue and runway
+The agent recovers from failures
+A run where an action failed, showing what the agent did next
+You built in public
+Links to what you shared during the hackathon, tagged #neatHack
+You wrote the code during the hackathon
+A public repository with commits dated during the hackathon also what screenshots should i supply you with? and also are we going to add the demo video to our readme? make the readme concise and not verbose, explanatory but not to complex. simple english. create the full readme if there is anything that you don't have yet like a screenshot or something just put a placeholder first. note that the readme is an md file so yeah. create it.

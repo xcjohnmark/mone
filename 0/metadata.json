@@ -1,0 +1,85 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4R02NZ2QTF8CAECVNGJT8M1",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T12:05:57.7947775Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "README.md"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "2471e15477f4",
+  "checkpoint_transcript_start": 1438,
+  "transcript_lines_at_start": 1438,
+  "token_usage": {
+    "input_tokens": 9771,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 549546,
+    "output_tokens": 1339,
+    "api_call_count": 12
+  },
+  "session_metrics": {
+    "turn_count": 24
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T12:05:57.6724312Z",
+    "agent_lines": 202,
+    "agent_removed": 138,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 202,
+    "total_lines_changed": 340,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 32979,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".agents/skills/brag/SKILL.md": 179,
+        ".agents/skills/brag/assets/music/README.md": 20,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-1-by-ende-dot-app.music-cues.json": 3846,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-1-by-ende-dot-app.music-cues.md": 35,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-10-by-ende-dot-app.music-cues.json": 1826,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-10-by-ende-dot-app.music-cues.md": 35,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-11-by-ende-dot-app.music-cues.json": 2266,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-11-by-ende-dot-app.music-cues.md": 35,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-12-by-ende-dot-app.music-cues.json": 2806,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-12-by-ende-dot-app.music-cues.md": 35,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-9-by-ende-dot-app.music-cues.json": 2796,
+        ".agents/skills/brag/assets/music/cues/happy-beats-business-moves-vol-9-by-ende-dot-app.music-cues.md": 35,
+        ".agents/skills/brag/assets/sfx/sfx-analysis.json": 15584,
+        ".agents/skills/brag/assets/sfx/sfx-analysis.md": 75,
+        ".agents/skills/brag/references/audio.md": 307,
+        ".agents/skills/brag/references/step-1-inspect.md": 133,
+        ".agents/skills/brag/references/step-2-plan.md": 234,
+        ".agents/skills/brag/references/step-3-compose.md": 237,
+        ".agents/skills/brag/references/step-4-deliver.md": 168,
+        ".agents/skills/brag/references/tones.md": 231,
+        ".agents/skills/brag/scripts/analyze_music_cues.py": 309,
+        ".agents/skills/brag/scripts/pyproject.toml": 14,
+        ".agents/skills/brag/scripts/uv.lock": 819,
+        ".agents/skills/brag/slim.md": 101,
+        "brag-output/brag-plan.md": 112,
+        "brag-output/composition-brief.md": 90,
+        "brag-output/composition/AGENTS.md": 109,
+        "brag-output/composition/CLAUDE.md": 109,
+        "brag-output/composition/hyperframes.json": 12,
+        "brag-output/composition/index.html": 364,
+        "brag-output/composition/meta.json": 5,
+        "brag-output/composition/package.json": 11,
+        "brag-output/share-copy-variants.md": 27,
+        "brag-output/share-copy.txt": 3,
+        "skills-lock.json": 11
+      }
+    }
+  ]
+}
