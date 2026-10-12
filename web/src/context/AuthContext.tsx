@@ -116,22 +116,7 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
       }
     },
     onError: (error) => {
-      console.warn("Google login popup closed or origin not yet authorized:", error);
-      // Fallback to guest profile if user cancels or origin not authorized in dev
-      const fallbackProfile: UserProfile = {
-        id: "usr_google_guest",
-        name: "Google Authenticated Trader",
-        email: "trader@gmail.com",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
-        trialDaysRemaining: 7,
-        runsRemaining: 50,
-        plan: "7-Day Free Trial",
-        isTrialActive: true,
-        cliApiToken: "mone_sec_9381726481028374",
-      };
-      setUser(fallbackProfile);
-      localStorage.setItem("mone_user_session", JSON.stringify(fallbackProfile));
-      setShowOnboardingPrompt(true);
+      console.warn("Google login popup closed or canceled:", error);
     },
   });
 

@@ -120,7 +120,7 @@ export function SetupAgentModal({ isOpen, onClose }: SetupAgentModalProps) {
                 onClick={handleLaunchWeb}
                 className="text-xs text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] underline underline-offset-4"
               >
-                Skip and explore dashboard as guest &rarr;
+                Open Dashboard &rarr;
               </button>
             </div>
           </div>
