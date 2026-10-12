@@ -283,6 +283,16 @@ def approve_signal(signal_id: int):
     return {"status": "executed", "position": pos.model_dump()}
 
 
+@app.post("/api/positions/{position_id}/close")
+def close_position(position_id: int):
+    """Takes profit early or liquidates position before market settlement."""
+    agent = get_agent()
+    res = agent.close_position_early(position_id)
+    if not res:
+        raise HTTPException(status_code=400, detail=f"Could not close position {position_id} early.")
+    return {"status": "closed_early", "result": res}
+
+
 @app.get("/api/backtest")
 def get_backtest_report(days: int = 60):
     return run_backtest(days=days)

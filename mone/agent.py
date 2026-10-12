@@ -98,6 +98,17 @@ class MoneAgent:
         if not signal.is_actionable or signal.contracts_suggested <= 0:
             return None
 
+        # Production Guardrail: Ensure venue has sufficient real collateral
+        venue_balance = self.market.get_balance()
+        est_cost = signal.contracts_suggested * signal.market_ask
+        if venue_balance < est_cost:
+            logger.error(
+                f"INSUFFICIENT COLLATERAL on {self.market.venue_id}: "
+                f"${venue_balance:.2f} available < ${est_cost:.2f} required for {signal.market_id}. "
+                f"Halting order execution. Deposit funds on {self.market.venue_id} to resume."
+            )
+            return None
+
         order = OrderRequest(
             market_id=signal.market_id,
             station_code=signal.station_code,
@@ -443,4 +454,64 @@ class MoneAgent:
         if pos and matched_staged:
             self.db.update_signal_status(matched_staged.id, "EXECUTED")
         return pos
+
+    def close_position_early(self, position_id: int) -> Optional[dict]:
+        """
+        Takes profit early or liquidates position before market settlement by selling contracts back to the order book.
+        """
+        open_positions = self.db.get_open_positions()
+        pos = next((p for p in open_positions if p.id == position_id), None)
+        if not pos:
+            logger.warning(f"Position #{position_id} not found or already settled.")
+            return None
+
+        quotes = self.market.get_quotes_for_date(pos.target_date)
+        quote = quotes.get(pos.station_code)
+
+        current_bid = 0.50
+        if quote:
+            current_bid = quote.yes_bid if pos.side == "YES" else quote.no_bid
+
+        if current_bid <= 0.01:
+            current_bid = max(0.05, pos.entry_price * 0.9)
+
+        sell_order = OrderRequest(
+            market_id=pos.market_id,
+            station_code=pos.station_code,
+            side=pos.side,
+            action="SELL",
+            contracts=pos.contracts,
+            max_price=current_bid,
+        )
+
+        res = self.market.place_order(sell_order)
+        fill_price = res.fill_price if res.status == "FILLED" else current_bid
+        proceeds = round(fill_price * pos.contracts, 2)
+        realized_pnl = round(proceeds - pos.total_invested, 2)
+
+        self.db.resolve_position(
+            pos_id=pos.id,
+            actual_result=f"CLOSED_EARLY_{pos.side}",
+            payout_dollars=proceeds,
+            net_pnl=realized_pnl,
+        )
+
+        logger.info(
+            f"Closed position #{pos.id} early: {pos.contracts}x @ ${fill_price:.2f} "
+            f"(Proceeds: ${proceeds:.2f}, Realized PnL: ${realized_pnl:+.2f})"
+        )
+
+        return {
+            "position_id": pos.id,
+            "city": pos.city,
+            "market_id": pos.market_id,
+            "side": pos.side,
+            "contracts": pos.contracts,
+            "entry_price": pos.entry_price,
+            "close_price": fill_price,
+            "proceeds": proceeds,
+            "realized_pnl": realized_pnl,
+            "status": "CLOSED_EARLY",
+        }
+
 
