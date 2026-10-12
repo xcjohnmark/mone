@@ -1,0 +1,11 @@
+ok let' assume, test the app in a sandbox extensively to get the actual answers to tese questiosn:
+- so if i am a web user and i setup the agent and get access to my dashboard, can i get to toggle autonomous execution on and off later?
+- can i get to see the agents signals for that day and if autonomous the trades it took? and also a way to see the current position of our entry so you can decide to take profit early?
+- can a user delete account? if so make sure he/she knows that he can't get a refund back.
+
+setup every other important part o the dashbaord. the dashboard is not a mirror of the markets in polymarket or kaslhi, no, t is just a list of all the events for that day where the agent has found an opportunity or signal and ahs plaed a trade or not.
+- i feel like the dashboard should be built in such a way that each day is a current and you can check for the 5 previous days how the dashboard by just selecting a dropdown right.
+
+also users should be able to turn on and off their agent. the agent, if autonomous should be aware of the users balance in polymarket and kaslhi so that if a user sets the auto agent to trade $100 and it doesn't have $100, no demo or sandbs or what ever us created to mirror that rtade, no thats bullshit for a production grade app, whta should be done is that the agent system sees that the balance to execute is less and prompts the user to fill up their trading wallets or accounts.
+
+you see the way i am thinking of all posible user scenarios, yes also make research and think of other possible scenarios and create how each scenario should be handles.
