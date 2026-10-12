@@ -1,0 +1,13 @@
+ok my status is still in testing, i need to complete this in branding before i can oublish my app: 
+Application privacy policy link
+Provide users a link to your public privacy policy
+Application terms of service link
+Provide users a link to your public terms of service how do i get link for these?
+
+---
+
+Commit and push the changes so Vercel deploys /privacy and /terms:
+    git add web/src/app/privacy web/src/app/terms web/src/app/page.tsx web/src/app/agent/page.tsx web/src/context/AuthContext.tsx
+  web/src/app/api/auth/google
+    git commit -m "feat(legal): add Google OAuth compliant privacy policy and terms of service"
+    git push
