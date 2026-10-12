@@ -1,0 +1,5 @@
+Ok did you follow ui guidelines from context?
+
+---
+
+Remove that continue in demo sandbox mode in https://mone-agent.vercel.app/agent it is vexing. how many times have i meatnioned removing vibecdoed slop from a working app? resmove that whole thing. don't we have a working dashboard?!
