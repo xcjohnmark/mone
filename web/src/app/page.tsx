@@ -650,6 +650,18 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-6">
+            <Link
+              href="/privacy"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-[var(--geist-foreground)] transition-colors duration-200"
+            >
+              Terms
+            </Link>
             <button
               onClick={() => setIsCliModalOpen(true)}
               className="hover:text-[var(--geist-foreground)] transition-colors duration-200"

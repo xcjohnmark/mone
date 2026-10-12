@@ -393,12 +393,26 @@ function AgentDashboardContent() {
             </button>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 flex items-center justify-center gap-3 text-xs text-[var(--ds-gray-900)]">
             <Link
               href="/"
-              className="text-xs text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] transition"
+              className="hover:text-[var(--geist-foreground)] transition"
             >
-              &larr; Return to Homepage
+              &larr; Home
+            </Link>
+            <span>&middot;</span>
+            <Link
+              href="/privacy"
+              className="hover:text-[var(--geist-foreground)] transition"
+            >
+              Privacy Policy
+            </Link>
+            <span>&middot;</span>
+            <Link
+              href="/terms"
+              className="hover:text-[var(--geist-foreground)] transition"
+            >
+              Terms of Service
             </Link>
           </div>
         </div>

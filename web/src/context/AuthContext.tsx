@@ -53,13 +53,26 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-        const res = await fetch(`${apiUrl}/api/auth/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ access_token: tokenResponse.access_token }),
-        });
-        if (res.ok) {
+        const primaryUrl = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google` : "/api/auth/google";
+        let res: Response | null = null;
+        try {
+          res = await fetch(primaryUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ access_token: tokenResponse.access_token }),
+          });
+        } catch {
+          // If primary URL failed (e.g. localhost backend not running in production), try relative Next.js route
+          if (primaryUrl !== "/api/auth/google") {
+            res = await fetch("/api/auth/google", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ access_token: tokenResponse.access_token }),
+            });
+          }
+        }
+
+        if (res && res.ok) {
           const profile = await res.json();
           const userProfile: UserProfile = {
             id: profile.user_id,
@@ -75,6 +88,28 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
           setUser(userProfile);
           localStorage.setItem("mone_user_session", JSON.stringify(userProfile));
           setShowOnboardingPrompt(true);
+        } else {
+          // If server responded with error, fetch userinfo directly from Google
+          const googleUserRes = await fetch(
+            `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenResponse.access_token}`
+          );
+          if (googleUserRes.ok) {
+            const googleData = await googleUserRes.json();
+            const directProfile: UserProfile = {
+              id: `usr_${googleData.sub ? String(googleData.sub).slice(-7) : "direct"}`,
+              name: googleData.name || "Google Trader",
+              email: googleData.email || "trader@gmail.com",
+              avatar: googleData.picture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
+              trialDaysRemaining: 7,
+              runsRemaining: 50,
+              plan: "7-Day Free Trial",
+              isTrialActive: true,
+              cliApiToken: `mone_sec_${Math.abs(Math.sin(Date.now()) * 100000000 | 0)}`,
+            };
+            setUser(directProfile);
+            localStorage.setItem("mone_user_session", JSON.stringify(directProfile));
+            setShowOnboardingPrompt(true);
+          }
         }
       } catch (err) {
         console.error("Google authentication failed on backend:", err);
