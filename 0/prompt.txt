@@ -1,0 +1,18 @@
+how many times would i mention i am creatting an app that real users use? you focus too much on mediocrity becuasre i want to submit for an hackathon. bro i need users to sign up and use it too. so tell me is the dodo issue okay?
+
+---
+
+ok let's pause the dodo integration it's not a compulsory partner tool. we a re pivoting to get paid in crypto. we would only support usdc. create the full plan to implement this for each pricing tier and ask for my details.
+
+---
+
+we should support polygon, base and solana. can one address support that or we need multiple address, how does usdc work in these terms?
+
+---
+
+so to get my evm address i went to metamask, opened it and copied the wallet address under base. i also veriifed that it is the same as the one under polygin and ethereum, now are you sure it is going to recieve usdc? i used to think it only recieve their native tokens. btw couldn't help but notice that in metamsk, solana network is there and in phantom polygon and base is there.  can i just use only one wallet app, phantom for instance and copy the address for solana, polygon and base there.? it works right.
+
+---
+
+0x.... address: 0x938C272530Af9939b98893c810d50EB79BE9f58b
+Solana address: REDACTED

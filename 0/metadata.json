@@ -1,0 +1,71 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PSDSBP3YXG5CZTX0SQWEW6",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T00:50:28.9744045Z",
+  "branch": "main",
+  "checkpoints_count": 5,
+  "save_step_count": 1,
+  "files_touched": [
+    "mone/billing/crypto.py",
+    "mone/server.py",
+    "web/src/app/api/billing/verify-usdc/route.ts",
+    "web/src/app/page.tsx",
+    "web/src/components/PricingModal.tsx"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "6e9618adbdd5",
+  "checkpoint_transcript_start": 706,
+  "transcript_lines_at_start": 706,
+  "session_metrics": {
+    "turn_count": 14
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T00:50:28.7625571Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 815,
+    "human_modified": 199,
+    "human_removed": 0,
+    "total_committed": 815,
+    "total_lines_changed": 1014,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 219,
+      "user_lines_removed": 1,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "mone/agent.py": 173,
+        "mone/config.py": 4,
+        "mone/markets/__init__.py": 2,
+        "mone/markets/stations.py": 40
+      },
+      "user_removed_per_file": {
+        "mone/agent.py": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 474,
+      "user_lines_removed": 89,
+      "agent_lines_added": 219,
+      "agent_lines_removed": 1,
+      "user_added_per_file": {
+        "mone/cli.py": 300,
+        "tests/test_cli_queries.py": 103,
+        "trace_exports/failure_recovery_trace.json": 71
+      },
+      "user_removed_per_file": {
+        "mone/cli.py": 18,
+        "trace_exports/failure_recovery_trace.json": 71
+      }
+    }
+  ]
+}
