@@ -14,7 +14,9 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 from mone.agent import MoneAgent
+from mone.billing.crypto import DESTINATION_WALLETS
 from mone.config import AutonomyMode, MarketVenueType, WeatherProviderType, get_config
+from mone.entitlements import EntitlementRequiredError, get_entitlement_manager
 from mone.markets import NWS_STATIONS, resolve_station
 from mone.state import Database
 from mone.telemetry import flush_telemetry
@@ -378,7 +380,76 @@ def cmd_doctor(args):
     except Exception as e:
         print(f"    [ERROR] Database initialization failed: {e}")
 
+    # 5. Entitlement & License check
+    print(f"\n[5] License & Paywall Entitlement:")
+    try:
+        mgr = get_entitlement_manager()
+        status = mgr.get_status()
+        if status.allowed:
+            print(f"    [OK] Plan '{status.plan}' active ({status.runs_remaining} runs remaining, {status.trial_days_remaining} trial days left)")
+        else:
+            print(f"    [UPGRADE REQUIRED] {status.message}")
+            print(f"    Run 'mone pay' or visit https://mono-agent.vercel.app/#pricing to upgrade.")
+    except Exception as e:
+        print(f"    [ERROR] Entitlement check failed: {e}")
+
     print("\n[+] Diagnostics complete.\n")
+
+
+def cmd_pay(args):
+    """Inspects license status, views USDC payment plans & addresses, or submits a transaction hash."""
+    print_banner()
+    mgr = get_entitlement_manager()
+    status = mgr.get_status()
+
+    # If --tx is provided: submit payment verification
+    if getattr(args, "tx", None):
+        plan_key = getattr(args, "plan", None) or "pass_10"
+        network = getattr(args, "network", None) or "polygon"
+        print(f"[*] Verifying transaction {args.tx} on {network.upper()} for plan '{plan_key}'...")
+        try:
+            new_status = mgr.credit_payment(plan_key=plan_key, tx_hash=args.tx, network=network)
+            print("\n" + "=" * 68)
+            print("  [+] PAYMENT VERIFIED SUCCESSFULLY ON-CHAIN!")
+            print("=" * 68)
+            print(f"  Plan Activated     : {new_status.plan}")
+            print(f"  Runs Remaining     : {new_status.runs_remaining}")
+            print(f"  Entitlement Status : {'ACTIVE' if new_status.allowed else 'EXPIRED'}")
+            print(f"  Network            : {network.upper()}")
+            print(f"  Transaction Hash   : {args.tx}")
+            print("-" * 68)
+            print("  You can now run 'mone run' or 'mone scan' without restrictions.\n")
+            return
+        except Exception as e:
+            print("\n" + "=" * 68)
+            print(f"  [-] PAYMENT VERIFICATION FAILED: {e}")
+            print("=" * 68 + "\n")
+            sys.exit(1)
+
+    # Otherwise: display status and payment instructions
+    print("=" * 74)
+    print("  MONE AGENT ENTITLEMENT & NATIVE USDC BILLING")
+    print("=" * 74)
+    print(f"  Current Plan       : {status.plan}")
+    print(f"  Runs Remaining     : {status.runs_remaining}")
+    print(f"  Trial Days Left    : {status.trial_days_remaining} days")
+    print(f"  Execution Status   : {'UNLOCKED' if status.allowed else 'LOCKED (UPGRADE REQUIRED)'}")
+    print(f"  CLI API Token      : {status.cli_api_token or 'None'}")
+    print("-" * 74)
+    print("  AVAILABLE PRICING TIERS (Native USDC):")
+    print("    1. 100 Runs Pass  : 10 USDC  (--plan pass_10)          - 100 Automated Cycles")
+    print("    2. 300 Runs Pass  : 25 USDC  (--plan pass_25)          - 300 Cycles + Priority Queue")
+    print("    3. Pro Trader     : 49 USDC  (--plan pro_subscription) - 30 Days Unlimited Cycles")
+    print("-" * 74)
+    print("  OFFICIAL NON-CUSTODIAL USDC DEPOSIT ADDRESSES:")
+    print(f"    • Polygon (Native USDC) : {DESTINATION_WALLETS['evm']}")
+    print(f"    • Base (Native USDC)    : {DESTINATION_WALLETS['evm']}")
+    print(f"    • Solana (Native USDC)  : {DESTINATION_WALLETS['solana']}")
+    print("-" * 74)
+    print("  HOW TO ACTIVATE AFTER SENDING:")
+    print("    mone pay --plan pass_10 --network polygon --tx <tx_hash>")
+    print("    Or verify via Web3 wallet at: https://mono-agent.vercel.app/#pricing")
+    print("=" * 74 + "\n")
 
 
 def cmd_backtest(args):
@@ -545,6 +616,12 @@ def main():
     p_bt = subparsers.add_parser("backtest", help="Run historical replay backtesting")
     p_bt.add_argument("--days", type=int, default=60, help="Number of historical days to simulate")
 
+    # Command: pay (aliases: license, entitlement)
+    p_pay = subparsers.add_parser("pay", aliases=["license", "entitlement"], help="Inspect license entitlement, plans, or verify a USDC crypto transaction")
+    p_pay.add_argument("--plan", choices=["pass_10", "pass_25", "pro_subscription"], help="Plan key (e.g. pass_10, pass_25, pro_subscription)")
+    p_pay.add_argument("--network", choices=["polygon", "base", "solana"], help="Payment network (polygon, base, solana)")
+    p_pay.add_argument("--tx", type=str, help="Transaction hash or signature to verify")
+
     # Command: serve
     p_srv = subparsers.add_parser("serve", help="Start the mone companion API server for web runner")
     p_srv.add_argument("--host", type=str, default="127.0.0.1", help="Host interface to bind (default 127.0.0.1)")
@@ -579,6 +656,8 @@ def main():
             cmd_doctor(args)
         elif args.command == "backtest":
             cmd_backtest(args)
+        elif args.command in ("pay", "license", "entitlement"):
+            cmd_pay(args)
         elif args.command == "serve":
             from mone.server import start_server
             print_banner()
@@ -586,6 +665,9 @@ def main():
             start_server(host=args.host, port=args.port)
         else:
             parser.print_help()
+    except EntitlementRequiredError as e:
+        e.print_upgrade_banner()
+        sys.exit(402)
     finally:
         flush_telemetry()
 

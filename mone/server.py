@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from mone.agent import MoneAgent
 from mone.billing.dodo import DodoPaymentsClient
 from mone.config import AutonomyMode, MoneConfig, get_config
+from mone.entitlements import get_entitlement_manager, EntitlementRequiredError
 from mone.state.db import Database
 from mone.backtest.engine import run_backtest
 
@@ -191,8 +192,29 @@ def get_status():
     }
 
 
+@app.get("/api/auth/entitlement")
+def get_entitlement_status(token: Optional[str] = None):
+    mgr = get_entitlement_manager()
+    status = mgr.get_status()
+    return status.model_dump()
+
+
 @app.post("/api/step")
 def trigger_step(req: StepRequest):
+    mgr = get_entitlement_manager()
+    status = mgr.get_status()
+    if not status.allowed:
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "error": "PAYMENT_REQUIRED",
+                "code": "TRIAL_EXPIRED",
+                "message": status.message,
+                "pricing_url": "https://mono-agent.vercel.app/#pricing",
+                "status": status.model_dump(),
+            },
+        )
+
     agent = get_agent()
     if req.mode and req.mode in ("autonomous", "copilot"):
         agent.config.agent_autonomy_mode = AutonomyMode(req.mode)
@@ -202,6 +224,20 @@ def trigger_step(req: StepRequest):
 
 @app.post("/api/approve/{signal_id}")
 def approve_signal(signal_id: int):
+    mgr = get_entitlement_manager()
+    status = mgr.get_status()
+    if not status.allowed:
+        raise HTTPException(
+            status_code=402,
+            detail={
+                "error": "PAYMENT_REQUIRED",
+                "code": "TRIAL_EXPIRED",
+                "message": status.message,
+                "pricing_url": "https://mono-agent.vercel.app/#pricing",
+                "status": status.model_dump(),
+            },
+        )
+
     agent = get_agent()
     pos = agent.approve_copilot_signal(signal_id)
     if not pos:
@@ -237,14 +273,22 @@ class VerifyUsdcRequest(BaseModel):
 
 @app.post("/api/billing/verify-usdc")
 def verify_usdc(req: VerifyUsdcRequest):
-    from mone.billing.crypto import verify_evm_transaction, verify_solana_transaction
-    if req.network == "solana":
-        res = verify_solana_transaction(req.tx_hash, req.plan_key)
-    else:
-        res = verify_evm_transaction(req.network, req.tx_hash, req.plan_key)
-    if not res.get("valid"):
-        raise HTTPException(status_code=400, detail=res.get("error", "Verification failed"))
-    return res
+    mgr = get_entitlement_manager()
+    try:
+        new_status = mgr.credit_payment(
+            plan_key=req.plan_key or "pass_10",
+            tx_hash=req.tx_hash,
+            network=req.network or "polygon",
+        )
+        return {
+            "valid": True,
+            "network": req.network,
+            "tx_hash": req.tx_hash,
+            "plan_key": req.plan_key,
+            "entitlement": new_status.model_dump(),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.post("/api/billing/webhook")

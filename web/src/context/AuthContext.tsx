@@ -152,6 +152,14 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
   const consumeRun = (): boolean => {
     if (!user) return false;
     if (user.plan === "Pro") return true;
+
+    // Check trial expiration
+    if (user.plan === "7-Day Free Trial" && (user.trialDaysRemaining <= 0 || !user.isTrialActive)) {
+      setIsPricingOpen(true);
+      return false;
+    }
+
+    // Check runs depletion
     if (user.runsRemaining <= 0) {
       setIsPricingOpen(true);
       return false;

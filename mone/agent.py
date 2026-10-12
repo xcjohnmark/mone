@@ -22,6 +22,7 @@ from mone.risk import RiskManager
 from mone.state import Database, EquitySummary, PositionRecord, SignalRecord
 from mone.strategy import TradeSignal, evaluate_market_signal
 from mone.telemetry import agent_span, init_telemetry, tool_span, workflow_span
+from mone.entitlements import get_entitlement_manager, EntitlementManager
 
 logger = logging.getLogger("mone.agent")
 
@@ -38,6 +39,7 @@ class MoneAgent:
         market_client: Optional[MarketClient] = None,
         db: Optional[Database] = None,
         risk_manager: Optional[RiskManager] = None,
+        entitlement_manager: Optional[EntitlementManager] = None,
     ):
         self.config = config or get_config()
         self.db = db or Database(
@@ -46,6 +48,7 @@ class MoneAgent:
         self.weather = weather_provider or get_weather_provider(self.config)
         self.market = market_client or get_market_client(self.config)
         self.risk = risk_manager or RiskManager(self.config)
+        self.entitlements = entitlement_manager or get_entitlement_manager()
 
         # Initialize Neatlogs observability
         init_telemetry(
@@ -170,6 +173,9 @@ class MoneAgent:
         4. Quant evaluation
         5. Execution / Copilot Staging
         """
+        # Enforce paywall / trial entitlement
+        self.entitlements.require_entitlement("Agent trading cycle")
+
         # Resolve existing settlements
         resolved = self.resolve_settlements()
 
@@ -220,6 +226,7 @@ class MoneAgent:
                 staged_signals.append({"id": sig_id, "signal": sig.model_dump()})
 
         equity_final = self.db.get_equity_summary()
+        updated_entitlement = self.entitlements.consume_run()
 
         return {
             "target_date": target_date,
@@ -232,10 +239,12 @@ class MoneAgent:
             "executed_positions": [p.model_dump() for p in executed_positions],
             "staged_signals": staged_signals,
             "equity": equity_final.model_dump(),
+            "entitlement": updated_entitlement.model_dump(),
         }
 
     def approve_copilot_signal(self, signal_id: int) -> Optional[PositionRecord]:
         """Approves and executes a staged signal from the Copilot queue."""
+        self.entitlements.require_entitlement("Copilot signal approval")
         staged = self.db.get_staged_signals()
         target = next((s for s in staged if s.id == signal_id), None)
         if not target:
@@ -265,6 +274,7 @@ class MoneAgent:
         pos = self.execute_order(sig)
         if pos:
             self.db.update_signal_status(signal_id, "EXECUTED")
+            self.entitlements.consume_run()
         else:
             self.db.update_signal_status(signal_id, "REJECTED")
         return pos
@@ -285,6 +295,7 @@ class MoneAgent:
         3. Station ticker / code (e.g. 'SATX', 'CLIORD')
         4. City name (e.g. 'San Antonio', 'Miami', 'Chicago')
         """
+        self.entitlements.require_entitlement("Direct trade execution")
         clean_id = identifier.strip()
         num_part = clean_id.lstrip("#")
 
