@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PVQ5C9AMERXK0XA19C1V1J",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T01:30:33.8440064Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "mone/billing/crypto.py",
+    "mone/entitlements.py",
+    "mone/state/db.py",
+    "tests/test_entitlements.py",
+    "web/src/app/agent/page.tsx",
+    "web/src/app/api/billing/verify-usdc/route.ts",
+    "web/src/app/page.tsx",
+    "web/src/components/PricingModal.tsx",
+    "web/src/context/AuthContext.tsx"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "48695986e1fa",
+  "session_metrics": {
+    "turn_count": 16
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T01:30:33.4769118Z",
+    "agent_lines": 323,
+    "agent_removed": 96,
+    "human_added": 286,
+    "human_modified": 63,
+    "human_removed": 0,
+    "total_committed": 672,
+    "total_lines_changed": 768,
+    "agent_percentage": 54.557291666666664,
+    "metric_version": 2
+  }
+}

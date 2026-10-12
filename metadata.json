@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PVQ5C9AMERXK0XA19C1V1J",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "mone/billing/crypto.py",
+    "mone/entitlements.py",
+    "mone/state/db.py",
+    "tests/test_entitlements.py",
+    "web/src/app/agent/page.tsx",
+    "web/src/app/api/billing/verify-usdc/route.ts",
+    "web/src/app/page.tsx",
+    "web/src/components/PricingModal.tsx",
+    "web/src/context/AuthContext.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ]
+}
