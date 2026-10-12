@@ -7,41 +7,33 @@ import {
   ArrowLeft,
   Play,
   Pause,
-  Power,
   ShieldCheck,
   Check,
   X,
-  RefreshCw,
-  AlertTriangle,
-  ExternalLink,
   Settings,
   Activity,
   Layers,
-  Clock,
   Sparkles,
   User,
   LogOut,
-  CreditCard,
   DollarSign,
   TrendingUp,
   Trash2,
   Calendar,
   ChevronDown,
+  LayoutDashboard,
+  CheckCircle2,
+  AlertTriangle,
+  Radio,
+  Sliders,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { BrandLogo } from "../../components/ui/BrandLogo";
 import { ThemeToggle } from "../../components/ui/ThemeToggle";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "../../components/ui/Card";
+import { Card } from "../../components/ui/Card";
 import { Switch } from "../../components/ui/Switch";
-import { Tabs } from "../../components/ui/Tabs";
 
 interface OpportunityItem {
   id: number;
@@ -77,9 +69,8 @@ interface Position {
   created_at: string;
 }
 
-// 6 Available Historical / Current Days
 const AVAILABLE_DATES = [
-  { value: "2026-10-12", label: "Today (Current) — Oct 12, 2026", isCurrent: true },
+  { value: "2026-10-12", label: "Today — Oct 12, 2026", isCurrent: true },
   { value: "2026-10-11", label: "Yesterday — Oct 11, 2026", isCurrent: false },
   { value: "2026-10-10", label: "Oct 10, 2026", isCurrent: false },
   { value: "2026-10-09", label: "Oct 09, 2026", isCurrent: false },
@@ -87,7 +78,6 @@ const AVAILABLE_DATES = [
   { value: "2026-10-07", label: "Oct 07, 2026", isCurrent: false },
 ];
 
-// Curated daily opportunities where agent detected quantifiable edge or evaluated forecasts
 const DAILY_OPPORTUNITIES: Record<string, OpportunityItem[]> = {
   "2026-10-12": [
     {
@@ -199,53 +189,15 @@ const DAILY_OPPORTUNITIES: Record<string, OpportunityItem[]> = {
       contracts: 33,
       capital: 9.90,
       status: "WON",
-      reason: "Lake effect band yielded 0.22 inches; settled YES",
+      reason: "Frontal system delivered 0.42 inches; contract resolved YES",
       outcome_pnl: 23.10,
     },
-  ],
-  "2026-10-09": [
     {
       id: 1,
-      station_code: "CLISEA",
-      city: "Seattle",
-      target_date: "2026-10-09",
-      market_id: "KXRAIN-26OCT09-SEA",
-      model_prob_pct: 82.0,
-      market_ask: 0.65,
-      edge_pct: 17.0,
-      side: "YES",
-      contracts: 15,
-      capital: 9.75,
-      status: "LOST",
-      reason: "Precipitation occurred 3 miles south of station sensor (0.00 trace)",
-      outcome_pnl: -9.75,
-    },
-  ],
-  "2026-10-08": [
-    {
-      id: 101,
-      station_code: "CLIBOS",
-      city: "Boston",
-      target_date: "2026-10-08",
-      market_id: "KXRAIN-26OCT08-BOS",
-      model_prob_pct: 88.0,
-      market_ask: 0.40,
-      edge_pct: 48.0,
-      side: "YES",
-      contracts: 25,
-      capital: 10.00,
-      status: "WON",
-      reason: "Coastal front produced 0.44 inches; settled YES",
-      outcome_pnl: 15.00,
-    },
-  ],
-  "2026-10-07": [
-    {
-      id: 102,
       station_code: "CLIDFW",
       city: "Dallas/Fort Worth",
-      target_date: "2026-10-07",
-      market_id: "KXRAIN-26OCT07-DFW",
+      target_date: "2026-10-10",
+      market_id: "KXRAIN-26OCT10-DFW",
       model_prob_pct: 94.0,
       market_ask: 0.50,
       edge_pct: 44.0,
@@ -262,17 +214,26 @@ const DAILY_OPPORTUNITIES: Record<string, OpportunityItem[]> = {
 function AgentDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, setIsPricingOpen, signOut } = useAuth();
+  const { user, signInWithGoogle, setIsPricingOpen, signOut } = useAuth();
+
+  // Allow guest exploration if requested
+  const [guestMode, setGuestMode] = useState<boolean>(false);
+
+  // Sidebar navigation state
+  const [activeNav, setActiveNav] = useState<
+    "overview" | "signals" | "positions" | "settings"
+  >("overview");
 
   // Settings & Autonomy Controls
   const [isAgentActive, setIsAgentActive] = useState<boolean>(true);
-  const [autonomyMode, setAutonomyMode] = useState<"AUTONOMOUS" | "COPILOT">("AUTONOMOUS");
+  const [autonomyMode, setAutonomyMode] = useState<"AUTONOMOUS" | "COPILOT">(
+    "AUTONOMOUS"
+  );
   const [selectedDate, setSelectedDate] = useState<string>("2026-10-12");
-  const [activeTab, setActiveTab] = useState<"opportunities" | "positions" | "settings">("opportunities");
 
-  // Venue Real Balance State
-  const [venueBalance, setVenueBalance] = useState<number>(4.50);
-  const [capitalPerTrade, setCapitalPerTrade] = useState<number>(10.00);
+  // Venue Balance State (Default to $1,000 demo sandbox)
+  const [venueBalance, setVenueBalance] = useState<number>(1000.0);
+  const [capitalPerTrade, setCapitalPerTrade] = useState<number>(10.0);
 
   // Opportunities and Positions State
   const [opportunities, setOpportunities] = useState<OpportunityItem[]>(
@@ -289,9 +250,9 @@ function AgentDashboardContent() {
       entry_price: 0.48,
       current_bid: 0.72,
       contracts: 20,
-      total_invested: 9.60,
-      potential_payout: 20.00,
-      unrealized_pnl: 4.80,
+      total_invested: 9.6,
+      potential_payout: 20.0,
+      unrealized_pnl: 4.8,
       unrealized_pct: 50.0,
       status: "OPEN",
       created_at: "Today, 08:30 UTC",
@@ -305,9 +266,9 @@ function AgentDashboardContent() {
       entry_price: 0.18,
       current_bid: 0.35,
       contracts: 50,
-      total_invested: 9.00,
-      potential_payout: 50.00,
-      unrealized_pnl: 8.50,
+      total_invested: 9.0,
+      potential_payout: 50.0,
+      unrealized_pnl: 8.5,
       unrealized_pct: 94.4,
       status: "OPEN",
       created_at: "Today, 09:15 UTC",
@@ -315,7 +276,9 @@ function AgentDashboardContent() {
   ]);
 
   // Modals
-  const [earlyExitPosition, setEarlyExitPosition] = useState<Position | null>(null);
+  const [earlyExitPosition, setEarlyExitPosition] = useState<Position | null>(
+    null
+  );
   const [isExitSubmitting, setIsExitSubmitting] = useState(false);
   const [exitNotification, setExitNotification] = useState<string | null>(null);
 
@@ -323,12 +286,10 @@ function AgentDashboardContent() {
   const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Update opportunities when date dropdown changes
   useEffect(() => {
     setOpportunities(DAILY_OPPORTUNITIES[selectedDate] || []);
   }, [selectedDate]);
 
-  // Handle Take Profit Early
   const handleTakeProfitEarly = async () => {
     if (!earlyExitPosition) return;
     setIsExitSubmitting(true);
@@ -349,19 +310,21 @@ function AgentDashboardContent() {
         `Successfully closed ${earlyExitPosition.city} at $${earlyExitPosition.current_bid.toFixed(2)}. Net proceeds: $${closedProceeds.toFixed(2)} (+${closedPnl >= 0 ? "+" : ""}$${closedPnl.toFixed(2)} profit locked).`
       );
       setEarlyExitPosition(null);
-    } catch (e) {
-      console.error(e);
     } finally {
       setIsExitSubmitting(false);
     }
   };
 
-  // Handle Account Deletion
   const handleDeleteAccount = async () => {
     if (deleteConfirmationText !== "DELETE") return;
     setIsDeleting(true);
     try {
-      await new Promise((r) => setTimeout(r, 800));
+      await fetch("/api/user/delete-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user?.email }),
+      }).catch(() => null);
+
       signOut();
       localStorage.clear();
       router.push("/?deleted=true");
@@ -371,64 +334,290 @@ function AgentDashboardContent() {
     }
   };
 
-  const isLowCollateral = venueBalance < capitalPerTrade;
+  // If user is not logged in and not in guest mode, show the clean Auth Gate
+  if (!user && !guestMode) {
+    return (
+      <div className="min-h-screen bg-[var(--geist-background)] text-[var(--geist-foreground)] flex items-center justify-center p-4">
+        <div className="w-full max-w-md p-8 rounded-2xl border border-[var(--brand-border)] bg-[var(--brand-card-bg)] shadow-2xl space-y-6 text-center">
+          <div className="flex justify-center">
+            <BrandLogo size="md" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="font-outfit text-2xl font-bold tracking-tight">
+              Sign in to Mone Dashboard
+            </h2>
+            <p className="text-xs text-[var(--ds-gray-900)] max-w-xs mx-auto leading-relaxed">
+              Connect your account to access autonomous weather prediction trading, historical signals, and risk controls.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] text-xs text-emerald-500 font-semibold flex items-center justify-center gap-2">
+            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            7-Day Free Trial Included (50 Runs)
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Button
+              variant="default"
+              size="lg"
+              onClick={signInWithGoogle}
+              className="w-full gap-3 text-xs font-semibold rounded-xl"
+            >
+              <svg className="size-4 shrink-0" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              Sign in with Google
+            </Button>
+
+            <button
+              onClick={() => setGuestMode(true)}
+              className="w-full py-2.5 rounded-xl border border-[var(--brand-border-subtle)] text-xs text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--brand-glass)] transition"
+            >
+              Continue in Demo Sandbox Mode &rarr;
+            </button>
+          </div>
+
+          <div className="pt-2">
+            <Link
+              href="/"
+              className="text-xs text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] transition"
+            >
+              &larr; Return to Homepage
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[var(--geist-background)] text-[var(--geist-foreground)] font-satoshi flex flex-col selection:bg-[var(--geist-selection)]">
-      {/* 80px Top Navigation Bar (Glider Blueprint Standard) */}
-      <header className="sticky top-0 z-40 border-b border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] backdrop-blur-md transition-all duration-200">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-[80px] flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <BrandLogo size="md" href="/agent" />
-            <div className="h-6 w-px bg-[var(--brand-border-subtle)] hidden sm:block" />
+    <div className="min-h-screen bg-[var(--geist-background)] text-[var(--geist-foreground)] font-satoshi flex selection:bg-[var(--geist-selection)]">
+      {/* Sidebar Navigation */}
+      <aside className="w-64 border-r border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] backdrop-blur-md hidden md:flex flex-col justify-between shrink-0 h-screen sticky top-0 p-5">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--brand-border-subtle)]">
+            <BrandLogo size="sm" href="/" />
+          </div>
 
-            {/* Master Agent Power Toggle */}
-            <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft">
-              <Switch
-                checked={isAgentActive}
-                onCheckedChange={setIsAgentActive}
-                activeColor="emerald"
-                id="agent-master-switch"
-              />
-              <span className="text-xs font-semibold font-satoshi flex items-center gap-1.5">
-                <span
-                  className={`size-2 rounded-full ${
-                    isAgentActive
-                      ? "bg-emerald-500 animate-pulse"
-                      : "bg-[var(--ds-gray-500)]"
-                  }`}
-                />
-                {isAgentActive ? "AGENT ACTIVE" : "PAUSED"}
+          {/* Navigation Links */}
+          <nav className="space-y-1">
+            <button
+              onClick={() => setActiveNav("overview")}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
+                activeNav === "overview"
+                  ? "bg-[var(--brand-card-bg)] text-[var(--geist-foreground)] border border-[var(--brand-border)] shadow-sm"
+                  : "text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--brand-border-subtle)]"
+              }`}
+            >
+              <LayoutDashboard className="size-4" />
+              <span>Overview</span>
+            </button>
+
+            <button
+              onClick={() => setActiveNav("signals")}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
+                activeNav === "signals"
+                  ? "bg-[var(--brand-card-bg)] text-[var(--geist-foreground)] border border-[var(--brand-border)] shadow-sm"
+                  : "text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--brand-border-subtle)]"
+              }`}
+            >
+              <Activity className="size-4" />
+              <span>Signals &amp; Execution</span>
+            </button>
+
+            <button
+              onClick={() => setActiveNav("positions")}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
+                activeNav === "positions"
+                  ? "bg-[var(--brand-card-bg)] text-[var(--geist-foreground)] border border-[var(--brand-border)] shadow-sm"
+                  : "text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--brand-border-subtle)]"
+              }`}
+            >
+              <Layers className="size-4" />
+              <span>Positions &amp; Portfolio</span>
+            </button>
+
+            <button
+              onClick={() => setActiveNav("settings")}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
+                activeNav === "settings"
+                  ? "bg-[var(--brand-card-bg)] text-[var(--geist-foreground)] border border-[var(--brand-border)] shadow-sm"
+                  : "text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--brand-border-subtle)]"
+              }`}
+            >
+              <Settings className="size-4" />
+              <span>Settings &amp; Risk</span>
+            </button>
+          </nav>
+        </div>
+
+        {/* Sidebar Footer: Profile & Plan */}
+        <div className="pt-4 border-t border-[var(--brand-border-subtle)] space-y-3">
+          <div className="p-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold truncate max-w-[120px]">
+                {user ? user.name || user.email : "Demo User"}
+              </span>
+              <Badge variant="success" className="text-[10px] font-mono">
+                {user ? user.plan : "Sandbox"}
+              </Badge>
+            </div>
+            <div className="text-[11px] text-[var(--ds-gray-900)] flex items-center justify-between">
+              <span>Runs Remaining:</span>
+              <strong className="text-[var(--geist-foreground)] tabular-nums">
+                {user?.plan === "Pro"
+                  ? `Unlimited (${user.proDaysRemaining ?? 30}d)`
+                  : user?.runsRemaining ?? 50}
+              </strong>
+            </div>
+            <button
+              onClick={() => setIsPricingOpen(true)}
+              className="w-full py-1.5 rounded-lg border border-[var(--brand-border-subtle)] text-[11px] font-semibold text-[var(--geist-foreground)] hover:bg-[var(--brand-glass)] transition text-center"
+            >
+              Top Up Runs
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <ThemeToggle />
+            {user ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={signOut}
+                className="text-xs gap-1.5 rounded-lg"
+              >
+                <LogOut className="size-3.5" /> Sign Out
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={signInWithGoogle}
+                className="text-xs rounded-lg"
+              >
+                Sign In
+              </Button>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Header Bar */}
+        <header className="h-[72px] border-b border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <div className="md:hidden">
+              <BrandLogo size="sm" />
+            </div>
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="font-outfit font-bold text-sm uppercase tracking-wider text-[var(--geist-foreground)]">
+                {activeNav === "overview" && "Dashboard Overview"}
+                {activeNav === "signals" && "Signals & Execution"}
+                {activeNav === "positions" && "Positions & Portfolio"}
+                {activeNav === "settings" && "Agent Settings"}
               </span>
             </div>
 
-            {/* Autonomy Switch */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft">
-              <span className="text-xs text-[var(--ds-gray-900)]">Mode:</span>
+            {/* Mobile Nav Tabs */}
+            <div className="flex md:hidden items-center gap-1">
               <button
-                onClick={() =>
-                  setAutonomyMode((prev) =>
-                    prev === "AUTONOMOUS" ? "COPILOT" : "AUTONOMOUS"
-                  )
-                }
-                className={`text-xs font-semibold px-2.5 py-1 rounded-brand-card transition-all duration-200 ${
-                  autonomyMode === "AUTONOMOUS"
-                    ? "bg-[var(--ds-blue-700)] text-white shadow-sm"
-                    : "bg-[var(--ds-gray-200)] text-[var(--geist-foreground)]"
+                onClick={() => setActiveNav("overview")}
+                className={`p-2 rounded-lg text-xs ${
+                  activeNav === "overview" ? "bg-[var(--brand-card-bg)] font-bold" : ""
                 }`}
               >
-                {autonomyMode}
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveNav("signals")}
+                className={`p-2 rounded-lg text-xs ${
+                  activeNav === "signals" ? "bg-[var(--brand-card-bg)] font-bold" : ""
+                }`}
+              >
+                Signals
+              </button>
+              <button
+                onClick={() => setActiveNav("positions")}
+                className={`p-2 rounded-lg text-xs ${
+                  activeNav === "positions" ? "bg-[var(--brand-card-bg)] font-bold" : ""
+                }`}
+              >
+                Positions
+              </button>
+              <button
+                onClick={() => setActiveNav("settings")}
+                className={`p-2 rounded-lg text-xs ${
+                  activeNav === "settings" ? "bg-[var(--brand-card-bg)] font-bold" : ""
+                }`}
+              >
+                Settings
               </button>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* 40px Standard Height Date Dropdown */}
+            {/* Agent Active Toggle */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] text-xs">
+              <Switch
+                checked={isAgentActive}
+                onCheckedChange={setIsAgentActive}
+                activeColor="emerald"
+                id="header-switch"
+              />
+              <span className="font-semibold flex items-center gap-1.5">
+                <span
+                  className={`size-2 rounded-full ${
+                    isAgentActive
+                      ? "bg-emerald-500 animate-pulse"
+                      : "bg-[var(--ds-gray-400)]"
+                  }`}
+                />
+                <span className="hidden sm:inline">
+                  {isAgentActive ? "AGENT ACTIVE" : "PAUSED"}
+                </span>
+              </span>
+            </div>
+
+            {/* Autonomy Mode Toggle */}
+            <button
+              onClick={() =>
+                setAutonomyMode((prev) =>
+                  prev === "AUTONOMOUS" ? "COPILOT" : "AUTONOMOUS"
+                )
+              }
+              className={`text-xs font-semibold px-3 py-1.5 rounded-xl border transition ${
+                autonomyMode === "AUTONOMOUS"
+                  ? "bg-[var(--geist-foreground)] text-[var(--geist-background)] border-[var(--geist-foreground)]"
+                  : "bg-[var(--brand-card-bg)] text-[var(--geist-foreground)] border-[var(--brand-border-subtle)]"
+              }`}
+            >
+              {autonomyMode}
+            </button>
+
+            {/* Date Dropdown */}
             <div className="relative">
               <select
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="appearance-none bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] text-[var(--geist-foreground)] text-xs font-medium rounded-brand-card pl-3 pr-8 h-10 focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)] cursor-pointer shadow-brand-soft transition-all duration-200 hover:border-[var(--brand-border)]"
+                className="appearance-none bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] text-[var(--geist-foreground)] text-xs font-medium rounded-xl pl-3 pr-7 h-9 focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)] cursor-pointer"
               >
                 {AVAILABLE_DATES.map((d) => (
                   <option key={d.value} value={d.value}>
@@ -436,479 +625,452 @@ function AgentDashboardContent() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="size-3.5 text-[var(--ds-gray-900)] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-
-            <ThemeToggle />
-
-            {/* User Plan Pill */}
-            {user && (
-              <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md shadow-brand-soft text-xs">
-                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-semibold text-[var(--geist-foreground)]">
-                  {user.plan}
-                </span>
-                <span className="text-[var(--ds-gray-900)] tabular-nums">
-                  (
-                  {user.plan === "Pro"
-                    ? `${user.proDaysRemaining ?? 30}d`
-                    : `${user.runsRemaining} left`}
-                  )
-                </span>
-              </div>
-            )}
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={signOut}
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <LogOut className="size-4 text-[var(--ds-gray-900)]" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Container (1440px Max Width with 16px Grid System) */}
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-8 py-8 flex-1 w-full space-y-6">
-        {/* Early Exit Notification Banner */}
-        {exitNotification && (
-          <div className="p-4 rounded-brand-card border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs flex items-center justify-between shadow-brand-soft">
-            <span className="flex items-center gap-2">
-              <Check className="size-4 shrink-0" />
-              <span>{exitNotification}</span>
-            </span>
-            <button
-              onClick={() => setExitNotification(null)}
-              className="text-emerald-500 hover:text-emerald-400 p-1"
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        )}
-
-        {/* Venue Collateral Awareness Alert */}
-        {isLowCollateral && (
-          <div className="p-4 rounded-brand-card border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-brand-soft">
-            <div className="flex items-start sm:items-center gap-3">
-              <AlertTriangle className="size-5 shrink-0 mt-0.5 sm:mt-0" />
-              <div>
-                <span className="font-semibold block sm:inline font-outfit">
-                  INSUFFICIENT VENUE COLLATERAL:{" "}
-                </span>
-                <span>
-                  Available Kalshi balance is{" "}
-                  <strong className="tabular-nums font-mono">
-                    ${venueBalance.toFixed(2)}
-                  </strong>
-                  , but configured capital per trade requires{" "}
-                  <strong className="tabular-nums font-mono">
-                    ${capitalPerTrade.toFixed(2)}
-                  </strong>
-                  . Autonomous order execution halted to protect capital.
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <a
-                href="https://kalshi.com/account/deposit"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Button variant="default" size="md" className="text-xs bg-amber-500 text-black hover:bg-amber-400 font-semibold">
-                  Deposit Collateral
-                </Button>
-              </a>
+              <ChevronDown className="size-3 text-[var(--ds-gray-900)] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
-        )}
+        </header>
 
-        {/* 4 Metric KPI Cards (16px Grid Rhythm) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 tabular-nums">
-          <Card className="p-4">
-            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
-              <span>Venue Balance</span>
-              <DollarSign className="size-4" />
-            </div>
-            <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
-              ${venueBalance.toFixed(2)}
-            </div>
-            <div className="text-[11px] text-[var(--ds-gray-900)] mt-1">
-              Kalshi Demo BYOK
-            </div>
-          </Card>
-
-          <Card className="p-4">
-            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
-              <span>Realized Day PnL</span>
-              <TrendingUp className="size-4 text-emerald-500" />
-            </div>
-            <div className="font-outfit text-2xl font-bold text-emerald-500">
-              +$28.76
-            </div>
-            <div className="text-[11px] text-emerald-500 mt-1">
-              +14.2% daily yield
-            </div>
-          </Card>
-
-          <Card className="p-4">
-            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
-              <span>Audited Win Rate</span>
-              <Activity className="size-4 text-[var(--ds-blue-700)]" />
-            </div>
-            <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
-              76.8%
-            </div>
-            <div className="text-[11px] text-[var(--ds-gray-900)] mt-1">
-              22 NWS stations
-            </div>
-          </Card>
-
-          <Card className="p-4">
-            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
-              <span>Remaining Runs</span>
-              <Sparkles className="size-4 text-amber-500" />
-            </div>
-            <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
-              {user?.plan === "Pro"
-                ? `Unlimited (${user.proDaysRemaining ?? 30}d)`
-                : `${user?.runsRemaining ?? 37}`}
-            </div>
-            <div className="text-[11px] text-[var(--ds-blue-700)] mt-1">
+        {/* Content Body */}
+        <main className="p-6 md:p-8 space-y-6 flex-1 max-w-7xl w-full">
+          {/* Early Exit Notification Banner */}
+          {exitNotification && (
+            <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Check className="size-4 shrink-0" />
+                <span>{exitNotification}</span>
+              </span>
               <button
-                onClick={() => setIsPricingOpen(true)}
-                className="hover:underline cursor-pointer"
+                onClick={() => setExitNotification(null)}
+                className="text-emerald-500 hover:text-emerald-400 p-1"
               >
-                Top up USDC runs &rarr;
+                <X className="size-4" />
               </button>
             </div>
-          </Card>
-        </div>
+          )}
 
-        {/* Segmented Control Navigation */}
-        <div className="flex items-center justify-between border-b border-[var(--brand-border-subtle)] pb-4">
-          <Tabs
-            size="md"
-            value={activeTab}
-            onValueChange={(val) =>
-              setActiveTab(val as "opportunities" | "positions" | "settings")
-            }
-            items={[
-              {
-                id: "opportunities",
-                label: (
-                  <span className="flex items-center gap-2">
+          {/* SECTION 1: OVERVIEW */}
+          {activeNav === "overview" && (
+            <div className="space-y-6">
+              {/* 4 KPI Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 tabular-nums">
+                <div className="p-5 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)]">
+                    <span>Venue Balance</span>
+                    <DollarSign className="size-4" />
+                  </div>
+                  <div className="font-outfit text-3xl font-bold">
+                    ${venueBalance.toFixed(2)}
+                  </div>
+                  <div className="text-[11px] text-[var(--ds-gray-900)]">
+                    Kalshi Demo BYOK
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)]">
+                    <span>Realized Day PnL</span>
+                    <TrendingUp className="size-4 text-emerald-500" />
+                  </div>
+                  <div className="font-outfit text-3xl font-bold text-emerald-500">
+                    +$28.76
+                  </div>
+                  <div className="text-[11px] text-emerald-500">
+                    +14.2% daily yield
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)]">
+                    <span>Audited Win Rate</span>
                     <Activity className="size-4" />
-                    Curated Daily Signals ({opportunities.length})
-                  </span>
-                ),
-              },
-              {
-                id: "positions",
-                label: (
-                  <span className="flex items-center gap-2">
-                    <Layers className="size-4" />
-                    Active Positions (
-                    {positions.filter((p) => p.status === "OPEN").length})
-                  </span>
-                ),
-              },
-              {
-                id: "settings",
-                label: (
-                  <span className="flex items-center gap-2">
-                    <Settings className="size-4" />
-                    Settings &amp; Danger Zone
-                  </span>
-                ),
-              },
-            ]}
-          />
-        </div>
+                  </div>
+                  <div className="font-outfit text-3xl font-bold">
+                    76.8%
+                  </div>
+                  <div className="text-[11px] text-[var(--ds-gray-900)]">
+                    22 NWS stations
+                  </div>
+                </div>
 
-        {/* Tab 1: Curated Daily Opportunities */}
-        {activeTab === "opportunities" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="font-outfit text-lg font-bold text-[var(--geist-foreground)]">
-                  Evaluated Precipitation Alpha for {selectedDate}
-                </h2>
-                <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
-                  Filtered specifically for evaluated contracts where WeatherNext calculated probability spread.
-                </p>
+                <div className="p-5 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)]">
+                    <span>Remaining Runs</span>
+                    <Sparkles className="size-4 text-amber-500" />
+                  </div>
+                  <div className="font-outfit text-3xl font-bold">
+                    {user?.plan === "Pro"
+                      ? `Unlimited (${user.proDaysRemaining ?? 30}d)`
+                      : `${user?.runsRemaining ?? 50}`}
+                  </div>
+                  <div className="text-[11px]">
+                    <button
+                      onClick={() => setIsPricingOpen(true)}
+                      className="underline text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)]"
+                    >
+                      Top up USDC runs &rarr;
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {opportunities.map((opp) => (
-                <Card
-                  key={opp.id}
-                  className="p-5 space-y-4 hover:border-[var(--brand-border)] transition-all duration-200"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-outfit font-bold text-base text-[var(--geist-foreground)]">
-                          {opp.city}
-                        </span>
-                        <Badge variant="secondary" className="font-mono text-[10px]">
-                          {opp.station_code}
+              {/* Quick Status / Recent Opportunities */}
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-outfit font-bold text-base">
+                    Active Evaluated Signals
+                  </h3>
+                  <button
+                    onClick={() => setActiveNav("signals")}
+                    className="text-xs text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] underline"
+                  >
+                    View all signals &rarr;
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {opportunities.slice(0, 2).map((opp) => (
+                    <div
+                      key={opp.id}
+                      className="p-5 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="font-outfit font-bold text-base">
+                          {opp.city}{" "}
+                          <span className="font-mono text-xs text-[var(--ds-gray-900)]">
+                            ({opp.station_code})
+                          </span>
+                        </div>
+                        <Badge
+                          variant={
+                            opp.status === "WON"
+                              ? "success"
+                              : opp.status === "EXECUTED"
+                              ? "blue"
+                              : opp.status === "STAGED"
+                              ? "warning"
+                              : "secondary"
+                          }
+                        >
+                          {opp.status}
                         </Badge>
                       </div>
-                      <div className="font-mono text-xs text-[var(--ds-gray-900)] mt-0.5">
-                        {opp.market_id}
+
+                      <div className="grid grid-cols-3 gap-2 p-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-glass)] text-xs tabular-nums text-center">
+                        <div>
+                          <span className="block text-[10px] text-[var(--ds-gray-900)]">
+                            WeatherNext
+                          </span>
+                          <span className="font-bold">{opp.model_prob_pct}%</span>
+                        </div>
+                        <div>
+                          <span className="block text-[10px] text-[var(--ds-gray-900)]">
+                            Market Ask
+                          </span>
+                          <span className="font-bold">
+                            ${opp.market_ask.toFixed(2)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="block text-[10px] text-[var(--ds-gray-900)]">
+                            Edge
+                          </span>
+                          <span className="font-bold text-emerald-500">
+                            +{opp.edge_pct}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-[var(--ds-gray-900)] leading-relaxed">
+                        {opp.reason}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 2: SIGNALS & EXECUTION */}
+          {activeNav === "signals" && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="font-outfit text-xl font-bold">
+                  Evaluated Precipitation Alpha for {selectedDate}
+                </h2>
+                <p className="text-xs text-[var(--ds-gray-900)]">
+                  Filtered contracts where WeatherNext calculated statistical edge against order books.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {opportunities.map((opp) => (
+                  <div
+                    key={opp.id}
+                    className="p-5 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-4 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-outfit font-bold text-base">
+                            {opp.city}
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            className="font-mono text-[10px]"
+                          >
+                            {opp.station_code}
+                          </Badge>
+                        </div>
+                        <div className="font-mono text-xs text-[var(--ds-gray-900)] mt-0.5">
+                          {opp.market_id}
+                        </div>
+                      </div>
+
+                      <Badge
+                        variant={
+                          opp.status === "WON"
+                            ? "success"
+                            : opp.status === "LOST"
+                            ? "error"
+                            : opp.status === "EXECUTED"
+                            ? "blue"
+                            : opp.status === "STAGED"
+                            ? "warning"
+                            : "secondary"
+                        }
+                      >
+                        {opp.status}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[var(--brand-glass)] border border-[var(--brand-border-subtle)] text-xs tabular-nums text-center">
+                      <div>
+                        <span className="text-[var(--ds-gray-900)] block text-[10px]">
+                          WeatherNext
+                        </span>
+                        <span className="font-semibold">
+                          {opp.model_prob_pct}%
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[var(--ds-gray-900)] block text-[10px]">
+                          Market Ask
+                        </span>
+                        <span className="font-semibold">
+                          ${opp.market_ask.toFixed(2)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[var(--ds-gray-900)] block text-[10px]">
+                          Edge
+                        </span>
+                        <span
+                          className={`font-semibold ${
+                            opp.edge_pct > 0
+                              ? "text-emerald-500"
+                              : "text-[var(--ds-gray-900)]"
+                          }`}
+                        >
+                          {opp.edge_pct > 0 ? `+${opp.edge_pct}%` : `${opp.edge_pct}%`}
+                        </span>
                       </div>
                     </div>
 
-                    <Badge
-                      variant={
-                        opp.status === "WON"
-                          ? "success"
-                          : opp.status === "LOST"
-                          ? "error"
-                          : opp.status === "EXECUTED"
-                          ? "blue"
-                          : opp.status === "STAGED"
-                          ? "warning"
-                          : "secondary"
-                      }
-                      dot={opp.status === "EXECUTED" || opp.status === "STAGED"}
-                    >
-                      {opp.status}
-                    </Badge>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 p-3 rounded-brand-card bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] text-xs tabular-nums">
-                    <div>
-                      <span className="text-[var(--ds-gray-900)] block text-[10px]">
-                        WeatherNext Prob
-                      </span>
-                      <span className="font-semibold text-[var(--geist-foreground)]">
-                        {opp.model_prob_pct}%
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[var(--ds-gray-900)] block text-[10px]">
-                        Market Ask
-                      </span>
-                      <span className="font-semibold text-[var(--geist-foreground)]">
-                        ${opp.market_ask.toFixed(2)}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[var(--ds-gray-900)] block text-[10px]">
-                        Calculated Edge
-                      </span>
-                      <span
-                        className={`font-semibold ${
-                          opp.edge_pct > 0
-                            ? "text-emerald-500"
-                            : "text-[var(--ds-gray-900)]"
-                        }`}
-                      >
-                        {opp.edge_pct > 0 ? `+${opp.edge_pct}%` : `${opp.edge_pct}%`}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-xs text-[var(--ds-gray-900)] leading-relaxed">
-                    <strong className="text-[var(--geist-foreground)] font-satoshi">
-                      Decision Rationale:{" "}
-                    </strong>
-                    {opp.reason}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-[var(--brand-border-subtle)] text-xs tabular-nums">
-                    <span className="text-[var(--ds-gray-900)]">
-                      Capital Allocation:{" "}
+                    <div className="text-xs text-[var(--ds-gray-900)] leading-relaxed">
                       <strong className="text-[var(--geist-foreground)]">
-                        ${opp.capital.toFixed(2)}
-                      </strong>{" "}
-                      ({opp.contracts} contracts)
-                    </span>
-                    {opp.outcome_pnl !== undefined && (
-                      <span
-                        className={`font-semibold ${
-                          opp.outcome_pnl >= 0 ? "text-emerald-500" : "text-rose-500"
-                        }`}
-                      >
-                        Settled PnL: {opp.outcome_pnl >= 0 ? "+" : ""}$
-                        {opp.outcome_pnl.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+                        Rationale:{" "}
+                      </strong>
+                      {opp.reason}
+                    </div>
 
-        {/* Tab 2: Active Positions & Early Profit Exit */}
-        {activeTab === "positions" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pt-3 border-t border-[var(--brand-border-subtle)] text-xs tabular-nums">
+                      <span className="text-[var(--ds-gray-900)]">
+                        Allocation:{" "}
+                        <strong className="text-[var(--geist-foreground)]">
+                          ${opp.capital.toFixed(2)}
+                        </strong>{" "}
+                        ({opp.contracts} contracts)
+                      </span>
+                      {opp.outcome_pnl !== undefined && (
+                        <span
+                          className={`font-semibold ${
+                            opp.outcome_pnl >= 0 ? "text-emerald-500" : "text-rose-500"
+                          }`}
+                        >
+                          Settled PnL: {opp.outcome_pnl >= 0 ? "+" : ""}$
+                          {opp.outcome_pnl.toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 3: POSITIONS & PORTFOLIO */}
+          {activeNav === "positions" && (
+            <div className="space-y-4">
               <div>
-                <h2 className="font-outfit text-lg font-bold text-[var(--geist-foreground)]">
-                  Live Contract Positions
+                <h2 className="font-outfit text-xl font-bold">
+                  Active Contract Positions
                 </h2>
-                <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
-                  Real-time market mark-to-market. Lock in profits early before market expiration.
+                <p className="text-xs text-[var(--ds-gray-900)]">
+                  Live mark-to-market positions. Take profit early to lock in gains before expiration.
                 </p>
               </div>
-            </div>
 
-            <div className="rounded-brand-card border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] backdrop-blur-md overflow-hidden shadow-brand-soft">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs tabular-nums">
-                  <thead className="bg-[var(--brand-glass)] border-b border-[var(--brand-border-subtle)] text-[var(--ds-gray-900)]">
-                    <tr>
-                      <th className="p-4 font-medium">Market / Station</th>
-                      <th className="p-4 font-medium">Side</th>
-                      <th className="p-4 font-medium">Contracts</th>
-                      <th className="p-4 font-medium">Entry Price</th>
-                      <th className="p-4 font-medium">Current Bid</th>
-                      <th className="p-4 font-medium">Invested</th>
-                      <th className="p-4 font-medium">Unrealized PnL</th>
-                      <th className="p-4 font-medium text-right">Early Exit</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--brand-border-subtle)]">
-                    {positions.map((pos) => (
-                      <tr
-                        key={pos.id}
-                        className="hover:bg-[var(--ds-gray-200)]/40 transition-colors duration-200"
-                      >
-                        <td className="p-4">
-                          <span className="font-semibold text-[var(--geist-foreground)] block">
-                            {pos.city}
-                          </span>
-                          <span className="font-mono text-[11px] text-[var(--ds-gray-900)]">
-                            {pos.market_id}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          <Badge
-                            variant={pos.side === "YES" ? "success" : "warning"}
-                            className="font-bold text-[10px]"
-                          >
-                            {pos.side}
-                          </Badge>
-                        </td>
-                        <td className="p-4 font-medium">{pos.contracts}</td>
-                        <td className="p-4">${pos.entry_price.toFixed(2)}</td>
-                        <td className="p-4 font-semibold text-[var(--ds-blue-700)]">
-                          ${pos.current_bid.toFixed(2)}
-                        </td>
-                        <td className="p-4">${pos.total_invested.toFixed(2)}</td>
-                        <td className="p-4">
-                          <span
-                            className={`font-semibold ${
-                              pos.unrealized_pnl >= 0
-                                ? "text-emerald-500"
-                                : "text-rose-500"
-                            }`}
-                          >
-                            {pos.unrealized_pnl >= 0 ? "+" : ""}$
-                            {pos.unrealized_pnl.toFixed(2)} (
-                            {pos.unrealized_pct >= 0 ? "+" : ""}
-                            {pos.unrealized_pct.toFixed(1)}%)
-                          </span>
-                        </td>
-                        <td className="p-4 text-right">
-                          {pos.status === "OPEN" ? (
-                            <Button
-                              variant="default"
-                              size="md"
-                              onClick={() => setEarlyExitPosition(pos)}
-                              className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
-                            >
-                              Take Profit Early
-                            </Button>
-                          ) : (
-                            <Badge variant="secondary">CLOSED EARLY</Badge>
-                          )}
-                        </td>
+              <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs tabular-nums">
+                    <thead className="bg-[var(--brand-glass)] border-b border-[var(--brand-border-subtle)] text-[var(--ds-gray-900)]">
+                      <tr>
+                        <th className="p-4 font-medium">Market / Station</th>
+                        <th className="p-4 font-medium">Side</th>
+                        <th className="p-4 font-medium">Contracts</th>
+                        <th className="p-4 font-medium">Entry Price</th>
+                        <th className="p-4 font-medium">Current Bid</th>
+                        <th className="p-4 font-medium">Invested</th>
+                        <th className="p-4 font-medium">Unrealized PnL</th>
+                        <th className="p-4 font-medium text-right">Early Exit</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--brand-border-subtle)]">
+                      {positions.map((pos) => (
+                        <tr
+                          key={pos.id}
+                          className="hover:bg-[var(--brand-glass)] transition-colors"
+                        >
+                          <td className="p-4">
+                            <span className="font-semibold block">
+                              {pos.city}
+                            </span>
+                            <span className="font-mono text-[11px] text-[var(--ds-gray-900)]">
+                              {pos.market_id}
+                            </span>
+                          </td>
+                          <td className="p-4">
+                            <Badge
+                              variant={pos.side === "YES" ? "success" : "warning"}
+                              className="font-bold text-[10px]"
+                            >
+                              {pos.side}
+                            </Badge>
+                          </td>
+                          <td className="p-4 font-medium">{pos.contracts}</td>
+                          <td className="p-4">${pos.entry_price.toFixed(2)}</td>
+                          <td className="p-4 font-semibold">
+                            ${pos.current_bid.toFixed(2)}
+                          </td>
+                          <td className="p-4">${pos.total_invested.toFixed(2)}</td>
+                          <td className="p-4">
+                            <span
+                              className={`font-semibold ${
+                                pos.unrealized_pnl >= 0
+                                  ? "text-emerald-500"
+                                  : "text-rose-500"
+                              }`}
+                            >
+                              {pos.unrealized_pnl >= 0 ? "+" : ""}$
+                              {pos.unrealized_pnl.toFixed(2)} (
+                              {pos.unrealized_pct >= 0 ? "+" : ""}
+                              {pos.unrealized_pct.toFixed(1)}%)
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            {pos.status === "OPEN" ? (
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => setEarlyExitPosition(pos)}
+                                className="text-xs rounded-xl font-semibold"
+                              >
+                                Take Profit
+                              </Button>
+                            ) : (
+                              <Badge variant="secondary">CLOSED EARLY</Badge>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Tab 3: Settings & Danger Zone */}
-        {activeTab === "settings" && (
-          <div className="space-y-6 max-w-3xl">
-            <Card className="p-6 space-y-4">
-              <h3 className="font-outfit text-base font-bold text-[var(--geist-foreground)]">
-                Autonomous Execution Risk Limits
-              </h3>
-              <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
-                Protect your account against volatile meteorological deviations and exchange slippage.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs tabular-nums">
-                <div className="space-y-1">
-                  <label className="text-[var(--ds-gray-900)]">
-                    Capital Allocation Per Trade
-                  </label>
-                  <input
-                    type="number"
-                    value={capitalPerTrade}
-                    onChange={(e) => setCapitalPerTrade(parseFloat(e.target.value) || 10)}
-                    className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--geist-foreground)] focus:ring-1 focus:ring-[var(--ds-focus-color)]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[var(--ds-gray-900)]">
-                    Daily Loss Circuit Breaker
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue="$50.00 max daily drawdown"
-                    disabled
-                    className="w-full h-10 bg-[var(--ds-gray-200)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-xs text-[var(--ds-gray-900)] cursor-not-allowed"
-                  />
-                </div>
-              </div>
-            </Card>
-
-            {/* Danger Zone: Account Deletion */}
-            <Card className="p-6 border-rose-500/30 bg-rose-500/5 space-y-4">
-              <div className="flex items-center gap-2 text-rose-500">
-                <Trash2 className="size-5" />
+          {/* SECTION 4: SETTINGS & RISK */}
+          {activeNav === "settings" && (
+            <div className="space-y-6 max-w-3xl">
+              <div className="p-6 rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-card-bg)] space-y-4">
                 <h3 className="font-outfit text-base font-bold">
-                  Danger Zone: Account Deletion
+                  Autonomous Execution Limits
                 </h3>
+                <p className="text-xs text-[var(--ds-gray-900)]">
+                  Configure risk guardrails to protect capital against volatility and slippage.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs tabular-nums">
+                  <div className="space-y-1">
+                    <label className="text-[var(--ds-gray-900)] block">
+                      Capital Allocation Per Trade ($)
+                    </label>
+                    <input
+                      type="number"
+                      value={capitalPerTrade}
+                      onChange={(e) =>
+                        setCapitalPerTrade(parseFloat(e.target.value) || 10)
+                      }
+                      className="w-full h-10 bg-[var(--brand-glass)] border border-[var(--brand-border-subtle)] rounded-xl px-3 text-xs text-[var(--geist-foreground)] focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[var(--ds-gray-900)] block">
+                      Daily Drawdown Circuit Breaker
+                    </label>
+                    <input
+                      type="text"
+                      defaultValue="$50.00 max daily loss"
+                      disabled
+                      className="w-full h-10 bg-[var(--brand-glass)] border border-[var(--brand-border-subtle)] rounded-xl px-3 text-xs text-[var(--ds-gray-900)] cursor-not-allowed"
+                    />
+                  </div>
+                </div>
               </div>
-              <p className="font-satoshi text-xs text-[var(--ds-gray-900)] leading-relaxed">
-                Permanently delete your account, session records, and API credentials from the system.
-              </p>
-              <div className="p-3.5 rounded-brand-card border border-rose-500/20 bg-rose-500/10 text-xs text-rose-500 font-medium">
-                ⚠️ Strict Non-Refundable Crypto Policy: Decentralized USDC payments and remaining plan runs are final and non-refundable upon account deletion.
+
+              {/* Danger Zone: Account Deletion */}
+              <div className="p-6 rounded-2xl border border-rose-500/30 bg-rose-500/5 space-y-4">
+                <div className="flex items-center gap-2 text-rose-500">
+                  <Trash2 className="size-5" />
+                  <h3 className="font-outfit text-base font-bold">
+                    Danger Zone: Delete Account
+                  </h3>
+                </div>
+                <p className="text-xs text-[var(--ds-gray-900)] leading-relaxed">
+                  Permanently remove your account, active sessions, and local configuration.
+                </p>
+                <Button
+                  variant="destructive"
+                  size="md"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  className="text-xs font-semibold rounded-xl"
+                >
+                  Delete Account
+                </Button>
               </div>
-              <Button
-                variant="destructive"
-                size="md"
-                onClick={() => setIsDeleteModalOpen(true)}
-                className="text-xs font-semibold"
-              >
-                Delete Account &amp; Wipe Credentials
-              </Button>
-            </Card>
-          </div>
-        )}
-      </main>
+            </div>
+          )}
+        </main>
+      </div>
 
       {/* Take Profit Early Modal */}
       {earlyExitPosition && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--brand-glass)] border-[var(--brand-border)] shadow-2xl">
+          <div className="w-full max-w-md p-6 space-y-5 rounded-2xl bg-[var(--brand-card-bg)] border border-[var(--brand-border)] shadow-2xl">
             <div className="flex items-center justify-between border-b border-[var(--brand-border-subtle)] pb-3">
-              <h3 className="font-outfit font-bold text-lg text-[var(--geist-foreground)]">
+              <h3 className="font-outfit font-bold text-lg">
                 Take Profit Early
               </h3>
               <button
@@ -919,28 +1081,26 @@ function AgentDashboardContent() {
               </button>
             </div>
 
-            <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+            <p className="text-xs text-[var(--ds-gray-900)]">
               Sell your active position back to the market order book at current bid to lock in gains before settlement:
             </p>
 
-            <div className="p-4 rounded-brand-card bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] space-y-2 text-xs tabular-nums">
+            <div className="p-4 rounded-xl bg-[var(--brand-glass)] border border-[var(--brand-border-subtle)] space-y-2 text-xs tabular-nums">
               <div className="flex justify-between">
                 <span className="text-[var(--ds-gray-900)]">Market:</span>
-                <span className="font-semibold text-[var(--geist-foreground)]">
+                <span className="font-semibold">
                   {earlyExitPosition.city} ({earlyExitPosition.side})
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--ds-gray-900)]">Contracts:</span>
-                <span className="font-semibold">{earlyExitPosition.contracts}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--ds-gray-900)]">Entry Price:</span>
-                <span>${earlyExitPosition.entry_price.toFixed(2)}</span>
+                <span className="font-semibold">
+                  {earlyExitPosition.contracts}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--ds-gray-900)]">Current Bid:</span>
-                <span className="font-bold text-[var(--ds-blue-700)]">
+                <span className="font-bold">
                   ${earlyExitPosition.current_bid.toFixed(2)}
                 </span>
               </div>
@@ -958,6 +1118,7 @@ function AgentDashboardContent() {
                 variant="outline"
                 size="md"
                 onClick={() => setEarlyExitPosition(null)}
+                className="rounded-xl text-xs"
               >
                 Cancel
               </Button>
@@ -966,19 +1127,19 @@ function AgentDashboardContent() {
                 size="md"
                 isLoading={isExitSubmitting}
                 onClick={handleTakeProfitEarly}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                className="rounded-xl text-xs font-semibold"
               >
                 Confirm Early Sell
               </Button>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
       {/* Account Deletion Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--brand-glass)] border-rose-500/40 shadow-2xl">
+          <div className="w-full max-w-md p-6 space-y-5 rounded-2xl bg-[var(--brand-card-bg)] border border-rose-500/40 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[var(--brand-border-subtle)] pb-3">
               <div className="flex items-center gap-2 text-rose-500">
                 <AlertTriangle className="size-5" />
@@ -998,18 +1159,15 @@ function AgentDashboardContent() {
               <p>
                 This action is irreversible. All stored venue credentials, session states, and trade records will be permanently wiped.
               </p>
-              <div className="p-3.5 rounded-brand-card border border-rose-500/30 bg-rose-500/10 text-rose-500 font-semibold leading-relaxed">
-                ⚠️ NON-REFUNDABLE POLICY: Any remaining USDC subscription time or run passes are permanently forfeit and cannot be refunded.
-              </div>
               <p>
-                To confirm, type <strong className="text-[var(--geist-foreground)]">DELETE</strong> in the box below:
+                To confirm, type <strong className="text-[var(--geist-foreground)]">DELETE</strong> below:
               </p>
               <input
                 type="text"
                 value={deleteConfirmationText}
                 onChange={(e) => setDeleteConfirmationText(e.target.value)}
                 placeholder="DELETE"
-                className="w-full h-10 bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] rounded-brand-card px-3 text-sm text-[var(--geist-foreground)] font-mono focus:ring-1 focus:ring-rose-500"
+                className="w-full h-10 bg-[var(--brand-glass)] border border-[var(--brand-border-subtle)] rounded-xl px-3 text-sm text-[var(--geist-foreground)] font-mono focus:ring-1 focus:ring-rose-500"
               />
             </div>
 
@@ -1018,6 +1176,7 @@ function AgentDashboardContent() {
                 variant="outline"
                 size="md"
                 onClick={() => setIsDeleteModalOpen(false)}
+                className="rounded-xl text-xs"
               >
                 Cancel
               </Button>
@@ -1027,11 +1186,12 @@ function AgentDashboardContent() {
                 disabled={deleteConfirmationText !== "DELETE"}
                 isLoading={isDeleting}
                 onClick={handleDeleteAccount}
+                className="rounded-xl text-xs font-semibold"
               >
                 Delete Forever
               </Button>
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </div>

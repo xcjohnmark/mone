@@ -55,10 +55,7 @@ export function BrandLogo({
           textSizes[size]
         )}
       >
-        mone
-        <span className="text-[var(--ds-blue-700)] group-hover:animate-pulse">
-          _
-        </span>
+        mone_
       </span>
     </Link>
   );
