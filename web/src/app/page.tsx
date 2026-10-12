@@ -104,7 +104,9 @@ export default function LandingPage() {
                 <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="text-zinc-300 font-medium">{user.plan}</span>
-                  <span className="text-zinc-500">({user.plan === "Pro" ? "Unlimited" : `${user.runsRemaining} runs`})</span>
+                  <span className="text-zinc-500">
+                    ({user.plan === "Pro" ? `Unlimited (${user.proDaysRemaining !== undefined ? user.proDaysRemaining : 30}d left)` : `${user.runsRemaining} runs`})
+                  </span>
                 </div>
                 <button
                   onClick={signOut}

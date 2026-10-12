@@ -35,6 +35,7 @@ class EntitlementStatus(BaseModel):
     plan: str = "7-Day Free Trial"
     runs_remaining: int = 50
     trial_days_remaining: int = 7
+    pro_days_remaining: int = 0
     is_trial_active: bool = True
     is_pro: bool = False
     expires_at: Optional[str] = None
@@ -42,6 +43,7 @@ class EntitlementStatus(BaseModel):
     cli_api_token: Optional[str] = None
     last_tx_hash: Optional[str] = None
     message: str = "Active"
+    payment_note: Optional[str] = None
 
 
 class EntitlementRequiredError(Exception):
@@ -188,16 +190,21 @@ class EntitlementManager:
 
         # Pro Plan Check
         is_pro = False
+        pro_days_remaining = 0
         if plan == "Pro":
             if expires_at:
                 try:
                     exp_dt = datetime.fromisoformat(expires_at)
                     if exp_dt > now:
                         is_pro = True
+                        pro_days_remaining = max(0, (exp_dt - now).days)
+                        if pro_days_remaining == 0 and exp_dt > now:
+                            pro_days_remaining = 1
                 except Exception:
                     pass
             else:
                 is_pro = True
+                pro_days_remaining = 30
 
         # Determine permission
         allowed = False
@@ -205,8 +212,8 @@ class EntitlementManager:
 
         if is_pro:
             allowed = True
-            message = "Unlimited Pro Access Active"
-        elif runs_remaining > 0 and (is_trial_active or plan in ("100 Runs Pass", "300 Runs Pass")):
+            message = f"Unlimited Pro Access Active ({pro_days_remaining} days remaining)"
+        elif runs_remaining > 0 and (is_trial_active or plan in ("100 Runs Pass", "300 Runs Pass") or "Trade Runs Pass" in plan):
             allowed = True
             message = f"{runs_remaining} runs remaining on {plan}"
         else:
@@ -223,6 +230,7 @@ class EntitlementManager:
             plan=plan,
             runs_remaining=runs_remaining,
             trial_days_remaining=trial_days_remaining,
+            pro_days_remaining=pro_days_remaining,
             is_trial_active=is_trial_active,
             is_pro=is_pro,
             expires_at=expires_at,
@@ -230,6 +238,7 @@ class EntitlementManager:
             cli_api_token=cli_api_token,
             last_tx_hash=last_tx_hash,
             message=message,
+            payment_note=data.get("payment_note"),
         )
 
     def require_entitlement(self, action: str = "Trading cycle"):
@@ -257,6 +266,7 @@ class EntitlementManager:
     def credit_payment(self, plan_key: str, tx_hash: str, network: str = "polygon") -> EntitlementStatus:
         """
         Verifies on-chain USDC payment transaction and credits the account balance.
+        Supports fee tolerance, underpayment pro-rated runs, and stacked Pro renewal days.
         """
         network_clean = network.lower()
         if network_clean == "solana":
@@ -267,30 +277,48 @@ class EntitlementManager:
         if not verify_res.get("valid"):
             raise ValueError(verify_res.get("error", "Transaction verification failed on-chain."))
 
-        plan_info = CRYPTO_PLANS.get(plan_key)
-        if not plan_info:
-            raise ValueError(f"Unknown plan: {plan_key}")
+        activated = verify_res.get("plan_activated", plan_key)
+        runs_granted = verify_res.get("runs_granted", 0)
+        days_granted = verify_res.get("days_granted")
+        note = verify_res.get("note", "Payment verified and credited.")
 
         data = self._load_data()
         now = datetime.now(timezone.utc)
 
-        if plan_key == "pro_subscription":
+        if activated == "pro_subscription":
             data["plan"] = "Pro"
-            data["expires_at"] = (now + timedelta(days=30)).isoformat()
+            # Day Stacking: If renewing while active, add 30 days to existing expiration!
+            base_date = now
+            if data.get("expires_at"):
+                try:
+                    exp_dt = datetime.fromisoformat(data["expires_at"])
+                    if exp_dt > now:
+                        base_date = exp_dt
+                except Exception:
+                    pass
+            data["expires_at"] = (base_date + timedelta(days=30)).isoformat()
             data["runs_remaining"] = 999999
-        elif plan_key == "pass_10":
-            data["plan"] = "100 Runs Pass"
-            current_runs = data.get("runs_remaining", 0)
-            data["runs_remaining"] = current_runs + 100
-        elif plan_key == "pass_25":
+        elif activated == "pass_25":
             data["plan"] = "300 Runs Pass"
             current_runs = data.get("runs_remaining", 0)
-            data["runs_remaining"] = current_runs + 300
+            data["runs_remaining"] = current_runs + runs_granted
+        elif activated == "pass_10":
+            data["plan"] = "100 Runs Pass"
+            current_runs = data.get("runs_remaining", 0)
+            data["runs_remaining"] = current_runs + runs_granted
+        else:
+            # Custom / pro-rated runs from fee underpayment guardrail
+            current_runs = data.get("runs_remaining", 0)
+            data["runs_remaining"] = current_runs + runs_granted
+            data["plan"] = f"Trade Runs Pass ({data['runs_remaining']} runs)"
 
         data["last_tx_hash"] = tx_hash
+        data["payment_note"] = note
         self._save_data(data)
 
-        return self.get_status()
+        status = self.get_status()
+        status.payment_note = note
+        return status
 
 
 # Global singleton instance

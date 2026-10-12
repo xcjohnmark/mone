@@ -141,3 +141,43 @@ def test_upgrade_banner_contains_wallets(temp_entitlement_dir, capsys):
     assert DESTINATION_WALLETS["solana"] in captured.err
     assert "10 USDC" in captured.err
     assert "49 USDC" in captured.err
+
+
+def test_fee_tolerance_guardrail():
+    from mone.billing.crypto import evaluate_underpayment_guardrail
+    # User sent 9.90 USDC for 10 USDC plan (within 2% tolerance)
+    res = evaluate_underpayment_guardrail(9.90, "pass_10")
+    assert res["status"] == "FULL_CREDIT"
+    assert res["runs_granted"] == 100
+    assert "tolerance" in res["note"]
+
+
+def test_underpayment_prorated_credit():
+    from mone.billing.crypto import evaluate_underpayment_guardrail
+    # User sent 5.00 USDC for 10 USDC plan
+    res = evaluate_underpayment_guardrail(5.00, "pass_10")
+    assert res["status"] == "PRO_RATED_CREDIT"
+    assert res["runs_granted"] == 50
+    assert "No money lost" in res["note"]
+
+    # User sent 25 USDC for Pro ($49)
+    res_pro = evaluate_underpayment_guardrail(25.00, "pro_subscription")
+    assert res_pro["status"] == "PARTIAL_CREDIT"
+    assert res_pro["runs_granted"] == 300
+
+
+def test_pro_subscription_30_days_and_stacking(temp_entitlement_dir, monkeypatch):
+    monkeypatch.setenv("MONE_TEST_MODE", "1")
+    mgr = EntitlementManager(storage_dir=temp_entitlement_dir)
+    fake_tx1 = "0x" + "b" * 64
+    status = mgr.credit_payment(plan_key="pro_subscription", tx_hash=fake_tx1, network="polygon")
+
+    assert status.is_pro is True
+    assert status.plan == "Pro"
+    assert status.pro_days_remaining in (29, 30)
+
+    # Day stacking: renew while active
+    fake_tx2 = "0x" + "c" * 64
+    status_renew = mgr.credit_payment(plan_key="pro_subscription", tx_hash=fake_tx2, network="polygon")
+    assert status_renew.pro_days_remaining in (59, 60)
+

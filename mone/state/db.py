@@ -91,7 +91,24 @@ class Database:
                 )
             """)
 
-            # Dodo Payments Fuel Credit Balances
+            # Native USDC Crypto Payments Ledger (Replay Protection & Audit)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS crypto_payments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    tx_hash TEXT UNIQUE NOT NULL,
+                    network TEXT NOT NULL,
+                    plan_key TEXT NOT NULL,
+                    amount_usdc REAL NOT NULL,
+                    runs_granted INTEGER NOT NULL,
+                    days_granted INTEGER,
+                    status TEXT NOT NULL,
+                    note TEXT,
+                    recipient TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )
+            """)
+
+            # User Fuel Credit Balances & Subscriptions
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS fuel_credits (
                     user_id TEXT PRIMARY KEY,
@@ -276,3 +293,59 @@ class Database:
                 settled_trades_count=settled_cnt,
                 win_rate_pct=round(win_rate, 1),
             )
+
+    # --- Crypto Payment Operations ---
+    def record_crypto_payment(
+        self,
+        tx_hash: str,
+        network: str,
+        plan_key: str,
+        amount_usdc: float,
+        runs_granted: int,
+        days_granted: Optional[int],
+        status: str,
+        note: Optional[str],
+        recipient: str,
+    ) -> int:
+        """Stores a confirmed USDC crypto payment into the persistent database ledger."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO crypto_payments (
+                    tx_hash, network, plan_key, amount_usdc,
+                    runs_granted, days_granted, status, note, recipient, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    tx_hash.strip().lower(),
+                    network.lower(),
+                    plan_key,
+                    amount_usdc,
+                    runs_granted,
+                    days_granted,
+                    status,
+                    note,
+                    recipient,
+                    datetime.now(timezone.utc).isoformat(),
+                ),
+            )
+            conn.commit()
+            return cursor.lastrowid
+
+    def is_tx_already_recorded(self, tx_hash: str) -> bool:
+        """Checks if a transaction hash has already been credited (persistent replay protection)."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id FROM crypto_payments WHERE tx_hash = ?",
+                (tx_hash.strip().lower(),),
+            )
+            return cursor.fetchone() is not None
+
+    def get_all_crypto_payments(self) -> List[dict]:
+        """Retrieves audit trail of all confirmed crypto transactions."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM crypto_payments ORDER BY id DESC")
+            return [dict(row) for row in cursor.fetchall()]

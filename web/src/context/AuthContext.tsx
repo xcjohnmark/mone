@@ -9,6 +9,8 @@ export interface UserProfile {
   email: string;
   avatar: string;
   trialDaysRemaining: number;
+  proDaysRemaining?: number;
+  subscriptionExpiresAt?: string;
   runsRemaining: number;
   plan: "7-Day Free Trial" | "100 Runs Pass" | "300 Runs Pass" | "Pro";
   isTrialActive: boolean;
@@ -25,7 +27,7 @@ interface AuthContextType {
   setIsCliModalOpen: (open: boolean) => void;
   showOnboardingPrompt: boolean;
   setShowOnboardingPrompt: (show: boolean) => void;
-  upgradePlan: (planKey: string) => void;
+  upgradePlan: (planKey: string, customRuns?: number) => void;
   consumeRun: () => boolean;
 }
 
@@ -111,29 +113,49 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const upgradePlan = (planKey: string) => {
+  const upgradePlan = (planKey: string, customRuns?: number) => {
     if (!user) return;
     let updated: UserProfile;
 
     if (planKey === "pass_10" || planKey === "fuel_10") {
+      const runsToAdd = customRuns !== undefined ? customRuns : 100;
       updated = {
         ...user,
         plan: "100 Runs Pass",
-        runsRemaining: user.runsRemaining + 100,
+        runsRemaining: user.runsRemaining + runsToAdd,
         isTrialActive: false,
       };
     } else if (planKey === "pass_25" || planKey === "fuel_25") {
+      const runsToAdd = customRuns !== undefined ? customRuns : 300;
       updated = {
         ...user,
         plan: "300 Runs Pass",
-        runsRemaining: user.runsRemaining + 300,
+        runsRemaining: user.runsRemaining + runsToAdd,
         isTrialActive: false,
       };
     } else if (planKey === "pro_subscription") {
+      const now = new Date();
+      let baseDate = now;
+      if (user.subscriptionExpiresAt) {
+        const currentExp = new Date(user.subscriptionExpiresAt);
+        if (currentExp > now) {
+          baseDate = currentExp;
+        }
+      }
+      const expiresAt = new Date(baseDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const daysRemaining = Math.max(1, Math.round((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
       updated = {
         ...user,
         plan: "Pro",
         runsRemaining: 999999, // unlimited
+        proDaysRemaining: daysRemaining,
+        subscriptionExpiresAt: expiresAt.toISOString(),
+        isTrialActive: false,
+      };
+    } else if (customRuns !== undefined && customRuns > 0) {
+      updated = {
+        ...user,
+        runsRemaining: user.runsRemaining + customRuns,
         isTrialActive: false,
       };
     } else {
@@ -151,7 +173,18 @@ function AuthProviderInner({ children }: { children: React.ReactNode }) {
 
   const consumeRun = (): boolean => {
     if (!user) return false;
-    if (user.plan === "Pro") return true;
+
+    // Check Pro expiration
+    if (user.plan === "Pro") {
+      if (user.subscriptionExpiresAt) {
+        const exp = new Date(user.subscriptionExpiresAt);
+        if (new Date() > exp) {
+          setIsPricingOpen(true);
+          return false;
+        }
+      }
+      return true;
+    }
 
     // Check trial expiration
     if (user.plan === "7-Day Free Trial" && (user.trialDaysRemaining <= 0 || !user.isTrialActive)) {

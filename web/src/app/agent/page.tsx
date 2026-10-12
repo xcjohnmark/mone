@@ -285,7 +285,7 @@ function AgentDashboard() {
                   <span>
                     {user.isTrialActive ? "7-Day Trial" : user.plan}:{" "}
                     <strong className="text-white">
-                      {user.plan === "Pro" ? "Unlimited" : `${user.runsRemaining} runs`}
+                      {user.plan === "Pro" ? `Unlimited (${user.proDaysRemaining !== undefined ? user.proDaysRemaining : 30}d left)` : `${user.runsRemaining} runs`}
                     </strong>
                   </span>
                   <span className="text-[10px] text-indigo-400 underline ml-1">Upgrade</span>

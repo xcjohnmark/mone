@@ -109,14 +109,16 @@ export function PricingModal() {
       }
 
       // Upgrade account immediately
-      upgradePlan(selectedPlan?.key || "pass_10");
-      setSuccessMessage(`Payment confirmed! ${selectedPlan?.name} activated on your account.`);
+      const activatedKey = data.plan_activated || selectedPlan?.key || "pass_10";
+      const customRuns = data.runs_granted;
+      upgradePlan(activatedKey, customRuns);
+      setSuccessMessage(data.note || `Payment confirmed! ${selectedPlan?.name} activated on your account.`);
 
       setTimeout(() => {
         setSuccessMessage(null);
         setSelectedPlan(null);
         setIsPricingOpen(false);
-      }, 2000);
+      }, 2500);
     } catch (err: any) {
       setVerifyError(err.message || "Failed to verify transaction.");
     } finally {
