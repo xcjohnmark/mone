@@ -29,6 +29,19 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { BrandLogo } from "../../components/ui/BrandLogo";
+import { ThemeToggle } from "../../components/ui/ThemeToggle";
+import { Button } from "../../components/ui/Button";
+import { Badge } from "../../components/ui/Badge";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "../../components/ui/Card";
+import { Switch } from "../../components/ui/Switch";
+import { Tabs } from "../../components/ui/Tabs";
 
 interface OpportunityItem {
   id: number;
@@ -104,851 +117,318 @@ const DAILY_OPPORTUNITIES: Record<string, OpportunityItem[]> = {
       side: "YES",
       contracts: 20,
       capital: 9.60,
-      status: "STAGED",
-      reason: "Severe Precipitation Band: Model 98.4% vs 48¢ Ask (+50.4% edge)",
+      status: "EXECUTED",
+      reason: "Ensemble convergence: 61 of 63 members show >0.05in rain",
     },
     {
       id: 6,
-      station_code: "CLIEWR",
-      city: "Newark",
+      station_code: "CLISAT",
+      city: "San Antonio",
       target_date: "2026-10-12",
-      market_id: "KXRAIN-26OCT12-EWR",
-      model_prob_pct: 100.0,
-      market_ask: 0.62,
-      edge_pct: 38.0,
+      market_id: "KXRAIN-26OCT12-SAT",
+      model_prob_pct: 85.7,
+      market_ask: 0.18,
+      edge_pct: 67.7,
       side: "YES",
-      contracts: 16,
-      capital: 9.92,
-      status: "STAGED",
-      reason: "Atmospheric River Inflow: 100% ensemble consensus vs 62¢ Ask (+38.0% edge)",
+      contracts: 50,
+      capital: 9.00,
+      status: "EXECUTED",
+      reason: "Large market dislocation: Ask 18¢ while radar confirms storm front",
     },
     {
       id: 5,
-      station_code: "CLIAUS",
-      city: "Austin",
+      station_code: "CLIDEN",
+      city: "Denver",
       target_date: "2026-10-12",
-      market_id: "KXRAIN-26OCT12-AUS",
-      model_prob_pct: 77.8,
-      market_ask: 0.35,
-      edge_pct: 42.8,
-      side: "YES",
-      contracts: 28,
-      capital: 9.80,
-      status: "STAGED",
-      reason: "Gulf Moisture Surge: Model 77.8% vs 35¢ Ask (+42.8% edge)",
-    },
-    {
-      id: 4,
-      station_code: "CLIDFW",
-      city: "Dallas",
-      target_date: "2026-10-12",
-      market_id: "KXRAIN-26OCT12-DFW",
-      model_prob_pct: 18.2,
-      market_ask: 0.38,
-      edge_pct: 0.0,
+      market_id: "KXRAIN-26OCT12-DEN",
+      model_prob_pct: 48.0,
+      market_ask: 0.52,
+      edge_pct: -4.0,
       side: "NO",
       contracts: 0,
-      capital: 0.0,
+      capital: 0.00,
       status: "NO_TRADE",
-      reason: "Forecast Clear: Rain Prob 18.2% < 25%, but ask spread offers insufficient edge",
+      reason: "Edge below 5.0% threshold (Calculated edge: -4.0%). Trade rejected.",
     },
   ],
   "2026-10-11": [
     {
-      id: 101,
-      station_code: "CLISAT",
-      city: "San Antonio",
-      target_date: "2026-10-11",
-      market_id: "KXRAIN-26OCT11-SATX",
-      model_prob_pct: 88.5,
-      market_ask: 0.22,
-      edge_pct: 66.5,
-      side: "YES",
-      contracts: 45,
-      capital: 9.90,
-      status: "WON",
-      reason: "Thunderstorm Line: Model 88.5% vs 22¢ Ask (+66.5% edge)",
-      outcome_pnl: 35.10,
-    },
-    {
-      id: 102,
+      id: 4,
       station_code: "CLIMIA",
       city: "Miami",
       target_date: "2026-10-11",
       market_id: "KXRAIN-26OCT11-MIA",
-      model_prob_pct: 92.0,
-      market_ask: 0.55,
-      edge_pct: 37.0,
+      model_prob_pct: 91.2,
+      market_ask: 0.38,
+      edge_pct: 53.2,
       side: "YES",
-      contracts: 18,
-      capital: 9.90,
+      contracts: 26,
+      capital: 9.88,
       status: "WON",
-      reason: "Tropical Depression Bands: Model 92% vs 55¢ Ask (+37.0% edge)",
-      outcome_pnl: 8.10,
+      reason: "Tropical wave precipitation settled positive at 1.12 inches",
+      outcome_pnl: 16.12,
     },
     {
-      id: 103,
-      station_code: "CLIORD",
-      city: "Chicago",
+      id: 3,
+      station_code: "CLILAX",
+      city: "Los Angeles",
       target_date: "2026-10-11",
-      market_id: "KXRAIN-26OCT11-ORD",
-      model_prob_pct: 12.0,
-      market_ask: 0.20,
-      edge_pct: 68.0,
+      market_id: "KXRAIN-26OCT11-LAX",
+      model_prob_pct: 3.5,
+      market_ask: 0.22,
+      edge_pct: 74.5,
       side: "NO",
-      contracts: 40,
-      capital: 8.00,
+      contracts: 12,
+      capital: 9.36,
       status: "WON",
-      reason: "High Pressure Dome: Rain Prob 12.0%, bought NO @ 20¢",
-      outcome_pnl: 32.00,
+      reason: "Zero rain front verified; settled NO at 0.00 inches",
+      outcome_pnl: 2.64,
     },
   ],
   "2026-10-10": [
     {
-      id: 201,
-      station_code: "CLIATL",
-      city: "Atlanta",
+      id: 2,
+      station_code: "CLIORD",
+      city: "Chicago (O'Hare)",
       target_date: "2026-10-10",
-      market_id: "KXRAIN-26OCT10-ATL",
-      model_prob_pct: 84.0,
+      market_id: "KXRAIN-26OCT10-ORD",
+      model_prob_pct: 78.4,
       market_ask: 0.30,
-      edge_pct: 54.0,
+      edge_pct: 48.4,
       side: "YES",
       contracts: 33,
       capital: 9.90,
       status: "WON",
-      reason: "Frontal Passage: Model 84.0% vs 30¢ Ask",
+      reason: "Lake effect band yielded 0.22 inches; settled YES",
       outcome_pnl: 23.10,
-    },
-    {
-      id: 202,
-      station_code: "CLIDEN",
-      city: "Denver",
-      target_date: "2026-10-10",
-      market_id: "KXRAIN-26OCT10-DEN",
-      model_prob_pct: 15.0,
-      market_ask: 0.25,
-      edge_pct: 60.0,
-      side: "NO",
-      contracts: 38,
-      capital: 9.50,
-      status: "WON",
-      reason: "Dry Continental Air: Bought NO @ 25¢",
-      outcome_pnl: 28.50,
     },
   ],
   "2026-10-09": [
     {
-      id: 301,
-      station_code: "CLIJFK",
-      city: "New York (JFK)",
+      id: 1,
+      station_code: "CLISEA",
+      city: "Seattle",
       target_date: "2026-10-09",
-      market_id: "KXRAIN-26OCT09-JFK",
-      model_prob_pct: 81.2,
-      market_ask: 0.40,
-      edge_pct: 41.2,
+      market_id: "KXRAIN-26OCT09-SEA",
+      model_prob_pct: 82.0,
+      market_ask: 0.65,
+      edge_pct: 17.0,
       side: "YES",
-      contracts: 25,
-      capital: 10.00,
-      status: "WON",
-      reason: "Coastal Low Pressure: Model 81.2% vs 40¢ Ask",
-      outcome_pnl: 15.00,
-    },
-    {
-      id: 302,
-      station_code: "CLILAX",
-      city: "Los Angeles",
-      target_date: "2026-10-09",
-      market_id: "KXRAIN-26OCT09-LAX",
-      model_prob_pct: 5.0,
-      market_ask: 0.15,
-      edge_pct: 80.0,
-      side: "NO",
-      contracts: 60,
-      capital: 9.00,
-      status: "WON",
-      reason: "Desert Ridge: Zero Rain Expected, bought NO @ 15¢",
-      outcome_pnl: 51.00,
+      contracts: 15,
+      capital: 9.75,
+      status: "LOST",
+      reason: "Precipitation occurred 3 miles south of station sensor (0.00 trace)",
+      outcome_pnl: -9.75,
     },
   ],
   "2026-10-08": [
     {
-      id: 401,
+      id: 101,
       station_code: "CLIBOS",
       city: "Boston",
       target_date: "2026-10-08",
       market_id: "KXRAIN-26OCT08-BOS",
-      model_prob_pct: 79.0,
-      market_ask: 0.45,
-      edge_pct: 34.0,
+      model_prob_pct: 88.0,
+      market_ask: 0.40,
+      edge_pct: 48.0,
       side: "YES",
-      contracts: 22,
-      capital: 9.90,
+      contracts: 25,
+      capital: 10.00,
       status: "WON",
-      reason: "Northeast Trough: Model 79% vs 45¢ Ask",
-      outcome_pnl: 12.10,
+      reason: "Coastal front produced 0.44 inches; settled YES",
+      outcome_pnl: 15.00,
     },
   ],
   "2026-10-07": [
     {
-      id: 501,
-      station_code: "CLISEA",
-      city: "Seattle",
+      id: 102,
+      station_code: "CLIDFW",
+      city: "Dallas/Fort Worth",
       target_date: "2026-10-07",
-      market_id: "KXRAIN-26OCT07-SEA",
-      model_prob_pct: 95.0,
+      market_id: "KXRAIN-26OCT07-DFW",
+      model_prob_pct: 94.0,
       market_ask: 0.50,
-      edge_pct: 45.0,
+      edge_pct: 44.0,
       side: "YES",
       contracts: 20,
       capital: 10.00,
       status: "WON",
-      reason: "Pacific Jet Stream: Heavy Precipitation Forecast",
+      reason: "Supercell convection confirmed at DFW airport; settled YES",
       outcome_pnl: 10.00,
     },
   ],
 };
 
-function AgentDashboard() {
+function AgentDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, signInWithGoogle, signOut, setIsPricingOpen, consumeRun } = useAuth();
+  const { user, setIsPricingOpen, signOut } = useAuth();
 
-  // Engine toggles & controls
-  const [agentPower, setAgentPower] = useState<"ACTIVE" | "PAUSED">("ACTIVE");
-  const [autonomyMode, setAutonomyMode] = useState<"copilot" | "autonomous">(
-    (searchParams.get("mode") as any) || "copilot"
-  );
-  const [provider, setProvider] = useState(searchParams.get("provider") || "auto");
-  const [venue, setVenue] = useState(searchParams.get("venue") || "kalshi_demo");
-  const [capitalPerTrade, setCapitalPerTrade] = useState(10.0);
+  // Settings & Autonomy Controls
+  const [isAgentActive, setIsAgentActive] = useState<boolean>(true);
+  const [autonomyMode, setAutonomyMode] = useState<"AUTONOMOUS" | "COPILOT">("AUTONOMOUS");
+  const [selectedDate, setSelectedDate] = useState<string>("2026-10-12");
+  const [activeTab, setActiveTab] = useState<"opportunities" | "positions" | "settings">("opportunities");
 
-  // Selected date dropdown (Today + past 5 days)
-  const [selectedDate, setSelectedDate] = useState("2026-10-12");
+  // Venue Real Balance State
+  const [venueBalance, setVenueBalance] = useState<number>(4.50);
+  const [capitalPerTrade, setCapitalPerTrade] = useState<number>(10.00);
 
-  // UI modals
-  const [isRunning, setIsRunning] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showTraceModal, setShowTraceModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
-  const [takeProfitModalPos, setTakeProfitModalPos] = useState<Position | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
-
-  // Balances
-  const [cashBalance, setCashBalance] = useState(90.10);
-  const [venueCollateralBalance, setVenueCollateralBalance] = useState(1000.0); // Kalshi demo v2 balance
-  const [investedCapital, setInvestedCapital] = useState(9.90);
-  const [cumulativePnl, setCumulativePnl] = useState(0.00);
-
-  // Active Positions
-  const [positions, setPositions] = useState<Position[]>([
-    {
-      id: 1,
-      market_id: "KXRAIN-26OCT12-SATX",
-      station_code: "CLISAT",
-      city: "San Antonio",
-      side: "YES",
-      entry_price: 0.18,
-      current_bid: 0.65, // Price has surged in our favor!
-      contracts: 55,
-      total_invested: 9.90,
-      potential_payout: 55.00,
-      unrealized_pnl: 25.85, // (0.65 - 0.18) * 55 = +$25.85
-      unrealized_pct: 261.1,
-      status: "OPEN",
-      created_at: new Date().toLocaleTimeString(),
-    },
-  ]);
-
-  // Current day's staged opportunities
-  const [stagedSignals, setStagedSignals] = useState<OpportunityItem[]>(
+  // Opportunities and Positions State
+  const [opportunities, setOpportunities] = useState<OpportunityItem[]>(
     DAILY_OPPORTUNITIES["2026-10-12"] || []
   );
 
-  const showToast = (msg: string) => {
-    setNotification(msg);
-    setTimeout(() => setNotification(null), 3500);
-  };
-
-  // Toggle agent master power
-  const handleToggleAgentPower = () => {
-    const nextPower = agentPower === "ACTIVE" ? "PAUSED" : "ACTIVE";
-    setAgentPower(nextPower);
-    if (nextPower === "PAUSED") {
-      showToast("Agent Paused. Trading and scans are temporarily halted.");
-    } else {
-      showToast("Agent Activated. Real-time scanning & execution resumed.");
-    }
-  };
-
-  // Take Profit Early Execution
-  const handleConfirmTakeProfit = () => {
-    if (!takeProfitModalPos) return;
-    const pos = takeProfitModalPos;
-
-    const proceeds = parseFloat((pos.current_bid * pos.contracts).toFixed(2));
-    const profitLocked = parseFloat((proceeds - pos.total_invested).toFixed(2));
-
-    // Update positions state
-    setPositions(
-      positions.map((p) =>
-        p.id === pos.id ? { ...p, status: "CLOSED_EARLY" as const } : p
-      )
-    );
-
-    // Update balances
-    setCashBalance((prev) => parseFloat((prev + proceeds).toFixed(2)));
-    setInvestedCapital((prev) => parseFloat((prev - pos.total_invested).toFixed(2)));
-    setCumulativePnl((prev) => parseFloat((prev + profitLocked).toFixed(2)));
-
-    showToast(`Take Profit Executed! Locked in +$${profitLocked.toFixed(2)} early profit on ${pos.city}.`);
-    setTakeProfitModalPos(null);
-  };
-
-  // Trigger cycle scan
-  const handleTriggerCycle = () => {
-    if (agentPower === "PAUSED") {
-      showToast("Agent is currently PAUSED. Switch to Active to execute cycles.");
-      return;
-    }
-
-    if (!user) {
-      signInWithGoogle();
-      showToast("Signed in with Google! 7-Day Free Trial activated.");
-      return;
-    }
-
-    if (!consumeRun()) {
-      showToast("Out of runs. Please select a pass or upgrade to Pro.");
-      return;
-    }
-
-    // Venue collateral check
-    if (venueCollateralBalance < capitalPerTrade) {
-      showToast(`Insufficient Collateral on ${venue}. Required $${capitalPerTrade}, Available $${venueCollateralBalance}. Please deposit funds.`);
-      return;
-    }
-
-    setIsRunning(true);
-    setTimeout(() => {
-      setIsRunning(false);
-      showToast(`Completed scan across 22 NWS stations via ${provider.toUpperCase()} ensemble.`);
-    }, 1200);
-  };
-
-  // Approve staged signal
-  const handleApprove = (sig: OpportunityItem) => {
-    if (agentPower === "PAUSED") {
-      showToast("Agent is currently PAUSED. Switch to Active to approve trades.");
-      return;
-    }
-
-    if (!user) {
-      signInWithGoogle();
-      return;
-    }
-
-    if (!consumeRun()) {
-      showToast("Out of runs. Please select a pass or upgrade to Pro.");
-      return;
-    }
-
-    if (venueCollateralBalance < sig.capital) {
-      showToast(`Venue collateral low ($${venueCollateralBalance.toFixed(2)}). Deposit funds on ${venue}.`);
-      return;
-    }
-
-    const newPosition: Position = {
-      id: Date.now(),
-      market_id: sig.market_id,
-      station_code: sig.station_code,
-      city: sig.city,
-      side: sig.side,
-      entry_price: sig.market_ask,
-      current_bid: sig.market_ask,
-      contracts: sig.contracts,
-      total_invested: sig.capital,
-      potential_payout: sig.contracts * 1.0,
-      unrealized_pnl: 0.0,
-      unrealized_pct: 0.0,
+  const [positions, setPositions] = useState<Position[]>([
+    {
+      id: 101,
+      market_id: "KXRAIN-26OCT12-HOU",
+      station_code: "CLIHOU",
+      city: "Houston (HOU)",
+      side: "YES",
+      entry_price: 0.48,
+      current_bid: 0.72,
+      contracts: 20,
+      total_invested: 9.60,
+      potential_payout: 20.00,
+      unrealized_pnl: 4.80,
+      unrealized_pct: 50.0,
       status: "OPEN",
-      created_at: new Date().toLocaleTimeString(),
-    };
+      created_at: "Today, 08:30 UTC",
+    },
+    {
+      id: 102,
+      market_id: "KXRAIN-26OCT12-SAT",
+      station_code: "CLISAT",
+      city: "San Antonio (SATX)",
+      side: "YES",
+      entry_price: 0.18,
+      current_bid: 0.35,
+      contracts: 50,
+      total_invested: 9.00,
+      potential_payout: 50.00,
+      unrealized_pnl: 8.50,
+      unrealized_pct: 94.4,
+      status: "OPEN",
+      created_at: "Today, 09:15 UTC",
+    },
+  ]);
 
-    setPositions([newPosition, ...positions]);
-    setStagedSignals(stagedSignals.filter((s) => s.id !== sig.id));
-    setCashBalance((prev) => parseFloat((prev - sig.capital).toFixed(2)));
-    setInvestedCapital((prev) => parseFloat((prev + sig.capital).toFixed(2)));
-    setVenueCollateralBalance((prev) => parseFloat((prev - sig.capital).toFixed(2)));
-    showToast(`Executed ${sig.side} ${sig.city} (x${sig.contracts} @ $${sig.market_ask.toFixed(2)})!`);
-  };
+  // Modals
+  const [earlyExitPosition, setEarlyExitPosition] = useState<Position | null>(null);
+  const [isExitSubmitting, setIsExitSubmitting] = useState(false);
+  const [exitNotification, setExitNotification] = useState<string | null>(null);
 
-  const handleReject = (id: number) => {
-    setStagedSignals(stagedSignals.filter((s) => s.id !== id));
-    showToast(`Rejected signal #${id}.`);
-  };
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Account Deletion Flow
-  const handleConfirmDeleteAccount = () => {
-    if (deleteConfirmationText !== "DELETE") {
-      showToast("Please type DELETE to confirm account removal.");
-      return;
-    }
+  // Update opportunities when date dropdown changes
+  useEffect(() => {
+    setOpportunities(DAILY_OPPORTUNITIES[selectedDate] || []);
+  }, [selectedDate]);
 
-    // Wipe session and state
+  // Handle Take Profit Early
+  const handleTakeProfitEarly = async () => {
+    if (!earlyExitPosition) return;
+    setIsExitSubmitting(true);
     try {
-      localStorage.removeItem("mone_user_session");
-    } catch {
-      // ignore
+      await new Promise((r) => setTimeout(r, 600));
+      const closedPnl = earlyExitPosition.unrealized_pnl;
+      const closedProceeds = earlyExitPosition.total_invested + closedPnl;
+
+      setPositions((prev) =>
+        prev.map((p) =>
+          p.id === earlyExitPosition.id
+            ? { ...p, status: "CLOSED_EARLY" as const, unrealized_pnl: closedPnl }
+            : p
+        )
+      );
+
+      setExitNotification(
+        `Successfully closed ${earlyExitPosition.city} at $${earlyExitPosition.current_bid.toFixed(2)}. Net proceeds: $${closedProceeds.toFixed(2)} (+${closedPnl >= 0 ? "+" : ""}$${closedPnl.toFixed(2)} profit locked).`
+      );
+      setEarlyExitPosition(null);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsExitSubmitting(false);
     }
-    signOut();
-    setShowDeleteModal(false);
-    setShowSettings(false);
-    router.push("/");
   };
 
-  const formatProviderName = (p: string) => {
-    if (p === "weathernext3") return "Google WeatherNext 3";
-    if (p === "openmeteo") return "Open-Meteo WeatherNext 2";
-    return "Auto (WeatherNext 3 + Open-Meteo)";
+  // Handle Account Deletion
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmationText !== "DELETE") return;
+    setIsDeleting(true);
+    try {
+      await new Promise((r) => setTimeout(r, 800));
+      signOut();
+      localStorage.clear();
+      router.push("/?deleted=true");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }
   };
 
-  const formatVenueName = (v: string) => {
-    if (v === "kalshi_live") return "Kalshi Live KXRAIN";
-    if (v === "kalshi_demo") return "Kalshi Demo v2 (Sandbox)";
-    if (v === "polymarket") return "Polymarket Web3";
-    return "Kalshi Demo v2 (Sandbox)";
-  };
-
-  // Opportunities to display based on selected historical date
-  const displayedOpportunities = DAILY_OPPORTUNITIES[selectedDate] || [];
+  const isLowCollateral = venueBalance < capitalPerTrade;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-zinc-100 flex flex-col font-sans">
-      {/* Toast Notification */}
-      {notification && (
-        <div className="fixed bottom-6 right-6 z-50 bg-indigo-600 text-white text-xs font-medium px-4 py-3 rounded-lg shadow-xl flex items-center gap-2 border border-indigo-400/30 animate-bounce">
-          <Sparkles className="w-4 h-4" />
-          <span>{notification}</span>
-        </div>
-      )}
+    <div className="min-h-screen bg-[var(--geist-background)] text-[var(--geist-foreground)] font-satoshi flex flex-col selection:bg-[var(--geist-selection)]">
+      {/* Top Header & Master Control Bar */}
+      <header className="sticky top-0 z-40 border-b border-[var(--ds-gray-400)] bg-[var(--geist-background)]/85 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <BrandLogo size="md" href="/agent" />
+            <div className="h-5 w-px bg-[var(--ds-gray-400)] hidden sm:block" />
 
-      {/* Top Navbar */}
-      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-zinc-400 hover:text-white p-1 rounded transition">
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <span className="font-mono text-lg font-bold text-white">
-              mone<span className="text-indigo-400">.</span>dashboard
-            </span>
-
-            {/* Master Agent Power Indicator */}
-            <button
-              onClick={handleToggleAgentPower}
-              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition cursor-pointer ${
-                agentPower === "ACTIVE"
-                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
-                  : "bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20"
-              }`}
-              title="Click to toggle Agent Master Power (Active vs Paused)"
-            >
-              <Power className="w-3.5 h-3.5" />
-              <span>{agentPower === "ACTIVE" ? "Agent Active" : "Agent Paused"}</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* User Account / Plan Badge */}
-            {user ? (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsPricingOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition"
-                >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>
-                    {user.isTrialActive ? "7-Day Trial" : user.plan}:{" "}
-                    <strong className="text-white">
-                      {user.plan === "Pro"
-                        ? `Unlimited (${user.proDaysRemaining !== undefined ? user.proDaysRemaining : 30}d left)`
-                        : `${user.runsRemaining} runs`}
-                    </strong>
-                  </span>
-                  <span className="text-[10px] text-indigo-400 underline ml-1">Upgrade</span>
-                </button>
-
-                <button
-                  onClick={signOut}
-                  title="Sign Out"
-                  className="p-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={signInWithGoogle}
-                className="inline-flex items-center gap-2 text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-white px-3 py-1.5 rounded-lg border border-zinc-800 transition"
-              >
-                <span>Sign in (7-Day Free Trial)</span>
-              </button>
-            )}
-
-            <button
-              onClick={() => setShowTraceModal(true)}
-              className="inline-flex items-center gap-1.5 text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-lg text-zinc-300 transition"
-            >
-              <Activity className="w-3.5 h-3.5 text-indigo-400" />
-              Trace Proof
-            </button>
-
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white transition"
-              title="BYOK & Engine Settings"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Runtime Configuration Sub-Header */}
-        <div className="border-t border-zinc-800/80 bg-zinc-950 px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between text-xs text-zinc-400 gap-2">
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-zinc-500">ENGINE:</span>
-            <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-200">
-              {formatProviderName(provider)}
-            </span>
-            <span className="font-mono text-zinc-500">VENUE:</span>
-            <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-200">
-              {formatVenueName(venue)}
-            </span>
-            <span className="font-mono text-zinc-500">MODE:</span>
-            <span
-              className={`px-2 py-0.5 rounded border uppercase text-[10px] font-semibold ${
-                autonomyMode === "autonomous"
-                  ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-400"
-                  : "bg-zinc-900 border-zinc-800 text-zinc-300"
-              }`}
-            >
-              {autonomyMode}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-zinc-500">
-              Venue Collateral: <strong className="text-zinc-300 font-mono">${venueCollateralBalance.toFixed(2)}</strong>
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* Settings & Account Deletion Drawer */}
-      {showSettings && (
-        <div className="border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-md p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                BYOK (Bring-Your-Own-Key) &amp; Runtime Settings
-              </h3>
-              <button onClick={() => setShowSettings(false)} className="text-zinc-400 hover:text-white text-xs">
-                Close
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-              <div>
-                <label className="block text-zinc-400 mb-1">Weather Provider</label>
-                <select
-                  value={provider}
-                  onChange={(e) => setProvider(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-300"
-                >
-                  <option value="auto">Auto (WeatherNext 3 + Open-Meteo)</option>
-                  <option value="openmeteo">Open-Meteo WeatherNext 2</option>
-                  <option value="weathernext3">Google WeatherNext 3</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-zinc-400 mb-1">Execution Venue</label>
-                <select
-                  value={venue}
-                  onChange={(e) => setVenue(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-300"
-                >
-                  <option value="kalshi_demo">Kalshi Demo v2 (Sandbox)</option>
-                  <option value="kalshi_live">Kalshi Live KXRAIN</option>
-                  <option value="polymarket">Polymarket Web3</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-zinc-400 mb-1">Capital Per Trade</label>
-                <input
-                  type="number"
-                  value={capitalPerTrade}
-                  onChange={(e) => setCapitalPerTrade(parseFloat(e.target.value) || 10.0)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-300 font-mono"
-                />
-              </div>
-              <div>
-                <label className="block text-zinc-400 mb-1">Daily Drawdown Circuit Breaker</label>
-                <input
-                  type="text"
-                  disabled
-                  value="$50.00 USD"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-500 font-mono"
-                />
-              </div>
-            </div>
-
-            {/* Danger Zone: Account Deletion */}
-            <div className="pt-4 border-t border-zinc-800 flex items-center justify-between">
-              <div>
-                <h4 className="text-xs font-semibold text-rose-400 flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  Danger Zone: Account &amp; Credential Wipe
-                </h4>
-                <p className="text-[11px] text-zinc-500">
-                  Permanently wipe your account, trading ledgers, and API tokens.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-medium transition"
-              >
-                Delete Account
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 flex-1 w-full">
-        {/* Venue Collateral Alert Banner (Triggered when venue balance is less than capital per trade) */}
-        {venueCollateralBalance < capitalPerTrade && (
-          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-start gap-3 text-xs text-amber-200">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <strong>Venue Collateral Depleted on {formatVenueName(venue)}</strong>
-              <p className="text-amber-300/80">
-                You have ${venueCollateralBalance.toFixed(2)} available collateral on {venue}, but your capital per trade is set to ${capitalPerTrade.toFixed(2)}. The agent will reject orders until you deposit funds into your venue account or reduce your Capital Per Trade sizing in BYOK Settings.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Control Strip & Balance Banner */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Runner Controls */}
-          <div className="lg:col-span-5 p-5 rounded-xl border border-zinc-800 bg-zinc-950 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Agent Controls</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleToggleAgentPower}
-                  className={`px-2.5 py-1 rounded text-xs font-medium border flex items-center gap-1.5 transition ${
-                    agentPower === "ACTIVE"
-                      ? "bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20"
-                      : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"
+            {/* Master Agent Power Toggle */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)]">
+              <Switch
+                checked={isAgentActive}
+                onCheckedChange={setIsAgentActive}
+                activeColor="emerald"
+                id="agent-master-switch"
+              />
+              <span className="text-xs font-semibold font-satoshi flex items-center gap-1.5">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    isAgentActive
+                      ? "bg-emerald-500 animate-pulse"
+                      : "bg-[var(--ds-gray-500)]"
                   }`}
-                >
-                  {agentPower === "ACTIVE" ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-                  <span>{agentPower === "ACTIVE" ? "Pause Agent" : "Resume Agent"}</span>
-                </button>
-              </div>
+                />
+                {isAgentActive ? "AGENT ACTIVE" : "PAUSED"}
+              </span>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Autonomy Switch */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)]">
+              <span className="text-xs text-[var(--ds-gray-900)]">Mode:</span>
               <button
-                onClick={handleTriggerCycle}
-                disabled={isRunning || agentPower === "PAUSED"}
-                className={`flex-1 inline-flex items-center justify-center gap-2 text-xs font-semibold py-2.5 rounded-lg transition shadow-sm ${
-                  agentPower === "PAUSED"
-                    ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                onClick={() =>
+                  setAutonomyMode((prev) =>
+                    prev === "AUTONOMOUS" ? "COPILOT" : "AUTONOMOUS"
+                  )
+                }
+                className={`text-xs font-semibold px-2 py-0.5 rounded transition ${
+                  autonomyMode === "AUTONOMOUS"
+                    ? "bg-[var(--ds-blue-700)] text-white"
+                    : "bg-[var(--ds-gray-200)] text-[var(--geist-foreground)]"
                 }`}
               >
-                {isRunning ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Scanning 22 Stations...
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-3.5 h-3.5 fill-current" /> Run Scan Cycle Now
-                  </>
-                )}
+                {autonomyMode}
               </button>
-
-              <div className="flex bg-zinc-900 border border-zinc-800 p-0.5 rounded-lg text-xs font-medium">
-                <button
-                  onClick={() => {
-                    setAutonomyMode("copilot");
-                    showToast("Switched to Copilot Mode. Signals await approval.");
-                  }}
-                  className={`px-3 py-2 rounded-md transition ${
-                    autonomyMode === "copilot" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  Copilot
-                </button>
-                <button
-                  onClick={() => {
-                    setAutonomyMode("autonomous");
-                    showToast("Switched to Autonomous Mode. Valid signals execute immediately.");
-                  }}
-                  className={`px-3 py-2 rounded-md transition ${
-                    autonomyMode === "autonomous" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  Autonomous
-                </button>
-              </div>
-            </div>
-
-            <p className="text-[11px] text-zinc-500">
-              {agentPower === "PAUSED"
-                ? "Agent is currently PAUSED. Orders and scans are prevented from running."
-                : autonomyMode === "copilot"
-                ? "Copilot Mode: Signals are staged in the queue below for 1-click human confirmation."
-                : "Autonomous Mode: Automatically evaluates edge and executes orders without waiting."}
-            </p>
-          </div>
-
-          {/* Portfolio Equity Strip */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3 p-5 rounded-xl border border-zinc-800 bg-zinc-950">
-            <div>
-              <span className="text-[11px] text-zinc-400 block">Cash Balance</span>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-white mt-1">${cashBalance.toFixed(2)}</div>
-              <span className="text-[10px] text-zinc-500">Uncommitted Capital</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-zinc-400 block">Open Exposure</span>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-zinc-300 mt-1">${investedCapital.toFixed(2)}</div>
-              <span className="text-[10px] text-zinc-500">{positions.filter(p => p.status === "OPEN").length} Active Position(s)</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-zinc-400 block">Total Portfolio</span>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-indigo-400 mt-1">
-                ${(cashBalance + investedCapital).toFixed(2)}
-              </div>
-              <span className="text-[10px] text-zinc-500">Ledger Equity</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-zinc-400 block">Realized PnL</span>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-emerald-400 mt-1">+${cumulativePnl.toFixed(2)}</div>
-              <span className="text-[10px] text-emerald-500/80">Audited 76.0% Win Rate</span>
             </div>
           </div>
-        </div>
 
-        {/* Active Positions with "Take Profit Early" */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-blue-400" />
-              Active Portfolio Positions ({positions.filter(p => p.status === "OPEN").length} Open)
-            </h2>
-            <span className="text-xs text-zinc-500">
-              Close positions early before resolution to secure gains or cut losses
-            </span>
-          </div>
-
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-zinc-900/80 text-zinc-400 border-b border-zinc-800">
-                  <tr>
-                    <th className="py-3 px-4">Market / Station</th>
-                    <th className="py-3 px-4">Side</th>
-                    <th className="py-3 px-4">Entry Ask</th>
-                    <th className="py-3 px-4">Live Bid</th>
-                    <th className="py-3 px-4">Contracts</th>
-                    <th className="py-3 px-4">Invested</th>
-                    <th className="py-3 px-4">Unrealized PnL</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Early Exit</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
-                  {positions.map((p) => {
-                    const isOpen = p.status === "OPEN";
-                    return (
-                      <tr key={p.id}>
-                        <td className="py-3 px-4 font-semibold text-white">
-                          {p.city} ({p.station_code})
-                          <span className="block text-[10px] text-zinc-500 font-normal">{p.market_id}</span>
-                        </td>
-                        <td className="py-3 px-4 text-emerald-400 font-semibold">{p.side}</td>
-                        <td className="py-3 px-4">${p.entry_price.toFixed(2)}</td>
-                        <td className="py-3 px-4 font-bold text-white">${p.current_bid.toFixed(2)}</td>
-                        <td className="py-3 px-4">{p.contracts}x</td>
-                        <td className="py-3 px-4">${p.total_invested.toFixed(2)}</td>
-                        <td className="py-3 px-4">
-                          {isOpen ? (
-                            <span className="text-emerald-400 font-bold">
-                              +${p.unrealized_pnl.toFixed(2)} (+{p.unrealized_pct.toFixed(1)}%)
-                            </span>
-                          ) : (
-                            <span className="text-zinc-500">Settled</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] border ${
-                              p.status === "OPEN"
-                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                : "bg-zinc-800 text-zinc-400 border-zinc-700"
-                            }`}
-                          >
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {isOpen ? (
-                            <button
-                              onClick={() => setTakeProfitModalPos(p)}
-                              className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-sans text-xs font-semibold transition"
-                            >
-                              Take Profit Early
-                            </button>
-                          ) : (
-                            <span className="text-zinc-500 font-sans text-xs">Closed</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* Daily Opportunity Scanner (Current Day + Past 5 Days Filter) */}
-        <section className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold text-white flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-400" />
-                Weather Prediction Events &amp; Quant Opportunities
-              </h2>
-              <p className="text-xs text-zinc-400">
-                Curated list of daily events where WeatherNext models evaluated mispricings
-              </p>
-            </div>
-
-            {/* Date Selection Dropdown */}
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-zinc-400" />
+          <div className="flex items-center gap-3">
+            {/* 6-Day Date Dropdown Selector */}
+            <div className="relative">
               <select
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-medium cursor-pointer"
+                className="appearance-none bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] text-[var(--geist-foreground)] text-xs font-medium rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-[var(--ds-focus-color)] cursor-pointer"
               >
                 {AVAILABLE_DATES.map((d) => (
                   <option key={d.value} value={d.value}>
@@ -956,268 +436,618 @@ function AgentDashboard() {
                   </option>
                 ))}
               </select>
+              <ChevronDown className="w-3.5 h-3.5 text-[var(--ds-gray-900)] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+
+            <ThemeToggle />
+
+            {/* User Plan Pill */}
+            {user && (
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="font-semibold text-[var(--geist-foreground)]">
+                  {user.plan}
+                </span>
+                <span className="text-[var(--ds-gray-900)] tabular-nums">
+                  (
+                  {user.plan === "Pro"
+                    ? `${user.proDaysRemaining ?? 30}d`
+                    : `${user.runsRemaining} left`}
+                  )
+                </span>
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={signOut}
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5 text-[var(--ds-gray-900)]" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full space-y-6">
+        {/* Early Exit Notification Banner */}
+        {exitNotification && (
+          <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-xs flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Check className="w-4 h-4 shrink-0" />
+              <span>{exitNotification}</span>
+            </span>
+            <button
+              onClick={() => setExitNotification(null)}
+              className="text-emerald-500 hover:text-emerald-400"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Venue Collateral Awareness Alert */}
+        {isLowCollateral && (
+          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 sm:mt-0" />
+              <div>
+                <span className="font-semibold block sm:inline font-outfit">
+                  INSUFFICIENT VENUE COLLATERAL:{" "}
+                </span>
+                <span>
+                  Available Kalshi balance is{" "}
+                  <strong className="tabular-nums font-mono">
+                    ${venueBalance.toFixed(2)}
+                  </strong>
+                  , but configured capital per trade requires{" "}
+                  <strong className="tabular-nums font-mono">
+                    ${capitalPerTrade.toFixed(2)}
+                  </strong>
+                  . Autonomous order execution halted to protect capital.
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href="https://kalshi.com/account/deposit"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button variant="default" size="sm" className="text-xs bg-amber-500 text-black hover:bg-amber-400">
+                  Deposit Collateral
+                </Button>
+              </a>
             </div>
           </div>
+        )}
 
-          {/* Opportunities Cards */}
-          {displayedOpportunities.length === 0 ? (
-            <div className="p-8 rounded-xl border border-dashed border-zinc-800 text-center text-xs text-zinc-500">
-              No evaluated opportunities recorded for {selectedDate}.
+        {/* 4 Metric KPI Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 tabular-nums">
+          <Card className="p-4">
+            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
+              <span>Venue Balance</span>
+              <DollarSign className="w-3.5 h-3.5" />
             </div>
-          ) : (
+            <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
+              ${venueBalance.toFixed(2)}
+            </div>
+            <div className="text-[11px] text-[var(--ds-gray-900)] mt-1">
+              Kalshi Demo BYOK
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
+              <span>Realized Day PnL</span>
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+            </div>
+            <div className="font-outfit text-2xl font-bold text-emerald-500">
+              +$28.76
+            </div>
+            <div className="text-[11px] text-emerald-500 mt-1">
+              +14.2% daily yield
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
+              <span>Audited Win Rate</span>
+              <Activity className="w-3.5 h-3.5 text-[var(--ds-blue-700)]" />
+            </div>
+            <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
+              76.8%
+            </div>
+            <div className="text-[11px] text-[var(--ds-gray-900)] mt-1">
+              22 NWS stations
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between text-xs text-[var(--ds-gray-900)] mb-1">
+              <span>Remaining Runs</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            </div>
+            <div className="font-outfit text-2xl font-bold text-[var(--geist-foreground)]">
+              {user?.plan === "Pro"
+                ? `Unlimited (${user.proDaysRemaining ?? 30}d)`
+                : `${user?.runsRemaining ?? 37}`}
+            </div>
+            <div className="text-[11px] text-[var(--ds-blue-700)] mt-1">
+              <button
+                onClick={() => setIsPricingOpen(true)}
+                className="hover:underline cursor-pointer"
+              >
+                Top up USDC runs &rarr;
+              </button>
+            </div>
+          </Card>
+        </div>
+
+        {/* Segmented Control Navigation */}
+        <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-3">
+          <Tabs
+            size="md"
+            value={activeTab}
+            onValueChange={(val) =>
+              setActiveTab(val as "opportunities" | "positions" | "settings")
+            }
+            items={[
+              {
+                id: "opportunities",
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Activity className="w-3.5 h-3.5" />
+                    Curated Daily Signals ({opportunities.length})
+                  </span>
+                ),
+              },
+              {
+                id: "positions",
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Layers className="w-3.5 h-3.5" />
+                    Active Positions (
+                    {positions.filter((p) => p.status === "OPEN").length})
+                  </span>
+                ),
+              },
+              {
+                id: "settings",
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Settings className="w-3.5 h-3.5" />
+                    Settings & Danger Zone
+                  </span>
+                ),
+              },
+            ]}
+          />
+        </div>
+
+        {/* Tab 1: Curated Daily Opportunities */}
+        {activeTab === "opportunities" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-outfit text-lg font-bold text-[var(--geist-foreground)]">
+                  Evaluated Precipitation Alpha for {selectedDate}
+                </h2>
+                <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+                  Filtered specifically for evaluated contracts where WeatherNext calculated probability spread.
+                </p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {displayedOpportunities.map((opp) => (
-                <div
+              {opportunities.map((opp) => (
+                <Card
                   key={opp.id}
-                  className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 space-y-4 hover:border-zinc-700 transition"
+                  className="p-5 space-y-4 hover:border-[var(--ds-gray-500)] transition"
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-white">{opp.city}</span>
-                        <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
+                        <span className="font-outfit font-bold text-base text-[var(--geist-foreground)]">
+                          {opp.city}
+                        </span>
+                        <Badge variant="secondary" className="font-mono text-[10px]">
                           {opp.station_code}
-                        </span>
+                        </Badge>
                       </div>
-                      <span className="text-[11px] text-zinc-500 font-mono">{opp.market_id}</span>
+                      <div className="font-mono text-xs text-[var(--ds-gray-900)] mt-0.5">
+                        {opp.market_id}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
-                        {opp.side}
+                    <Badge
+                      variant={
+                        opp.status === "WON"
+                          ? "success"
+                          : opp.status === "LOST"
+                          ? "error"
+                          : opp.status === "EXECUTED"
+                          ? "blue"
+                          : opp.status === "STAGED"
+                          ? "warning"
+                          : "secondary"
+                      }
+                      dot={opp.status === "EXECUTED" || opp.status === "STAGED"}
+                    >
+                      {opp.status}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-[var(--geist-background)] border border-[var(--ds-gray-400)] text-xs tabular-nums">
+                    <div>
+                      <span className="text-[var(--ds-gray-900)] block text-[10px]">
+                        WeatherNext Prob
                       </span>
-                      {opp.status === "WON" && (
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
-                          WON (+${opp.outcome_pnl?.toFixed(2)})
-                        </span>
-                      )}
-                      {opp.status === "NO_TRADE" && (
-                        <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 text-[10px]">
-                          NO TRADE
-                        </span>
-                      )}
+                      <span className="font-semibold text-[var(--geist-foreground)]">
+                        {opp.model_prob_pct}%
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[var(--ds-gray-900)] block text-[10px]">
+                        Market Ask
+                      </span>
+                      <span className="font-semibold text-[var(--geist-foreground)]">
+                        ${opp.market_ask.toFixed(2)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[var(--ds-gray-900)] block text-[10px]">
+                        Calculated Edge
+                      </span>
+                      <span
+                        className={`font-semibold ${
+                          opp.edge_pct > 0
+                            ? "text-emerald-500"
+                            : "text-[var(--ds-gray-900)]"
+                        }`}
+                      >
+                        {opp.edge_pct > 0 ? `+${opp.edge_pct}%` : `${opp.edge_pct}%`}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-zinc-900/60 text-xs font-mono">
-                    <div>
-                      <span className="text-[10px] text-zinc-500 block">Model Prob</span>
-                      <span className="text-white font-bold">{opp.model_prob_pct}%</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-zinc-500 block">Market Ask</span>
-                      <span className="text-zinc-300 font-bold">${opp.market_ask.toFixed(2)}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-zinc-500 block">Calculated Edge</span>
-                      <span className="text-emerald-400 font-bold">+{opp.edge_pct}%</span>
-                    </div>
+                  <div className="text-xs text-[var(--ds-gray-900)] leading-relaxed">
+                    <strong className="text-[var(--geist-foreground)] font-satoshi">
+                      Decision Rationale:{" "}
+                    </strong>
+                    {opp.reason}
                   </div>
 
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">{opp.reason}</p>
-
-                  {/* Actions (Only for current day & staged items) */}
-                  {selectedDate === "2026-10-12" && opp.status === "STAGED" && (
-                    <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80">
-                      <div className="text-xs font-mono">
-                        <span className="text-zinc-500">Sizing: </span>
-                        <span className="text-white font-semibold">{opp.contracts} contracts</span>
-                        <span className="text-zinc-500"> (${opp.capital.toFixed(2)})</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleReject(opp.id)}
-                          className="px-3 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-medium transition"
-                        >
-                          Reject
-                        </button>
-                        <button
-                          onClick={() => handleApprove(opp)}
-                          className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-sm"
-                        >
-                          <Check className="w-3.5 h-3.5" /> Approve Order
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-[var(--ds-gray-400)] text-xs tabular-nums">
+                    <span className="text-[var(--ds-gray-900)]">
+                      Capital Allocation:{" "}
+                      <strong className="text-[var(--geist-foreground)]">
+                        ${opp.capital.toFixed(2)}
+                      </strong>{" "}
+                      ({opp.contracts} contracts)
+                    </span>
+                    {opp.outcome_pnl !== undefined && (
+                      <span
+                        className={`font-semibold ${
+                          opp.outcome_pnl >= 0 ? "text-emerald-500" : "text-rose-500"
+                        }`}
+                      >
+                        Settled PnL: {opp.outcome_pnl >= 0 ? "+" : ""}$
+                        {opp.outcome_pnl.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                </Card>
               ))}
             </div>
-          )}
-        </section>
+          </div>
+        )}
+
+        {/* Tab 2: Active Positions & Early Profit Exit */}
+        {activeTab === "positions" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-outfit text-lg font-bold text-[var(--geist-foreground)]">
+                  Live Contract Positions
+                </h2>
+                <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+                  Real-time market mark-to-market. Lock in profits early before market expiration.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs tabular-nums">
+                  <thead className="bg-[var(--geist-background)] border-b border-[var(--ds-gray-400)] text-[var(--ds-gray-900)]">
+                    <tr>
+                      <th className="p-3.5 font-medium">Market / Station</th>
+                      <th className="p-3.5 font-medium">Side</th>
+                      <th className="p-3.5 font-medium">Contracts</th>
+                      <th className="p-3.5 font-medium">Entry Price</th>
+                      <th className="p-3.5 font-medium">Current Bid</th>
+                      <th className="p-3.5 font-medium">Invested</th>
+                      <th className="p-3.5 font-medium">Unrealized PnL</th>
+                      <th className="p-3.5 font-medium text-right">Early Exit</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--ds-gray-400)]">
+                    {positions.map((pos) => (
+                      <tr
+                        key={pos.id}
+                        className="hover:bg-[var(--geist-background)]/50 transition"
+                      >
+                        <td className="p-3.5">
+                          <span className="font-semibold text-[var(--geist-foreground)] block">
+                            {pos.city}
+                          </span>
+                          <span className="font-mono text-[11px] text-[var(--ds-gray-900)]">
+                            {pos.market_id}
+                          </span>
+                        </td>
+                        <td className="p-3.5">
+                          <Badge
+                            variant={pos.side === "YES" ? "success" : "warning"}
+                            className="font-bold text-[10px]"
+                          >
+                            {pos.side}
+                          </Badge>
+                        </td>
+                        <td className="p-3.5 font-medium">{pos.contracts}</td>
+                        <td className="p-3.5">${pos.entry_price.toFixed(2)}</td>
+                        <td className="p-3.5 font-semibold text-[var(--ds-blue-700)]">
+                          ${pos.current_bid.toFixed(2)}
+                        </td>
+                        <td className="p-3.5">${pos.total_invested.toFixed(2)}</td>
+                        <td className="p-3.5">
+                          <span
+                            className={`font-semibold ${
+                              pos.unrealized_pnl >= 0
+                                ? "text-emerald-500"
+                                : "text-rose-500"
+                            }`}
+                          >
+                            {pos.unrealized_pnl >= 0 ? "+" : ""}$
+                            {pos.unrealized_pnl.toFixed(2)} (
+                            {pos.unrealized_pct >= 0 ? "+" : ""}
+                            {pos.unrealized_pct.toFixed(1)}%)
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-right">
+                          {pos.status === "OPEN" ? (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => setEarlyExitPosition(pos)}
+                              className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
+                            >
+                              Take Profit Early
+                            </Button>
+                          ) : (
+                            <Badge variant="secondary">CLOSED EARLY</Badge>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Settings & Danger Zone */}
+        {activeTab === "settings" && (
+          <div className="space-y-6 max-w-3xl">
+            <Card className="p-6 space-y-4">
+              <h3 className="font-outfit text-base font-bold text-[var(--geist-foreground)]">
+                Autonomous Execution Risk Limits
+              </h3>
+              <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+                Protect your account against volatile meteorological deviations and exchange slippage.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs tabular-nums">
+                <div className="space-y-1">
+                  <label className="text-[var(--ds-gray-900)]">
+                    Capital Allocation Per Trade
+                  </label>
+                  <input
+                    type="number"
+                    value={capitalPerTrade}
+                    onChange={(e) => setCapitalPerTrade(parseFloat(e.target.value) || 10)}
+                    className="w-full bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--geist-foreground)] focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[var(--ds-gray-900)]">
+                    Daily Loss Circuit Breaker
+                  </label>
+                  <input
+                    type="text"
+                    defaultValue="$50.00 max daily drawdown"
+                    disabled
+                    className="w-full bg-[var(--ds-gray-200)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--ds-gray-900)] cursor-not-allowed"
+                  />
+                </div>
+              </div>
+            </Card>
+
+            {/* Danger Zone: Account Deletion */}
+            <Card className="p-6 border-rose-500/30 bg-rose-500/5 space-y-4">
+              <div className="flex items-center gap-2 text-rose-500">
+                <Trash2 className="w-4 h-4" />
+                <h3 className="font-outfit text-base font-bold">
+                  Danger Zone: Account Deletion
+                </h3>
+              </div>
+              <p className="font-satoshi text-xs text-[var(--ds-gray-900)] leading-relaxed">
+                Permanently delete your account, session records, and API credentials from the system.
+              </p>
+              <div className="p-3 rounded-lg border border-rose-500/20 bg-rose-500/10 text-xs text-rose-500 font-medium">
+                ⚠️ Strict Non-Refundable Crypto Policy: Decentralized USDC payments and remaining plan runs are final and non-refundable upon account deletion.
+              </div>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="text-xs font-semibold"
+              >
+                Delete Account &amp; Wipe Credentials
+              </Button>
+            </Card>
+          </div>
+        )}
       </main>
 
       {/* Take Profit Early Modal */}
-      {takeProfitModalPos && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="font-semibold text-white text-sm flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
+      {earlyExitPosition && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--geist-background)] border-[var(--ds-gray-400)] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-3">
+              <h3 className="font-outfit font-bold text-lg text-[var(--geist-foreground)]">
                 Take Profit Early
               </h3>
-              <button onClick={() => setTakeProfitModalPos(null)} className="text-zinc-400 hover:text-white text-xs">
+              <button
+                onClick={() => setEarlyExitPosition(null)}
+                className="text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)]"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-zinc-300 leading-relaxed">
-              You are holding <strong>{takeProfitModalPos.contracts} contracts</strong> of{" "}
-              <strong>{takeProfitModalPos.city} ({takeProfitModalPos.side})</strong> entered at $
-              {takeProfitModalPos.entry_price.toFixed(2)}. The current market bid is $
-              {takeProfitModalPos.current_bid.toFixed(2)}.
+            <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+              Sell your active position back to the market order book at current bid to lock in gains before settlement:
             </p>
 
-            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1 text-xs">
+            <div className="p-3.5 rounded-lg bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] space-y-2 text-xs tabular-nums">
               <div className="flex justify-between">
-                <span className="text-emerald-400">Total Invested:</span>
-                <span className="font-mono text-zinc-200">${takeProfitModalPos.total_invested.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-emerald-400">Exit Liquidation Value:</span>
-                <span className="font-mono text-zinc-200">
-                  ${(takeProfitModalPos.current_bid * takeProfitModalPos.contracts).toFixed(2)}
+                <span className="text-[var(--ds-gray-900)]">Market:</span>
+                <span className="font-semibold text-[var(--geist-foreground)]">
+                  {earlyExitPosition.city} ({earlyExitPosition.side})
                 </span>
               </div>
-              <div className="flex justify-between font-bold pt-1 border-t border-emerald-500/20">
-                <span className="text-emerald-300">Locked-in Net Profit:</span>
-                <span className="text-emerald-400 font-mono">
-                  +${takeProfitModalPos.unrealized_pnl.toFixed(2)} (+{takeProfitModalPos.unrealized_pct.toFixed(1)}%)
+              <div className="flex justify-between">
+                <span className="text-[var(--ds-gray-900)]">Contracts:</span>
+                <span className="font-semibold">{earlyExitPosition.contracts}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--ds-gray-900)]">Entry Price:</span>
+                <span>${earlyExitPosition.entry_price.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--ds-gray-900)]">Current Bid:</span>
+                <span className="font-bold text-[var(--ds-blue-700)]">
+                  ${earlyExitPosition.current_bid.toFixed(2)}
+                </span>
+              </div>
+              <div className="border-t border-[var(--ds-gray-400)] pt-2 flex justify-between font-bold text-emerald-500">
+                <span>Net Gain to Lock:</span>
+                <span>
+                  +${earlyExitPosition.unrealized_pnl.toFixed(2)} (+
+                  {earlyExitPosition.unrealized_pct.toFixed(1)}%)
                 </span>
               </div>
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                onClick={() => setTakeProfitModalPos(null)}
-                className="px-4 py-2 rounded-lg border border-zinc-800 text-xs text-zinc-400 hover:text-white transition"
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEarlyExitPosition(null)}
               >
                 Cancel
-              </button>
-              <button
-                onClick={handleConfirmTakeProfit}
-                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shadow-md"
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                isLoading={isExitSubmitting}
+                onClick={handleTakeProfitEarly}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
               >
-                Confirm Early Exit
-              </button>
+                Confirm Early Sell
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
-      {/* Account Deletion Modal (With Strict No-Refund Policy Disclaimer) */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-rose-500/40 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="font-semibold text-rose-400 text-sm flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-rose-400" />
-                Permanent Account Deletion
-              </h3>
-              <button onClick={() => setShowDeleteModal(false)} className="text-zinc-400 hover:text-white text-xs">
+      {/* Account Deletion Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <Card className="w-full max-w-md p-6 space-y-5 bg-[var(--geist-background)] border-rose-500/40 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-3">
+              <div className="flex items-center gap-2 text-rose-500">
+                <AlertTriangle className="w-5 h-5" />
+                <h3 className="font-outfit font-bold text-lg">
+                  Confirm Account Deletion
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)]"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs text-zinc-300 leading-relaxed">
+            <div className="space-y-3 text-xs text-[var(--ds-gray-900)]">
               <p>
-                Deleting your account will permanently wipe your login credentials, local state, trading history, and CLI API keys from this device.
+                This action is irreversible. All stored venue credentials, session states, and trade records will be permanently wiped.
               </p>
-
-              {/* Strict No-Refund Disclaimer */}
-              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-200 space-y-1">
-                <strong className="block text-rose-300 uppercase tracking-wide text-[10px]">
-                  ⚠️ Strict Non-Refundable Policy Notice
-                </strong>
-                <p className="text-[11px]">
-                  Because all payments on Mone are executed non-custodially on-chain in native <strong>USDC</strong> (Polygon, Base, Solana), <strong>any remaining trade runs or active Pro subscription days cannot be refunded</strong> once purchased. Account deletion permanently forfeits remaining credits.
-                </p>
+              <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-500 font-semibold leading-relaxed">
+                ⚠️ NON-REFUNDABLE POLICY: Any remaining USDC subscription time or run passes are permanently forfeit and cannot be refunded.
               </div>
-
-              <p className="text-zinc-400 text-[11px]">
-                To confirm permanent deletion, type <strong>DELETE</strong> in the box below:
+              <p>
+                To confirm, type <strong className="text-[var(--geist-foreground)]">DELETE</strong> in the box below:
               </p>
+              <input
+                type="text"
+                value={deleteConfirmationText}
+                onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                placeholder="DELETE"
+                className="w-full bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] rounded-md px-3 py-2 text-sm text-[var(--geist-foreground)] font-mono focus:ring-1 focus:ring-rose-500"
+              />
             </div>
-
-            <input
-              type="text"
-              placeholder="Type DELETE to confirm"
-              value={deleteConfirmationText}
-              onChange={(e) => setDeleteConfirmationText(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 focus:border-rose-500 rounded-lg px-3 py-2 text-xs text-white font-mono"
-            />
 
             <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-lg border border-zinc-800 text-xs text-zinc-400 hover:text-white transition"
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDeleteModalOpen(false)}
               >
                 Cancel
-              </button>
-              <button
-                onClick={handleConfirmDeleteAccount}
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
                 disabled={deleteConfirmationText !== "DELETE"}
-                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition"
+                isLoading={isDeleting}
+                onClick={handleDeleteAccount}
               >
-                Permanently Delete Account
-              </button>
+                Delete Forever
+              </Button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Neatlogs Trace Proof Modal */}
-      {showTraceModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-xl max-w-2xl w-full p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="font-semibold text-white text-sm flex items-center gap-2">
-                <Activity className="w-4 h-4 text-indigo-400" />
-                Neatlogs Failure Recovery Proof Trace
-              </h3>
-              <button onClick={() => setShowTraceModal(false)} className="text-zinc-400 hover:text-white text-xs">
-                Close
-              </button>
-            </div>
-            <p className="text-xs text-zinc-400">
-              Demonstrates Google Cloud GCS disconnect, instant automatic recovery to Open-Meteo WeatherNext 2 ensemble, and trade completion.
-            </p>
-            <div className="bg-black/90 p-3 rounded-lg border border-zinc-800 font-mono text-[11px] text-zinc-300 max-h-72 overflow-y-auto space-y-2">
-              <div className="text-emerald-400">Scenario: GCS_BIGQUERY_DISCONNECT_RECOVERY</div>
-              <div className="text-amber-400">Primary Error: GCS Bucket &apos;gs://weathernext3_spatial&apos; connection reset by peer</div>
-              <div className="text-indigo-400">Recovery Provider: openmeteo_weathernext2 (SUCCESS)</div>
-              <div className="text-zinc-500">--- Spans Hierarchy ---</div>
-              <div>[WORKFLOW] mone_trading_cycle (SUCCESS)</div>
-              <div>&nbsp;&nbsp;&boxur; [TOOL] fetch_weather_forecasts (FALLBACK_ACTIVE)</div>
-              <div>&nbsp;&nbsp;&boxur; [TOOL] fetch_market_quotes (SUCCESS)</div>
-              <div>&nbsp;&nbsp;&boxur; [AGENT] evaluate_market_signals (SUCCESS)</div>
-              <div>&nbsp;&nbsp;&boxur; [TOOL] execute_order (FILLED: CLIORD YES 23x @ $0.42)</div>
-            </div>
-            <div className="flex justify-end pt-2">
-              <button
-                onClick={() => setShowTraceModal(false)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-medium transition"
-              >
-                Done
-              </button>
-            </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>
   );
 }
 
-export default function AgentPage() {
+export default function AgentDashboard() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center text-zinc-400 font-mono text-xs">
-          Loading Agent Runner...
+        <div className="min-h-screen bg-[var(--geist-background)] flex items-center justify-center text-xs text-[var(--ds-gray-900)]">
+          Loading mone dashboard...
         </div>
       }
     >
-      <AgentDashboard />
+      <AgentDashboardContent />
     </Suspense>
   );
 }

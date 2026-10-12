@@ -17,6 +17,9 @@ import {
   Wallet,
   ArrowLeft,
 } from "lucide-react";
+import { Button } from "./ui/Button";
+import { Badge } from "./ui/Badge";
+import { Card } from "./ui/Card";
 
 type NetworkKey = "polygon" | "base" | "solana";
 
@@ -71,7 +74,8 @@ export function PricingModal() {
 
   if (!isPricingOpen) return null;
 
-  const currentAddress = selectedNetwork === "solana" ? WALLETS.solana : WALLETS.evm;
+  const currentAddress =
+    selectedNetwork === "solana" ? WALLETS.solana : WALLETS.evm;
 
   const handleCopy = (text: string, fieldId: string) => {
     navigator.clipboard.writeText(text);
@@ -105,14 +109,21 @@ export function PricingModal() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Verification failed. Please verify the transaction hash.");
+        throw new Error(
+          data.error ||
+            "Verification failed. Please verify the transaction hash."
+        );
       }
 
       // Upgrade account immediately
-      const activatedKey = data.plan_activated || selectedPlan?.key || "pass_10";
+      const activatedKey =
+        data.plan_activated || selectedPlan?.key || "pass_10";
       const customRuns = data.runs_granted;
       upgradePlan(activatedKey, customRuns);
-      setSuccessMessage(data.note || `Payment confirmed! ${selectedPlan?.name} activated on your account.`);
+      setSuccessMessage(
+        data.note ||
+          `Payment confirmed! ${selectedPlan?.name} activated on your account.`
+      );
 
       setTimeout(() => {
         setSuccessMessage(null);
@@ -129,12 +140,16 @@ export function PricingModal() {
   // 1-Click Web3 Wallet Transfer (MetaMask / Phantom / Rabby)
   const handleWeb3Transfer = async () => {
     if (selectedNetwork === "solana") {
-      setVerifyError("For Solana, please send USDC via Phantom to the address below and paste your TX signature.");
+      setVerifyError(
+        "For Solana, please send USDC via Phantom to the address below and paste your TX signature."
+      );
       return;
     }
 
     if (typeof window === "undefined" || !(window as any).ethereum) {
-      setVerifyError("No Web3 wallet extension found. You can send USDC directly to the address below and paste the TX hash.");
+      setVerifyError(
+        "No Web3 wallet extension found. You can send USDC directly to the address below and paste the TX hash."
+      );
       return;
     }
 
@@ -143,7 +158,9 @@ export function PricingModal() {
 
     try {
       const ethereum = (window as any).ethereum;
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
       const sender = accounts[0];
 
       // Native USDC Contracts: Polygon (137) or Base (8453)
@@ -191,15 +208,16 @@ export function PricingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-[#0e0e12] border border-zinc-800 rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
+      <Card className="bg-[var(--geist-background)] border-[var(--ds-gray-400)] rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative my-8">
         {/* Close Button */}
         <button
           onClick={() => {
             setSelectedPlan(null);
             setIsPricingOpen(false);
           }}
-          className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition"
+          className="absolute top-5 right-5 text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] p-1.5 rounded-lg hover:bg-[var(--ds-gray-100)] transition"
+          aria-label="Close"
         >
           <X className="w-5 h-5" />
         </button>
@@ -208,22 +226,26 @@ export function PricingModal() {
           /* View 1: Pricing Tiers Selection */
           <div className="space-y-6">
             <div className="text-center max-w-xl mx-auto space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400">
-                <Sparkles className="w-3.5 h-3.5" />
+              <Badge variant="blue" dot>
                 Native USDC Crypto Payments
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              </Badge>
+              <h2 className="font-outfit text-2xl sm:text-3xl font-bold tracking-tight text-[var(--geist-foreground)]">
                 Simple pricing. Zero banking borders.
               </h2>
-              <p className="text-xs sm:text-sm text-zinc-400">
-                Every new user gets a <strong>7-Day Free Trial</strong> (50 runs). Top up anytime with native <strong>USDC</strong> on Polygon, Base, or Solana.
+              <p className="font-satoshi text-xs sm:text-sm text-[var(--ds-gray-900)] leading-relaxed">
+                Every new user gets a <strong>7-Day Free Trial</strong> (50 runs).
+                Top up anytime with native <strong>USDC</strong> on Polygon, Base, or Solana.
               </p>
 
               {user && (
                 <div className="pt-1">
-                  <span className="inline-block text-xs px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300">
-                    Active Plan: <span className="text-emerald-400 font-semibold">{user.plan}</span> (
-                    {user.plan === "Pro" ? "Unlimited" : `${user.runsRemaining} runs left`})
+                  <span className="inline-block text-xs px-3 py-1 rounded-md bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] text-[var(--ds-gray-900)] tabular-nums">
+                    Active Plan:{" "}
+                    <strong className="text-emerald-500">{user.plan}</strong> (
+                    {user.plan === "Pro"
+                      ? `Unlimited (${user.proDaysRemaining ?? 30}d left)`
+                      : `${user.runsRemaining} runs left`}
+                    )
                   </span>
                 </div>
               )}
@@ -232,352 +254,343 @@ export function PricingModal() {
             {/* Pricing Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
               {/* Card 1: 100 Runs */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5 flex flex-col justify-between hover:border-zinc-700 transition">
+              <Card className="p-5 flex flex-col justify-between hover:border-[var(--ds-gray-500)] transition">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-semibold text-white">100 Runs</h3>
-                    <p className="text-xs text-zinc-400">Pay as you go</p>
+                    <h3 className="font-outfit text-base font-semibold text-[var(--geist-foreground)]">
+                      100 Runs
+                    </h3>
+                    <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+                      Pay as you go
+                    </p>
                   </div>
 
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-bold text-white">10</span>
-                    <span className="text-sm font-bold text-indigo-400">USDC</span>
-                    <span className="text-xs text-zinc-500">one-time</span>
+                  <div className="flex items-baseline gap-1.5 tabular-nums">
+                    <span className="font-outfit text-3xl font-extrabold text-[var(--geist-foreground)]">
+                      10
+                    </span>
+                    <span className="text-sm font-bold text-[var(--ds-blue-700)]">
+                      USDC
+                    </span>
+                    <span className="text-xs text-[var(--ds-gray-900)]">
+                      one-time
+                    </span>
                   </div>
 
-                  <ul className="space-y-2 text-xs text-zinc-300">
+                  <ul className="space-y-2 text-xs text-[var(--ds-gray-900)] font-satoshi">
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>100 automated trade runs</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>WeatherNext 3 &amp; 2 ensembles</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>Never expires</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="pt-6">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="md"
                     onClick={() => setSelectedPlan(PLANS[0])}
-                    className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition"
+                    className="w-full text-xs font-semibold gap-2"
                   >
                     Pay 10 USDC <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
 
               {/* Card 2: 300 Runs */}
-              <div className="rounded-xl border border-indigo-500/40 bg-zinc-950/90 p-5 flex flex-col justify-between relative shadow-lg shadow-indigo-500/5">
-                <div className="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-indigo-500 text-[10px] font-bold text-white uppercase tracking-wider">
-                  Most Popular
+              <Card className="p-5 flex flex-col justify-between relative border-[var(--ds-blue-700)] shadow-md">
+                <div className="absolute -top-2.5 right-4">
+                  <Badge variant="blue" className="text-[10px] font-bold">
+                    MOST POPULAR
+                  </Badge>
                 </div>
 
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-semibold text-white">300 Runs</h3>
-                    <p className="text-xs text-indigo-300">Save 17% per trade run</p>
+                    <h3 className="font-outfit text-base font-semibold text-[var(--geist-foreground)]">
+                      300 Runs
+                    </h3>
+                    <p className="font-satoshi text-xs text-[var(--ds-blue-700)]">
+                      Save 17% per trade run
+                    </p>
                   </div>
 
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-bold text-white">25</span>
-                    <span className="text-sm font-bold text-indigo-400">USDC</span>
-                    <span className="text-xs text-zinc-500">one-time</span>
+                  <div className="flex items-baseline gap-1.5 tabular-nums">
+                    <span className="font-outfit text-3xl font-extrabold text-[var(--geist-foreground)]">
+                      25
+                    </span>
+                    <span className="text-sm font-bold text-[var(--ds-blue-700)]">
+                      USDC
+                    </span>
+                    <span className="text-xs text-[var(--ds-gray-900)]">
+                      one-time
+                    </span>
                   </div>
 
-                  <ul className="space-y-2 text-xs text-zinc-300">
+                  <ul className="space-y-2 text-xs text-[var(--ds-gray-900)] font-satoshi">
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>300 automated trade runs</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>Priority execution queue</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span>Never expires</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      <span>Both Kalshi &amp; Polymarket</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="pt-6">
-                  <button
+                  <Button
+                    variant="blue"
+                    size="md"
                     onClick={() => setSelectedPlan(PLANS[1])}
-                    className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 transition"
+                    className="w-full text-xs font-semibold gap-2"
                   >
                     Pay 25 USDC <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
-              </div>
+              </Card>
 
-              {/* Card 3: Pro */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5 flex flex-col justify-between hover:border-zinc-700 transition">
+              {/* Card 3: mone Pro */}
+              <Card className="p-5 flex flex-col justify-between hover:border-[var(--ds-gray-500)] transition">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-semibold text-white">Pro</h3>
-                    <p className="text-xs text-zinc-400">For active quantitative traders</p>
+                    <h3 className="font-outfit text-base font-semibold text-[var(--geist-foreground)]">
+                      mone Pro
+                    </h3>
+                    <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+                      For serious prediction traders
+                    </p>
                   </div>
 
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-bold text-white">49</span>
-                    <span className="text-sm font-bold text-indigo-400">USDC</span>
-                    <span className="text-xs text-zinc-500">/ 30 days</span>
+                  <div className="flex items-baseline gap-1.5 tabular-nums">
+                    <span className="font-outfit text-3xl font-extrabold text-[var(--geist-foreground)]">
+                      49
+                    </span>
+                    <span className="text-sm font-bold text-[var(--ds-blue-700)]">
+                      USDC
+                    </span>
+                    <span className="text-xs text-[var(--ds-gray-900)]">
+                      / 30 days
+                    </span>
                   </div>
 
-                  <ul className="space-y-2 text-xs text-zinc-300">
+                  <ul className="space-y-2 text-xs text-[var(--ds-gray-900)] font-satoshi">
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span><strong>Unlimited</strong> trade runs</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      <span>Unlimited trade executions</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span>Sub-second order book stream</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      <span>30-Day Pass (Days stack on renew)</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span>Telegram webhook alerts</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      <span>Real-time webhook signals</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="pt-6">
-                  <button
+                  <Button
+                    variant="default"
+                    size="md"
                     onClick={() => setSelectedPlan(PLANS[2])}
-                    className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition"
+                    className="w-full text-xs font-semibold gap-2"
                   >
                     Pay 49 USDC <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
-              </div>
-            </div>
-
-            <div className="border-t border-zinc-800/80 pt-4 flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-500 gap-2">
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>100% Permissionless USDC: Accepted on Polygon, Base, and Solana.</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span>Instant on-chain confirmation &bull; Zero merchant KYC hold</span>
-              </div>
+              </Card>
             </div>
           </div>
         ) : (
-          /* View 2: Multi-Chain Crypto Checkout Modal */
+          /* View 2: Native USDC Payment Checkout */
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div className="flex items-center justify-between border-b border-[var(--ds-gray-400)] pb-4">
               <button
-                onClick={() => {
-                  setSelectedPlan(null);
-                  setVerifyError(null);
-                  setSuccessMessage(null);
-                }}
-                className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition"
+                onClick={() => setSelectedPlan(null)}
+                className="inline-flex items-center gap-1.5 text-xs text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] font-medium transition"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> Back to Plans
               </button>
-
-              <span className="text-xs font-semibold text-white">
-                Checkout: <span className="text-indigo-400">{selectedPlan.name}</span> ({selectedPlan.priceUsdc} USDC)
-              </span>
+              <div className="text-right">
+                <span className="text-xs text-[var(--ds-gray-900)]">
+                  Selected Tier:
+                </span>
+                <span className="font-outfit font-bold text-sm text-[var(--geist-foreground)] ml-2">
+                  {selectedPlan.name} (${selectedPlan.priceUsdc} USDC)
+                </span>
+              </div>
             </div>
 
             {/* Network Selector Tabs */}
             <div className="space-y-2">
-              <label className="block text-xs font-medium text-zinc-400">Select Blockchain Network:</label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => setSelectedNetwork("polygon")}
-                  className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
-                    selectedNetwork === "polygon"
-                      ? "bg-purple-950/30 border-purple-500 text-purple-200"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700"
-                  }`}
-                >
-                  <div>
-                    <div className="font-bold text-xs flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-purple-400" />
-                      Polygon
-                    </div>
-                    <span className="text-[10px] text-zinc-500">Polymarket Native</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setSelectedNetwork("base")}
-                  className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
-                    selectedNetwork === "base"
-                      ? "bg-blue-950/30 border-blue-500 text-blue-200"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700"
-                  }`}
-                >
-                  <div>
-                    <div className="font-bold text-xs flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-400" />
-                      Base
-                    </div>
-                    <span className="text-[10px] text-zinc-500">Coinbase L2</span>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setSelectedNetwork("solana")}
-                  className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
-                    selectedNetwork === "solana"
-                      ? "bg-emerald-950/30 border-emerald-500 text-emerald-200"
-                      : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700"
-                  }`}
-                >
-                  <div>
-                    <div className="font-bold text-xs flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      Solana
-                    </div>
-                    <span className="text-[10px] text-zinc-500">Phantom SPL</span>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Payment Details Container */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-zinc-950 p-5 rounded-xl border border-zinc-800">
-              {/* QR Code */}
-              <div className="md:col-span-4 flex flex-col items-center justify-center p-3 bg-black rounded-lg border border-zinc-800 text-center space-y-2">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${currentAddress}&bgcolor=000000&color=ffffff`}
-                  alt="USDC Deposit QR Code"
-                  className="w-36 h-36 rounded-md"
-                />
-                <span className="text-[10px] text-zinc-500 font-mono">Scan to send from mobile wallet</span>
-              </div>
-
-              {/* Transfer Info */}
-              <div className="md:col-span-8 space-y-3.5">
-                <div>
-                  <span className="text-[11px] text-zinc-500 block">Exact Amount to Send:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold font-mono text-white">
-                      {selectedPlan.priceUsdc}.00 USDC
-                    </span>
-                    <button
-                      onClick={() => handleCopy(`${selectedPlan.priceUsdc}.00`, "amount")}
-                      className="text-xs text-indigo-400 hover:underline flex items-center gap-1"
-                    >
-                      {copiedField === "amount" ? (
-                        <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span className="text-emerald-400">Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <span className="text-[11px] text-zinc-500 block">
-                    Recipient Deposit Address ({selectedNetwork.toUpperCase()}):
-                  </span>
-                  <div className="flex items-center gap-2 p-2 bg-black rounded-lg border border-zinc-800 font-mono text-xs text-zinc-200">
-                    <span className="truncate flex-1">{currentAddress}</span>
-                    <button
-                      onClick={() => handleCopy(currentAddress, "addr")}
-                      className="p-1.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition shrink-0"
-                      title="Copy Address"
-                    >
-                      {copiedField === "addr" ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* 1-Click Web3 Send Button */}
-                {selectedNetwork !== "solana" && (
-                  <button
-                    onClick={handleWeb3Transfer}
-                    disabled={isVerifying}
-                    className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 transition"
-                  >
-                    {isVerifying ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Confirming in Wallet...
-                      </>
-                    ) : (
-                      <>
-                        <Wallet className="w-3.5 h-3.5" /> Pay 1-Click with Web3 Wallet (MetaMask / Rabby / Phantom)
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Manual TXID Verification Section */}
-            <div className="space-y-3 p-4 rounded-xl bg-zinc-950/60 border border-zinc-800">
-              <label className="block text-xs font-medium text-zinc-300">
-                Sent from an exchange (Binance, Bybit, Coinbase, Yellow Card) or another wallet?
+              <label className="text-xs font-medium text-[var(--geist-foreground)] block">
+                Select Network for Native USDC Transfer:
               </label>
-              <p className="text-[11px] text-zinc-500">
-                Paste your Transaction Hash (TXID) or Solana signature below for instant verification:
-              </p>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  {
+                    key: "polygon" as NetworkKey,
+                    name: "Polygon (PoS)",
+                    badge: "Lowest Gas (<$0.01)",
+                  },
+                  {
+                    key: "base" as NetworkKey,
+                    name: "Base (L2)",
+                    badge: "Coinbase L2 (<$0.01)",
+                  },
+                  {
+                    key: "solana" as NetworkKey,
+                    name: "Solana",
+                    badge: "Sub-Second Finality",
+                  },
+                ].map((net) => (
+                  <button
+                    key={net.key}
+                    type="button"
+                    onClick={() => setSelectedNetwork(net.key)}
+                    className={`p-3 rounded-xl border text-left transition select-none ${
+                      selectedNetwork === net.key
+                        ? "border-[var(--ds-blue-700)] bg-[var(--ds-blue-700)]/5 text-[var(--geist-foreground)] ring-1 ring-[var(--ds-blue-700)]"
+                        : "border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] text-[var(--ds-gray-900)] hover:border-[var(--ds-gray-500)]"
+                    }`}
+                  >
+                    <div className="font-outfit font-bold text-xs text-[var(--geist-foreground)]">
+                      {net.name}
+                    </div>
+                    <div className="text-[10px] text-[var(--ds-gray-900)] mt-0.5">
+                      {net.badge}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={txHashInput}
-                  onChange={(e) => setTxHashInput(e.target.value)}
-                  placeholder={
-                    selectedNetwork === "solana"
-                      ? "Paste Solana Transaction Signature (e.g. 5xKu...)"
-                      : "Paste EVM Transaction Hash (e.g. 0x8a92...)"
-                  }
-                  className="flex-1 text-xs bg-black border border-zinc-800 rounded-lg px-3 py-2 text-zinc-200 font-mono focus:outline-none focus:border-indigo-500"
-                />
-                <button
-                  onClick={() => handleVerifyTx()}
-                  disabled={isVerifying || !txHashInput.trim()}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shrink-0"
+            {/* Deposit Address Card */}
+            <div className="p-4 rounded-xl border border-[var(--ds-gray-400)] bg-[var(--ds-gray-100)] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-[var(--ds-gray-900)]">
+                  Send exactly{" "}
+                  <strong className="text-[var(--geist-foreground)] tabular-nums">
+                    {selectedPlan.priceUsdc} USDC
+                  </strong>{" "}
+                  to this {selectedNetwork.toUpperCase()} address:
+                </span>
+                <span className="text-[11px] text-emerald-500 font-medium">
+                  2% fee tolerance accepted
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <code className="flex-1 bg-[var(--geist-background)] border border-[var(--ds-gray-400)] px-3 py-2 rounded-lg font-mono text-xs text-[var(--geist-foreground)] select-all truncate">
+                  {currentAddress}
+                </code>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCopy(currentAddress, "address")}
+                  className="shrink-0 text-xs gap-1.5"
                 >
-                  {isVerifying ? (
+                  {copiedField === "address" ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Verifying...
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />{" "}
+                      Copied
                     </>
                   ) : (
                     <>
-                      <Check className="w-3.5 h-3.5" /> Verify &amp; Unlock
+                      <Copy className="w-3.5 h-3.5" /> Copy
                     </>
                   )}
-                </button>
+                </Button>
               </div>
-
-              {/* Feedback messages */}
-              {verifyError && (
-                <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-medium">
-                  {verifyError}
-                </div>
-              )}
-
-              {successMessage && (
-                <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  {successMessage}
-                </div>
-              )}
             </div>
+
+            {/* Transfer & Verification Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Option A: Web3 1-Click */}
+              <Card className="p-4 space-y-3 flex flex-col justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-4 h-4 text-[var(--ds-blue-700)]" />
+                    <span className="font-outfit font-semibold text-xs text-[var(--geist-foreground)]">
+                      1-Click Web3 Transfer
+                    </span>
+                  </div>
+                  <p className="font-satoshi text-[11px] text-[var(--ds-gray-900)]">
+                    Auto-fill transaction in MetaMask, Rabby, or Coinbase Wallet:
+                  </p>
+                </div>
+                <Button
+                  variant="blue"
+                  size="md"
+                  isLoading={isVerifying}
+                  onClick={handleWeb3Transfer}
+                  className="w-full text-xs font-semibold"
+                >
+                  Transfer {selectedPlan.priceUsdc} USDC with Wallet
+                </Button>
+              </Card>
+
+              {/* Option B: Manual Verification */}
+              <Card className="p-4 space-y-3">
+                <div className="space-y-1">
+                  <span className="font-outfit font-semibold text-xs text-[var(--geist-foreground)] block">
+                    Or Verify By Transaction Hash:
+                  </span>
+                  <p className="font-satoshi text-[11px] text-[var(--ds-gray-900)]">
+                    Sent via Binance, Bybit, Phantom, or hardware wallet?
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={txHashInput}
+                    onChange={(e) => setTxHashInput(e.target.value)}
+                    placeholder="0x... or Solana signature"
+                    className="flex-1 bg-[var(--geist-background)] border border-[var(--ds-gray-400)] rounded-md px-3 py-1.5 text-xs text-[var(--geist-foreground)] font-mono focus:ring-1 focus:ring-[var(--ds-focus-color)]"
+                  />
+                  <Button
+                    variant="default"
+                    size="sm"
+                    isLoading={isVerifying}
+                    onClick={() => handleVerifyTx()}
+                    className="text-xs"
+                  >
+                    Verify
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* Error / Success Feedback */}
+            {verifyError && (
+              <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-xs text-rose-500">
+                {verifyError}
+              </div>
+            )}
+            {successMessage && (
+              <div className="p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-xs text-emerald-500 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{successMessage}</span>
+              </div>
+            )}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

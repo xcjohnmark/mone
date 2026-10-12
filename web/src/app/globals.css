@@ -2,30 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Vercel Geist Design System Color Tokens */
 :root {
-  --background: #0a0a0c;
-  --foreground: #ededed;
+  /* Light Mode */
+  --geist-background: #ffffff;
+  --geist-foreground: #000000;
+  
+  /* Gray Scale */
+  --ds-gray-100: hsla(0, 0%, 98%, 1);  /* #fafafa - Subtle surface offset */
+  --ds-gray-200: hsla(0, 0%, 95%, 1);  /* #f2f2f2 */
+  --ds-gray-400: hsla(0, 0%, 90%, 1);  /* #eaeaea - Crisp 1px border */
+  --ds-gray-500: hsla(0, 0%, 75%, 1);  /* #bfbfbf */
+  --ds-gray-900: hsla(0, 0%, 40%, 1);  /* #666666 - Secondary text */
+  --ds-gray-1000: hsla(0, 0%, 9%, 1);  /* #171717 - Primary high contrast */
+  
+  /* Primary Accent & Interactive */
+  --ds-blue-700: hsla(212, 100%, 48%, 1); /* #0070f3 - Primary action */
+  --ds-blue-900: hsla(210, 100%, 40%, 1); /* Hover state */
+  
+  /* Semantic UI */
+  --geist-success: #0070f3;
+  --geist-error: #ee0000;
+  --geist-warning: #f5a623;
+  
+  /* Focus & Selection */
+  --ds-focus-color: var(--ds-blue-700);
+  --geist-selection: hsla(212, 100%, 92%, 1);
+
+  color-scheme: light;
+}
+
+.dark {
+  /* Dark Mode */
+  --geist-background: #000000;
+  --geist-foreground: #ffffff;
+  
+  /* Gray Scale */
+  --ds-gray-100: hsla(0, 0%, 7%, 1);   /* #121212 - Surface offset */
+  --ds-gray-200: hsla(0, 0%, 12%, 1);  /* #1e1e1e */
+  --ds-gray-400: hsla(0, 0%, 18%, 1);  /* #2e2e2e - Crisp 1px border */
+  --ds-gray-500: hsla(0, 0%, 30%, 1);  /* #4d4d4d */
+  --ds-gray-900: hsla(0, 0%, 63%, 1);  /* #a1a1a1 - Secondary text */
+  --ds-gray-1000: hsla(0, 0%, 93%, 1); /* #ededed */
+  
+  /* Primary Accent & Interactive */
+  --ds-blue-700: hsla(212, 100%, 48%, 1); /* #0070f3 */
+  --ds-blue-900: hsla(210, 100%, 66%, 1); /* Hover state */
+  
+  /* Semantic UI */
+  --geist-success: #0070f3;
+  --geist-error: #ee0000;
+  --geist-warning: #f5a623;
+  
+  /* Focus & Selection */
+  --ds-focus-color: var(--ds-blue-900);
+  --geist-selection: hsla(210, 100%, 25%, 1);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--geist-foreground);
+  background-color: var(--geist-background);
+  font-family: var(--font-satoshi), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
+  transition: background-color 150ms ease, color 150ms ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbars */
+::selection {
+  background-color: var(--geist-selection);
+  color: var(--geist-foreground);
+}
+
+/* Custom Minimalist Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #111116;
+  background: var(--geist-background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--ds-gray-400);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--ds-gray-500);
+}
+
+/* Better typography & tabular numbers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Heading styles with Outfit */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-outfit), sans-serif;
+  letter-spacing: -0.02em;
 }

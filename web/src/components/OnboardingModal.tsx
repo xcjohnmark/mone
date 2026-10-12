@@ -3,9 +3,17 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import { Button } from "./ui/Button";
+import { Badge } from "./ui/Badge";
+import { Card } from "./ui/Card";
 
 export function OnboardingModal() {
-  const { user, showOnboardingPrompt, setShowOnboardingPrompt, setIsPricingOpen } = useAuth();
+  const {
+    user,
+    showOnboardingPrompt,
+    setShowOnboardingPrompt,
+    setIsPricingOpen,
+  } = useAuth();
 
   if (!showOnboardingPrompt || !user) return null;
 
@@ -19,58 +27,62 @@ export function OnboardingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-[#0e0e12] border border-zinc-800 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center">
-        <div className="mx-auto w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
+      <Card className="bg-[var(--geist-background)] border-[var(--ds-gray-400)] rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center">
+        <div className="mx-auto w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
           <Sparkles className="w-6 h-6" />
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-xl sm:text-2xl font-bold text-white">
+          <h2 className="font-outfit text-xl sm:text-2xl font-bold text-[var(--geist-foreground)]">
             Welcome to mone, {user.name}!
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-300">
-            Your <span className="text-emerald-400 font-semibold">7-Day Free Trial</span> is now active with <span className="text-white font-semibold">50 complimentary runs</span> and all Pro features unlocked.
+          <p className="font-satoshi text-xs sm:text-sm text-[var(--ds-gray-900)] leading-relaxed">
+            Your <span className="text-emerald-500 font-semibold">7-Day Free Trial</span> is now active with <span className="text-[var(--geist-foreground)] font-semibold">50 complimentary runs</span> and all prediction features unlocked.
           </p>
-          <p className="text-xs text-zinc-400 pt-1">
-            Explore our transparent pricing plans so you know how trade runs work after your trial ends.
+          <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
+            Explore our transparent pricing tiers to learn how automated runs work after your trial.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800/80 text-left space-y-2 text-xs text-zinc-300 font-mono">
+        <div className="p-3.5 rounded-xl bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] text-left space-y-2 text-xs text-[var(--ds-gray-900)] font-mono tabular-nums">
           <div className="flex justify-between">
-            <span className="text-zinc-500">Account:</span>
-            <span className="text-zinc-200">{user.email}</span>
+            <span className="text-[var(--ds-gray-900)]">Account:</span>
+            <span className="text-[var(--geist-foreground)]">{user.email}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Trial Period:</span>
-            <span className="text-emerald-400 font-semibold">7 Days Active</span>
+            <span className="text-[var(--ds-gray-900)]">Trial Period:</span>
+            <span className="text-emerald-500 font-semibold">7 Days Active</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Included Runs:</span>
-            <span className="text-white font-semibold">50 Trade Cycles</span>
+            <span className="text-[var(--ds-gray-900)]">Included Runs:</span>
+            <span className="text-[var(--geist-foreground)] font-semibold">50 Trade Cycles</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-zinc-500">Custody:</span>
-            <span className="text-blue-400 font-semibold">100% Non-Custodial (BYOK)</span>
+            <span className="text-[var(--ds-gray-900)]">Architecture:</span>
+            <span className="text-[var(--ds-blue-700)] font-semibold">100% Non-Custodial (BYOK)</span>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <button
+          <Button
+            variant="blue"
+            size="md"
             onClick={handleExplorePricing}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
+            className="flex-1 text-xs font-semibold gap-2"
           >
-            Explore Plans & Pricing <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-          <button
+            Explore Plans &amp; Pricing <ArrowRight className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            variant="outline"
+            size="md"
             onClick={handleProceed}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white text-xs font-medium transition"
+            className="flex-1 text-xs"
           >
             Go to Agent Dashboard
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
