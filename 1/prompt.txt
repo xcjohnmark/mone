@@ -1,0 +1,5 @@
+npx remotion skills add
+
+---
+
+npm run dev
