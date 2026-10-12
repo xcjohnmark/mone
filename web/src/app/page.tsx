@@ -27,7 +27,6 @@ import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Card } from "../components/ui/Card";
 import { Tabs } from "../components/ui/Tabs";
-import { WeatherGlobe3D } from "../components/ui/WeatherGlobe3D";
 import { MarketCardCarousel } from "../components/MarketCardCarousel";
 import { SetupAgentModal } from "../components/SetupAgentModal";
 
@@ -40,7 +39,7 @@ export default function LandingPage() {
     setIsPricingOpen,
     setIsCliModalOpen,
   } = useAuth();
-  const [setupTab, setSetupTab] = useState<string>("globe");
+  const [setupTab, setSetupTab] = useState<string>("cli");
   const [copied, setCopied] = useState(false);
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
   const [showRunsInfo, setShowRunsInfo] = useState(false);
@@ -213,7 +212,7 @@ export default function LandingPage() {
                   <span className="size-2.5 rounded-full bg-amber-500/80 inline-block" />
                   <span className="size-2.5 rounded-full bg-emerald-500/80 inline-block" />
                   <span className="ml-2 font-mono text-xs text-[var(--ds-gray-900)]">
-                    weathernext_grid.glb
+                    {setupTab === "cli" ? "mone_terminal.sh" : "web_runner.config"}
                   </span>
                 </div>
                 <Tabs
@@ -221,28 +220,14 @@ export default function LandingPage() {
                   value={setupTab}
                   onValueChange={setSetupTab}
                   items={[
-                    { id: "globe", label: "3D Grid" },
                     { id: "cli", label: "Terminal" },
-                    { id: "web", label: "Runner" },
+                    { id: "web", label: "Web Runner" },
                   ]}
                 />
               </div>
 
               <div className="p-6 flex flex-col items-center justify-center min-h-[320px]">
-                {setupTab === "globe" ? (
-                  <div className="w-full flex flex-col items-center">
-                    <WeatherGlobe3D className="w-60 h-60 sm:w-64 sm:h-64" />
-                    <div className="flex items-center justify-between w-full pt-4 border-t border-[var(--brand-border-subtle)] text-[11px] text-[var(--ds-gray-900)]">
-                      <span className="flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-emerald-500 animate-ping" />
-                        22 Active Weather Stations
-                      </span>
-                      <span className="tabular-nums font-mono">
-                        Global 0.25° Resolution
-                      </span>
-                    </div>
-                  </div>
-                ) : setupTab === "cli" ? (
+                {setupTab === "cli" ? (
                   <div className="w-full space-y-4 text-left">
                     <p className="text-xs text-[var(--ds-gray-900)]">
                       Run the autonomous agent package locally or on your cloud server:
