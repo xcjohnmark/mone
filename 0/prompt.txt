@@ -1,0 +1,340 @@
+i need to pass this judging criterias for this project: Judging criteria
+Judges score each project in five categories. Each category is scored out of 100, and the categories are weighted as shown to give a final score out of 100.
+
+The agent
+How well the agent, or the system of agents, handles a substantial task from start to finish.
+
+30%
+Use of neatlogs, Entire and cfo.ai
+How effectively you used neatlogs, Entire and cfo.ai to build, improve and plan a business around the agent.
+
+25%
+Demo video
+How clearly the demo video explains the agent and your use of neatlogs, Entire and cfo.ai.
+
+20%
+Building in public
+How you shared your project with other people while you built it.
+
+15%
+Usefulness and originality
+Whether the agent solves a problem that people have, in a new way.
+
+10%
+Evidence & verification
+Back up each claim in your submission with evidence that judges can check.
+
+The agent improved
+A run before your change and a run after it, e.g., two neatlogs traces, with the numbers you compared
+You used neatlogs
+Links to neatlogs traces from your project, or screenshots of them
+You used Entire
+Checkpoints or entire-graph output from your repository
+You used cfo.ai
+A business plan covering your agent’s pricing, costs, revenue and runway
+The agent recovers from failures
+A run where an action failed, showing what the agent did next
+You built in public
+Links to what you shared during the hackathon, tagged #neatHack
+You wrote the code during the hackathon
+A public repository with commits dated during the hackathon help me understand what i would need to do and what you as the agent and coding agent need to ensure in your build process.
+
+---
+
+firstly give me a guide to complete each of my tasks. make it detailed but not long and tiring, make use of bullet points. also add like a contaxt of what should've been done or what the agent would've done before i can now do what i want to do. create an md file for this named criterions.md where all the things the agent would make sure of and the things i would make usre of in details and guide (-bullet points most preferred) and also maybe a little info on how and what the the judge would view that particular criterion as a success
+
+---
+
+there is an agent prompt to setup neatlogs in the neatlogs website, is it ok to paste the instruction now? or how and when are we using neatlgos? when we are done building the agent?
+
+---
+
+# Trace an AI agent with Neatlogs
+
+Set up Neatlogs tracing in this working directory. Follow these steps in order.
+
+## Step 1: Set up Neatlogs access
+
+Neatlogs project ID: `4829ff21-c298-4d8c-9a4c-fed6a426623e`
+
+Set `NEATLOGS_API_KEY` to the key below in the shell the user will run the app from,
+for example `export NEATLOGS_API_KEY="REDACTED"`. If the app loads a
+`.env` file, add it there instead. Do not commit the key to version control.
+
+```
+REDACTED
+```
+
+Never replace this key with a guessed or invented one. This is an SDK project key, not a public API CLI credential. SDK Doctor verification can use it without CLI login. CLI readback requires browser/device approval or a service-account token; if neither is available, mark that step "waiting on a human" and continue SDK verification.
+
+The CLI host is the dashboard origin `https://app.neatlogs.com`, not the ingest endpoint. Use this host explicitly on every CLI command.
+
+## Step 2: Detect the language and stack
+
+Look at the workspace and determine the language and which LLM providers / agent frameworks it uses. If the project spans more than one language, instrument each one. If the project is a monorepo, check the git root to get oriented, but only ever instrument services in or below the current working directory — never a sibling or parent app outside it, even if a workspace/compose config references one.
+
+**Finding independent services.** A monorepo can bundle several independently-deployable services; each one that reaches an LLM/agent/tool call gets treated as its own entry point later (own workflow name in Step 4) — skip health/readiness/CRUD-only services that never call a model entirely. Check these signals in order and stop at the first one that finds more than one service directory:
+
+1. **Workspace config** (most authoritative) — a `workspaces` field in the root `package.json`, or a `packages` field in `pnpm-workspace.yaml`. Resolve those glob patterns to directories, then keep only the ones that actually have their own manifest (`package.json`, `pyproject.toml`, `go.mod`, etc.) — a glob can match a plain non-package directory too.
+2. **docker-compose** — `docker-compose.yml`/`docker-compose.yaml`/`compose.yml`/`compose.yaml` at the root. Each entry under `services:` whose `build` (a plain string, or an object's `context` field) resolves to an existing directory is one service.
+3. **Scattered manifests** (fallback, only if neither signal above found more than one) — search for manifest files (`package.json`, `pyproject.toml`, `go.mod`, etc.) up to 4 directories deep, excluding `node_modules`, `.git`, `dist`, `build`, `.next`, `venv`, `.venv`, `__pycache__`, `target`, `.turbo`, `vendor`. Drop the repo root's own manifest (that's the whole-repo language, not a separate service) and drop any candidate directory that's nested inside another candidate — a service's own internal shared-lib subpackage is not a separate service.
+
+Edge case: if exactly one of these signals finds exactly one nested service, and the repo root itself has no manifest/language of its own, use that single nested directory as the actual service root instead of the top-level directory — it IS the real service, just not living at the repo root (e.g. a `services/api/` with nothing else at the top level).
+
+If none of the three signals finds more than one candidate, treat the whole repo at the current working directory as a single service — this is the common case, and nothing else here changes for it. For every service found this way, only keep it if it reaches an LLM/agent/tool call — drop the rest, per the CRUD/health-check exclusion above.
+
+**Identifying entry points within each service.** A single service usually has several independent, separately-triggerable capabilities — these are the actual entry points, not the service as a whole. Typical shapes: an HTTP route, a CLI command/subcommand, a cron/scheduled job, a queue/stream consumer (Kafka/SQS/Celery/RabbitMQ/BullMQ — one entry point per message/task type, not one for the whole consumer loop), a webhook/event handler, an agent-loop iteration, or a public library API function. Two things commonly get this wrong:
+
+- **Altitude** — an internal helper the entry point calls into (`run_pipeline`, `process_document`, `process_chunk`) is NOT itself an entry point; the entry point is the outer route/command/job that calls it.
+- **Multiplexed entry** — if one transport dispatches to several different capabilities (a single `/run` route branching on a `task_type` field, a Celery task branching by job kind, an argparse dispatcher, a Kafka consumer loop branching on `msg.topic`/`event_type`), treat EACH BRANCH as its own entry point — never the shared dispatcher as one entry point covering all of them.
+
+For each entry point, also note its process kind — it changes how you initialize and where spans root:
+
+- **One-shot script**: initialize once near the top, and end by flushing/shutting down the SDK (its process exits immediately after, and unflushed spans batched in memory are otherwise lost).
+- **Long-running server**: initialize once at process startup — never inside a request handler — and only flush/shut down on process shutdown, not per request. Root each request under its own span (e.g. a `WORKFLOW` on the handler) so concurrent requests don't share one trace.
+- **Concurrent operations within one entry point** (goroutines, worker threads, manual thread pools — not plain `async`/`await` in the same coroutine, which propagates context on its own): context does not always propagate automatically across a new thread or goroutine. Check Step 3's reference for whether this language/runtime requires threading the trace context through explicitly (Go always does) or handles it for you.
+
+Neatlogs has a native SDK for Python, TypeScript, and Go — if the detected language is one of those, continue to Step 3. For any OTHER language, there is no Neatlogs SDK; pick ONE of these two paths instead, and skip Step 3 (its SDK integration-mechanism guidance is not applicable here):
+
+- **Default: the dependency-free HTTP endpoint.** Use this unless the app already has OpenTelemetry, or the language's OTel support is clearly the more idiomatic fit (e.g. Java, .NET). Follow https://docs.neatlogs.com/sdk/http-injection exactly, but send to the regional URL `https://ingest.neatlogs.com/v1/trace` instead of any default host shown in the guide. The mechanism is fundamentally different from Steps 3–4 below: build ONE nested JSON tree (an object with a `children` array) as the code for one entry-point invocation runs, then send it as a SINGLE `POST /v1/trace` when that invocation completes — success or error, so wrap the send in this language's try/finally-equivalent. Never POST once per span; that violates the endpoint's contract and produces disconnected traces instead of one.
+- **OpenTelemetry / OTLP-gRPC, when the app already emits OpenTelemetry spans** (its own `tracer.start_span()`-style setup, an OTel Collector, or a GenAI-instrumented framework) **or you're setting one up now:** if there's no existing OTel SDK for this language yet, find and install the official one from https://opentelemetry.io/docs/languages/ (its own site — Neatlogs doesn't ship or document per-language OTel setup beyond Python/TS/Go) and add a standard gRPC trace exporter. Either way, point the exporter at Neatlogs: endpoint `ingest.neatlogs.com:443`, gRPC protocol, and the project key sent as the `x-api-key` gRPC metadata key — NOT an `Authorization: Bearer` header. Standard: emit spans following the official OpenTelemetry GenAI semantic conventions (https://opentelemetry.io/docs/specs/semconv/gen-ai/) — `gen_ai.system`, `gen_ai.request.model`, `gen_ai.operation.name`, token/usage attributes, etc. (If this happens to be a TypeScript app already using the Vercel AI SDK's own built-in `experimental_telemetry` rather than the Neatlogs SDK, its native `ai.*` attribute format — `ai.prompt`, `ai.response.text`, `ai.operationId`, etc. — is also recognized directly; no need to convert it to `gen_ai.*`.) Spans that don't follow either of these two shapes still get ingested, but arrive as generic, unparsed spans — no model name, no token counts, no LLM-specific rendering in the dashboard. Full transport detail (including the "flush before the process exits or batched spans are silently dropped" footgun): https://docs.neatlogs.com/sdk/opentelemetry.
+
+## Step 3: Follow the SDK's instrumentation reference
+
+Python, TypeScript, or Go only — skip this step if you took one of the two paths above instead.
+
+For each language, read the matching page and follow it exactly for HOW to capture LLM/framework calls — it lists, per provider and per framework, whether that one needs `wrap()`, `instrumentations=[...]`, or a dedicated integration helper, and that list changes as the SDK evolves, so don't guess or reuse a pattern from a different provider.
+
+| Language | Guide |
+| --- | ------|
+| Python | https://docs.neatlogs.com/sdk/python |
+| TypeScript | https://docs.neatlogs.com/sdk/typescript |
+| Go | https://docs.neatlogs.com/sdk/go |
+
+Use the regional Neatlogs ingest endpoint `https://ingest.neatlogs.com` for SDK initialization. Follow the language guide for the exact endpoint parameter.
+
+## Step 4: Install and initialize the SDK
+
+Python, TypeScript, or Go only — if you took the OpenTelemetry or HTTP-injection path in Step 2, follow that page's own setup instructions instead of this step.
+
+- Install the SDK using this language's own package manager (`pip`/`poetry` for Python, `npm`/`pnpm`/`yarn` for TypeScript, `go get` for Go — see Step 3's reference for the exact package/module name). Look up and install the latest version rather than pinning to a specific one. Verify the install succeeded.
+- Initialize the SDK once, near the app's entry point — the exact call signature (parameter names, casing, whether the API key is passed explicitly or read from the environment automatically) differs by language, so use Step 3's reference for the precise syntax rather than guessing from another language's example. Whatever the signature, never hardcode the API key. Set the workflow name to describe the specific task or pipeline this process runs — e.g. `invoice-ocr`, `support-agent`, `checkout-flow` — not the repo or app name; the project (selected by the API key) already identifies the app. If the repo has multiple independent entry points that each reach an LLM/agent/tool, give each its own workflow name describing what THAT one does.
+- Calling `init()` again with the same configuration is idempotent; calling it with conflicting configuration raises a configuration error until the current SDK generation is shut down. Never add a second `init()` to switch projects inside one running process. Almost every independent entry point you find stays on the same project and is distinguished by its own workflow root. Use a secondary client only when telemetry genuinely belongs to a different Neatlogs project (for example, explicit multi-tenant routing), and confirm that ownership decision with the user rather than inferring it from code structure.
+- Capture each LLM/framework call using the mechanism Step 3's reference says to use for that specific provider or framework — do not wrap something the guide says to instrument a different way, and never apply two mechanisms to the same call (e.g. `wrap()` a client AND also list it in `instrumentations=[...]`).
+- `wrap()`/`instrumentations=[...]`/framework integrations only capture library calls. Add a manual `@neatlogs.span(kind="WORKFLOW")` / `trace()` around a feature entry point only when you need to GROUP several of those calls under one named trace — not as an alternative way to capture a single call.
+
+## Step 5: Verify instrumentation and ingestion
+
+Use the language guide to run the installed SDK's `doctor --local` and `doctor --probe` commands with the SDK project key and regional ingest endpoint. These are SDK commands, not subcommands of `neatlogs-cli`. Do not guess the Python, TypeScript, or Go invocation. For HTTP/OTLP-only integrations, follow their guide's verification path instead.
+
+Do not run the application yourself. Ask the user to run an instrumented entry point and provide its trace ID or result. A synthetic Doctor probe verifies the telemetry pipeline; report it separately from verification of the user's actual application trace. Do not claim application instrumentation passed based only on a synthetic probe. With only the SDK project key, use Doctor readback and mark CLI readback "waiting on a human".
+
+## Step 6: Optional public API CLI readback
+
+Install `neatlogs-cli` using `npm install --global neatlogs-cli` and check `neatlogs --version` (Node.js 22 or 24). The SDK key must remain available to the application, but it must not override CLI authentication.
+
+Use the dashboard-specific profile `setup-https---app-neatlogs-com` consistently for login and every read. Before signing in, inspect `neatlogs --host https://app.neatlogs.com profile list`. Reuse this name only if it is unused or already belongs to this exact dashboard origin; otherwise choose an unused name and replace it in every command below. Login creates the profile when needed. Do not rebind an authenticated profile from another dashboard or rely on the default/active profile.
+
+For human OAuth, the following POSIX-shell commands exclude SDK/environment credentials only from each CLI process; they do not unset the application's key. In other shells, launch the CLI in an environment without those variables. A CLI version exposing `--credential-source profile` in `--help` can use that option instead of excluding the two credential variables.
+
+```bash
+env -u NEATLOGS_API_KEY -u NEATLOGS_TOKEN neatlogs --host https://app.neatlogs.com --profile setup-https---app-neatlogs-com auth login --device
+# The user must approve the displayed code in their browser.
+env -u NEATLOGS_API_KEY -u NEATLOGS_TOKEN -u NEATLOGS_PROJECT_ID neatlogs --host https://app.neatlogs.com --profile setup-https---app-neatlogs-com projects list
+env -u NEATLOGS_API_KEY -u NEATLOGS_TOKEN neatlogs --host https://app.neatlogs.com --profile setup-https---app-neatlogs-com --project 4829ff21-c298-4d8c-9a4c-fed6a426623e whoami
+env -u NEATLOGS_API_KEY -u NEATLOGS_TOKEN neatlogs --host https://app.neatlogs.com --profile setup-https---app-neatlogs-com --project 4829ff21-c298-4d8c-9a4c-fed6a426623e traces list --limit 10
+env -u NEATLOGS_API_KEY -u NEATLOGS_TOKEN neatlogs --host https://app.neatlogs.com --profile setup-https---app-neatlogs-com --project 4829ff21-c298-4d8c-9a4c-fed6a426623e traces get <trace-id>
+```
+
+Confirm the project UUID against `projects list`; discovery must not receive `--project` or `NEATLOGS_PROJECT_ID`. A service-account token supplied securely via `NEATLOGS_TOKEN` can replace interactive login: exclude only `NEATLOGS_API_KEY` for those invocations, or use `--credential-source token` when supported. It needs `context:read` for discovery/whoami and `observability:read` for trace reads, plus access to the selected project. Never ask the user to paste tokens into chat.
+
+Use the project-scoped `whoami` and actual trace read as the authoritative check. Older CLI versions can report `auth status` as authenticated just because a key is present. The command is `traces get`, not `trace get`. Trace detail returns status, token totals and span counts; use `traces spans list <trace-id>` with the same host/profile/project/credential setup for individual spans. A nonexistent trace should return `NOT_FOUND`.
+
+## Rules
+
+- Add only tracing. Do not set up detections, alerts, evals, or anything else.
+- Make only the code changes needed to add tracing. Do not run the application yourself, and do not break or meaningfully modify existing code.
+- Do not use the Neatlogs wizard CLI (`npx @neatlogs/wizard@latest`) — that's a separate, more thorough path; this prompt is the manual alternative for when it isn't available.
+
+Full documentation index: https://docs.neatlogs.com/llms.txt
+
+If any framework detected in Step 2 has a dedicated skill at https://github.com/neatlogs/skills (check that repo's `skill-menu.json` for the matching package, e.g. a CrewAI or LangChain project), fetch and read it before instrumenting that framework — it carries gotcha-level detail Step 3's reference doesn't (e.g. exact span-double-firing traps, per-framework attachment rules) and is worth the extra step for that framework's correctness.
+
+---
+
+ok so here goes everything about cfo.ai you need to know: # cfo.ai
+Ari is an AI CFO. It pulls data from the systems a company already runs on, builds one financial model out of them and keeps it current without anyone rebuilding it, answers questions against that model, and speaks first when something needs attention: a board meeting far enough out that there is still time to prepare, a metric moving the wrong way, a number that will be asked about.
+
+The math is always deterministic. Every figure is computed by cfo.ai’s own calculation engine, built for financial modeling, and never by a language model. Each one prints its lineage back to the source line. Every write lands in a changelog and can be undone; anything it cannot verify it declines to sign.
+
+It replaces work otherwise done by a fractional CFO, an outsourced finance firm, or a finance hire, at a small fraction of what any of those cost. It is built for founders at any stage: no finance team, a fractional CFO, or a finance team already in place. The work is the same work. What changes is who was doing it before.
+
+## Pages
+[Home](https://cfo.ai/)
+[Blog](https://cfo.ai/blog)
+[Pricing](https://cfo.ai/pricing)
+[Integrations](https://cfo.ai/integrations)
+[All integrations](https://cfo.ai/integrations/all)
+[Integration catalog JSON](https://cfo.ai/integrations.json)
+[Docs](https://docs.cfo.ai)
+[Agent setup skill](https://cfo.ai/skill.md)
+[Sign in](https://app.cfo.ai/login)
+[Terms of Use](https://cfo.ai/tou)
+[Privacy](https://cfo.ai/privacy)
+[Standard Terms and Conditions for Orders](https://cfo.ai/terms)
+[llms.txt](https://cfo.ai/llms.txt)
+[agents.md](https://cfo.ai/agents.md)
+## Connect
+Paste this into Claude Code, Codex, or your preferred agent:
+
+set up https://cfo.ai/skill.md
+
+The guide at cfo.ai/skill.md walks through account access, MCP setup, OAuth sign-in, workspace selection, and a verified first read. The MCP server is at https://api.cfo.ai/mcp and uses Streamable HTTP. The guide adapts setup to your client; sign-in and authorization still happen in the browser.
+
+## Status
+Existing account holders sign in at app.cfo.ai/login. New users start at cfo.ai/start to register in the app. MCP authentication requires an approved account. Membership is the grant: an agent holding a member’s token reads and writes the model under the same permission engine as the app, every write lands in the changelog, and every write can be undone. External tool calls and notifications stay gated beyond membership. use /browser as you please/browser
+
+---
+
+why is installaton for pydantic, numpy and pandas? explain briefly
+
+---
+
+now check whether we are done with the agent build plan C:/Users/ADMIN/Documents/mone/AGENT_BUILD_PLAN.md
+
+---
+
+so the next build is the wesite and distribution. we want users to be able to eihter install the agent and set it up locally in the cli or run it on the web. for the cli, the needed commands should be created and the setup instructions should be on the website. for the web, the setup on choosing weathernext 3 or weathernext 2 open meteo, the platform they would be using and whther the agnet is autonomous and can execute trade or not. i can see this on the website hero section, but just finalize it end to end. now to major next thing is users must create an account either way they want to use our agent, maybe the account should be their google account so when they create the account, they would be prompted to explore pricing of the agent. for each user or new signup i would like to give 7 days free access to the agent, then after 7 days they choose a plan. check C:/Users/ADMIN/Documents/mone/cfo_business_plan.md to see whether it is inline with this. then we can now move to integrating dodo payments. and the full payment integration is setup. create a full /plan to do this, chedck if there is other parts or important tasks to work on from context that has not been done and create a plan to do all this./plan
+
+---
+
+the plan is nice but i gave C:/Users/ADMIN/Documents/mone/cfo_business_plan.md to cfo.ai and it returned Jahsfavour, mone’s revenue model is clear: sell software and runner capacity—not access to customer trading capital. But the financial plan has several contradictions that need fixing before you put it in front of judges or investors.
+
+Also, your workspace is currently empty. The figures labeled “cfo.ai Modeled” are supplied projections, not a model I’ve built or verified here yet.
+
+What checks out
+
+Your monthly revenue totals reconcile if every fuel pack sold is the $10 pack:
+
+
+
+
+
+
+
+Milestone
+
+
+
+Pro revenue
+
+
+
+Fuel revenue
+
+
+
+Total monthly revenue
+
+
+
+
+
+Q1
+
+
+
+$1,960
+
+
+
+$3,500
+
+
+
+$5,460
+
+
+
+
+
+Q2
+
+
+
+$12,250
+
+
+
+$18,000
+
+
+
+$30,250
+
+
+
+
+
+Q3
+
+
+
+$53,900
+
+
+
+$65,000 make sure they are inline first, then proceed. also stop calling our pricing fuel. the user don't need to know that they just need to know the price.
+
+---
+
+with our current architecture, does the user ever have to input their polymarket nd klshi apis in our platform. if so is that okay? other similar software do such right? what are the security risks.
+
+---
+
+so outline the users flow currently, for both cli users and web users. it should highlight every single action they take if they want to use our agent for the first time.
+then outline the steps they take if they want to view the agent dashboard on the web. now what is the alternative to this for cli users? are we to create some sort of pre defined queries for them to get info tjhat would be on the dashboard in their cli?
+
+---
+
+there is nothing like the Paper Broker ($1,000 Sandbox) again we are only using kalshi demo for any agent testing access. and why do users need to open a loclhost whern they can just also be able to access the website? is that how other similar apps work?
+
+---
+
+ok more on the agent particularly. currently is this how the agent work:
+- scans polymarket and kalshi immediately they create the new daily rain weather market for a new day
+- gets all the info about the market, goes to the user-selected weathernext and get forecasts for each city.
+- uses the deterministic trading guardrail to determine which market is worth trading.
+- if autonomous, executes trades on those market signals
+- if not autonomous, sends signal to the persons (we've not talked about this, do they get notified in telegram, on their dashboard, and for cli users where do they get notified? do they hae to open cli and run the agent before they get signals?)
+
+what are other things the agents does that i am missing out, and is the agent running all over the clock or only when new weathermarkets for the day are created on polymarket and kalshi
+
+---
+
+ok for me to continue with dodo payment integration i have to have a website url so we are deploying the site even though it's still in production. now first off are we using vercel? what do i need to do? and create a plan to do what you have to do to deploy a websit for free on vercel.
+
+---
+
+it is mono-agent.vercel.app by the way. now my country nigeria is not part of the accepted country for dodopayments. is that an issue? should i go on to create account?
+
+---
+
+how many times would i mention i am creatting an app that real users use? you focus too much on mediocrity becuasre i want to submit for an hackathon. bro i need users to sign up and use it too. so tell me is the dodo issue okay?
+
+---
+
+ok let's pause the dodo integration it's not a compulsory partner tool. we a re pivoting to get paid in crypto. we would only support usdc. create the full plan to implement this for each pricing tier and ask for my details.
+
+---
+
+we should support polygon, base and solana. can one address support that or we need multiple address, how does usdc work in these terms?
+
+---
+
+so to get my evm address i went to metamask, opened it and copied the wallet address under base. i also veriifed that it is the same as the one under polygin and ethereum, now are you sure it is going to recieve usdc? i used to think it only recieve their native tokens. btw couldn't help but notice that in metamsk, solana network is there and in phantom polygon and base is there.  can i just use only one wallet app, phantom for instance and copy the address for solana, polygon and base there.? it works right.
+
+---
+
+0x.... address: 0x938C272530Af9939b98893c810d50EB79BE9f58b
+Solana address: REDACTED
