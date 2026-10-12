@@ -1,86 +1,229 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
-import { Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import {
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  Terminal,
+  Copy,
+  Check,
+  Globe,
+  Zap,
+  X,
+  CheckCircle2,
+  Key,
+} from "lucide-react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { Card } from "./ui/Card";
 
 export function OnboardingModal() {
+  const router = useRouter();
   const {
     user,
     showOnboardingPrompt,
     setShowOnboardingPrompt,
     setIsPricingOpen,
+    setIsCliModalOpen,
   } = useAuth();
 
+  const [copiedToken, setCopiedToken] = useState(false);
+
   if (!showOnboardingPrompt || !user) return null;
+
+  const handleCopyToken = () => {
+    if (!user.cliApiToken) return;
+    navigator.clipboard.writeText(user.cliApiToken);
+    setCopiedToken(true);
+    setTimeout(() => setCopiedToken(false), 2000);
+  };
+
+  const handleGoToDashboard = () => {
+    setShowOnboardingPrompt(false);
+    router.push("/agent");
+  };
+
+  const handleSetupCli = () => {
+    setShowOnboardingPrompt(false);
+    setIsCliModalOpen(true);
+  };
 
   const handleExplorePricing = () => {
     setShowOnboardingPrompt(false);
     setIsPricingOpen(true);
   };
 
-  const handleProceed = () => {
+  const handleClose = () => {
     setShowOnboardingPrompt(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <Card className="bg-[var(--brand-glass)] border-[var(--brand-border)] rounded-brand-card max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center backdrop-blur-md">
-        <div className="mx-auto w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
-          <Sparkles className="w-6 h-6" />
-        </div>
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <Card className="bg-[var(--brand-card-bg)] border border-[var(--brand-border)] rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center">
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 size-8 rounded-full flex items-center justify-center text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] hover:bg-[var(--brand-border-subtle)] transition"
+          aria-label="Close"
+        >
+          <X className="size-4" />
+        </button>
 
-        <div className="space-y-2">
-          <h2 className="font-outfit text-xl sm:text-2xl font-bold text-[var(--geist-foreground)]">
-            Welcome to mone, {user.name}!
+        {/* Celebration Header */}
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-500 font-semibold">
+            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>7-Day Free Trial Activated</span>
+          </div>
+
+          <h2 className="font-outfit text-2xl sm:text-3xl font-extrabold text-[var(--geist-foreground)] tracking-tight">
+            Welcome to mone, {user.name.split(" ")[0]}!
           </h2>
-          <p className="font-satoshi text-xs sm:text-sm text-[var(--ds-gray-900)] leading-relaxed">
-            Your <span className="text-emerald-500 font-semibold">7-Day Free Trial</span> is now active with <span className="text-[var(--geist-foreground)] font-semibold">50 complimentary runs</span> and all prediction features unlocked.
-          </p>
-          <p className="font-satoshi text-xs text-[var(--ds-gray-900)]">
-            Explore our transparent pricing tiers to learn how automated runs work after your trial.
+
+          <p className="font-satoshi text-xs sm:text-sm text-[var(--ds-gray-900)] max-w-md mx-auto leading-relaxed">
+            Your account is loaded with <strong className="text-[var(--geist-foreground)]">50 complimentary automated runs</strong>. Autonomous weather forecasting intelligence across Kalshi &amp; Polymarket is now unlocked.
           </p>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[var(--ds-gray-100)] border border-[var(--ds-gray-400)] text-left space-y-2 text-xs text-[var(--ds-gray-900)] font-mono tabular-nums">
-          <div className="flex justify-between">
-            <span className="text-[var(--ds-gray-900)]">Account:</span>
-            <span className="text-[var(--geist-foreground)]">{user.email}</span>
+        {/* User & Trial Entitlement Details */}
+        <div className="p-4 rounded-xl bg-[var(--brand-glass)] border border-[var(--brand-border-subtle)] space-y-3 text-left">
+          {/* User ID Row */}
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--brand-border-subtle)] text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="size-8 rounded-full overflow-hidden border border-[var(--brand-border-subtle)] bg-[var(--brand-border-subtle)] shrink-0 flex items-center justify-center">
+                {user.avatar ? (
+                  <Image
+                    src={user.avatar}
+                    alt={user.name}
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="size-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs font-bold">
+                    {user.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="font-semibold text-[var(--geist-foreground)] leading-none">
+                  {user.name}
+                </p>
+                <p className="text-[11px] text-[var(--ds-gray-900)] mt-0.5">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
+              Active Trial
+            </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-[var(--ds-gray-900)]">Trial Period:</span>
-            <span className="text-emerald-500 font-semibold">7 Days Active</span>
+
+          {/* Grid Stats */}
+          <div className="grid grid-cols-3 gap-2 text-center text-xs py-1">
+            <div className="p-2 rounded-lg bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)]">
+              <span className="block text-[10px] text-[var(--ds-gray-900)] uppercase font-semibold">
+                Trial Days
+              </span>
+              <span className="font-outfit text-base font-bold text-emerald-500">
+                7 Days
+              </span>
+            </div>
+            <div className="p-2 rounded-lg bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)]">
+              <span className="block text-[10px] text-[var(--ds-gray-900)] uppercase font-semibold">
+                Free Compute
+              </span>
+              <span className="font-outfit text-base font-bold text-[var(--geist-foreground)]">
+                50 Runs
+              </span>
+            </div>
+            <div className="p-2 rounded-lg bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)]">
+              <span className="block text-[10px] text-[var(--ds-gray-900)] uppercase font-semibold">
+                Architecture
+              </span>
+              <span className="font-outfit text-xs font-bold text-[var(--geist-foreground)] mt-0.5 block truncate">
+                BYOK Non-Custodial
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-[var(--ds-gray-900)]">Included Runs:</span>
-            <span className="text-[var(--geist-foreground)] font-semibold">50 Trade Cycles</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[var(--ds-gray-900)]">Architecture:</span>
-            <span className="text-[var(--ds-blue-700)] font-semibold">100% Non-Custodial (BYOK)</span>
-          </div>
+
+          {/* CLI Token Row */}
+          {user.cliApiToken && (
+            <div className="pt-2 border-t border-[var(--brand-border-subtle)]">
+              <div className="flex items-center justify-between text-[11px] text-[var(--ds-gray-900)] mb-1.5">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <Key className="size-3 text-emerald-500" />
+                  Terminal CLI Authentication Token:
+                </span>
+                <span className="text-[10px] text-[var(--ds-gray-900)]">
+                  For VPS / Terminal Setup
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 px-2.5 py-1.5 rounded-lg bg-[var(--brand-card-bg)] border border-[var(--brand-border-subtle)] font-mono text-[11px] text-[var(--geist-foreground)] truncate select-all">
+                  {user.cliApiToken}
+                </code>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyToken}
+                  className="shrink-0 text-[11px] h-8 px-2.5 gap-1.5"
+                >
+                  {copiedToken ? (
+                    <>
+                      <Check className="size-3 text-emerald-500" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="size-3" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        {/* Next Step Action Buttons */}
+        <div className="space-y-2.5 pt-1">
+          {/* Primary Action: Go to Web Dashboard */}
           <Button
-            variant="blue"
+            variant="default"
+            size="lg"
+            onClick={handleGoToDashboard}
+            className="w-full text-xs font-semibold rounded-xl gap-2 shadow-lg"
+          >
+            <Globe className="size-4" />
+            <span>Launch Web Dashboard</span>
+            <ArrowRight className="size-4 ml-auto" />
+          </Button>
+
+          {/* Secondary Action: Setup Agent CLI */}
+          <Button
+            variant="secondary"
             size="md"
+            onClick={handleSetupCli}
+            className="w-full text-xs font-semibold rounded-xl gap-2"
+          >
+            <Terminal className="size-4" />
+            <span>Setup Autonomous Agent (Terminal / CLI)</span>
+          </Button>
+        </div>
+
+        {/* Pricing top-up hint */}
+        <div className="pt-1 text-center">
+          <button
             onClick={handleExplorePricing}
-            className="flex-1 text-xs font-semibold gap-2"
+            className="text-[11px] text-[var(--ds-gray-900)] hover:text-[var(--geist-foreground)] transition underline underline-offset-4"
           >
-            Explore Plans &amp; Pricing <ArrowRight className="w-3.5 h-3.5" />
-          </Button>
-          <Button
-            variant="outline"
-            size="md"
-            onClick={handleProceed}
-            className="flex-1 text-xs"
-          >
-            Go to Agent Dashboard
-          </Button>
+            Need more runs? View USDC Pricing Passes &amp; Top-Ups &rarr;
+          </button>
         </div>
       </Card>
     </div>

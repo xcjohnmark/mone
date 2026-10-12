@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   X,
@@ -24,8 +24,14 @@ interface SetupAgentModalProps {
 
 export function SetupAgentModal({ isOpen, onClose }: SetupAgentModalProps) {
   const router = useRouter();
-  const { user, signInWithGoogle, setIsCliModalOpen } = useAuth();
+  const { user, signInWithGoogle, setIsCliModalOpen, showOnboardingPrompt } = useAuth();
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && user && showOnboardingPrompt) {
+      onClose();
+    }
+  }, [isOpen, user, showOnboardingPrompt, onClose]);
 
   if (!isOpen) return null;
 

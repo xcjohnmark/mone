@@ -185,22 +185,46 @@ export default function LandingPage() {
 
           {/* Centered CTA Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <Button
-              variant="default"
-              size="lg"
-              onClick={() => setIsSetupModalOpen(true)}
-              className="px-8 py-3.5 text-sm font-semibold rounded-2xl gap-2 shadow-lg"
-            >
-              Setup Agent <ArrowRight className="size-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setIsCliModalOpen(true)}
-              className="px-8 py-3.5 text-sm font-semibold rounded-2xl gap-2"
-            >
-              <Terminal className="size-4" /> View Guide
-            </Button>
+            {user ? (
+              <>
+                <Link href="/agent">
+                  <Button
+                    variant="default"
+                    size="lg"
+                    className="px-8 py-3.5 text-sm font-semibold rounded-2xl gap-2 shadow-lg"
+                  >
+                    Go to Dashboard <ArrowRight className="size-4" />
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setIsCliModalOpen(true)}
+                  className="px-8 py-3.5 text-sm font-semibold rounded-2xl gap-2"
+                >
+                  <Terminal className="size-4" /> Setup CLI Agent
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={() => setIsSetupModalOpen(true)}
+                  className="px-8 py-3.5 text-sm font-semibold rounded-2xl gap-2 shadow-lg"
+                >
+                  Setup Agent <ArrowRight className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setIsCliModalOpen(true)}
+                  className="px-8 py-3.5 text-sm font-semibold rounded-2xl gap-2"
+                >
+                  <Terminal className="size-4" /> View Guide
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Centered Visual Card */}
