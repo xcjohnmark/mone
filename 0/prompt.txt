@@ -1,0 +1,18 @@
+return this conversation id.
+
+---
+
+npx create-video --yes --blank my-video
+
+---
+
+ok let's circle back to mone. I want to backtest my weathernext 3 strategies. that is test the strategies over previous weather markets on kalshi over the past 30 days. 
+- where do I get previous kalshi weather markets? the api?
+- i just want to test the strategy, not mone agent, so  i basically need a file that contains the full strategy and rules that govern the strategy
+- then i would now build a simulator or a backtester that would run that strategy with market data over the last 30 days.
+
+so firstly, create a /plan to execute the first step, finding where to get previous weather markets data from kalshi. Important info i need about the each events for each city for each day over the past 30 days are, the time it was uploaded or updated on kalshi, the final resolution and other things a pro trader would check in a weather market. if you can't find a reliable way to get kalshi weather market data, try polymarket. make sure to use /browser to make extensive search on platforms like reddit and x and forums too. be very diligent, keep researching till you find answers./browser
+
+---
+
+Yes, I have reviewd the artifact and i approve with one addition, when replaying the strategy against the 30 days of real markets how do we test with an actual price, since the price and yes an no flunctuates throughout the duration of that market event? what i think is we should test based on the fact that trades where taken during the first hour of the market. also we would only be backtesting for daily precipitation markets which is kxrain. so first let's agree on exactly what time is most realistic to test the market on, i believe one hour so it feels like it's an actual human taking those trades.

@@ -1,0 +1,94 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M550YMPQA9VVS02HZPM578FD",
+  "session_id": "319545d9-be64-4fd6-a881-897f7eabc8ad",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-17T13:31:22.1509423Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "save_step_count": 1,
+  "files_touched": [
+    "backtest_simulator.py",
+    "scripts/harvest_kalshi_weather_30d.py",
+    "strategy_rules_spec.py"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "b2f2c54ce739",
+  "checkpoint_transcript_start": 1501,
+  "transcript_lines_at_start": 1501,
+  "token_usage": {
+    "input_tokens": 30639,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2438109,
+    "output_tokens": 14775,
+    "api_call_count": 39
+  },
+  "session_metrics": {
+    "turn_count": 27
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-17T13:31:22.0173711Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 29474,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 29474,
+    "total_lines_changed": 29474,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 21465,
+      "user_lines_removed": 71,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "docs/entire-session.md": 15956,
+        "my-video/.gitignore": 7,
+        "my-video/.prettierrc": 5,
+        "my-video/README.md": 54,
+        "my-video/eslint.config.mjs": 3,
+        "my-video/package-lock.json": 5274,
+        "my-video/package.json": 28,
+        "my-video/remotion.config.ts": 13,
+        "my-video/src/Composition.tsx": 25,
+        "my-video/src/Root.tsx": 9,
+        "my-video/src/index.ts": 4,
+        "my-video/tsconfig.json": 16,
+        "trace_exports/failure_recovery_trace.json": 71
+      },
+      "user_removed_per_file": {
+        "trace_exports/failure_recovery_trace.json": 71
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 44370,
+      "user_lines_removed": 0,
+      "agent_lines_added": 59445,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "backtest_data/kalshi_kxrain_30d.json": 21985,
+        "backtest_simulator.py": 352,
+        "docs/entire-session.md": 15956,
+        "my-video/.gitignore": 7,
+        "my-video/.prettierrc": 5,
+        "my-video/README.md": 54,
+        "my-video/eslint.config.mjs": 3,
+        "my-video/package-lock.json": 5274,
+        "my-video/package.json": 28,
+        "my-video/remotion.config.ts": 13,
+        "my-video/src/Composition.tsx": 25,
+        "my-video/src/Root.tsx": 9,
+        "my-video/src/index.ts": 4,
+        "my-video/tsconfig.json": 16,
+        "scripts/harvest_kalshi_weather_30d.py": 230,
+        "strategy_rules_spec.py": 409
+      }
+    }
+  ]
+}
